@@ -57,9 +57,9 @@ namespace Crypto.CommandLine
             var ops = new ReadOnlySpan<string>(args, 1, args.Length - 1);
             CommandOption.Parse(ops, out CommandOption[] options);
 
-            var shellCmd = new Command(command, options);
+            var cmd = new Command(command, options);
 
-            return shellCmd;
+            return cmd;
         }
         #endregion
 
