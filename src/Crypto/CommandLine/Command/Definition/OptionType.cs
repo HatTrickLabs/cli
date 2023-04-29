@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Crypto.CommandLine
+{
+    #region option type [enum]
+    public enum OptionType
+    {
+        String,
+        Boolean,
+        Char,
+        Byte,
+        SByte,
+        Short,
+        UShort,
+        Int32,
+        UInt32,
+        Int64,
+        UInt64,
+        NInt,
+        NUInt,
+        Float,
+        Double,
+        Decimal,
+        DateTime,
+        Guid
+    }
+    #endregion
+}
