@@ -42,7 +42,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region get all
-        public CommandDefinition[] GetAllCommands()
+        public CommandDefinition[] GetAllCommandDefinitions()
         {
             return _definitions.Values.ToArray();
         }
@@ -55,10 +55,10 @@ namespace Crypto.CommandLine
             _namespaces.Add(commandNamespace.Name, commandNamespace);
         }
 
-        public void Add(CommandDefinition command)
+        public void Add(CommandDefinition commandDef)
         {
-            command.Ensure();
-            _definitions.Add(command.Key, command);
+            commandDef.Ensure();
+            _definitions.Add(commandDef.Key, commandDef);
         }
         #endregion
 
@@ -72,10 +72,10 @@ namespace Crypto.CommandLine
         #endregion
 
         #region try get
-        public bool TryGet(string key, out CommandDefinition cmdDef)
+        public bool TryGet(string key, out CommandDefinition commandDef)
         {
-            cmdDef = _definitions.ContainsKey(key) ? _definitions[key] : null;
-            return cmdDef is not null;
+            commandDef = _definitions.ContainsKey(key) ? _definitions[key] : null;
+            return commandDef is not null;
         }
         #endregion
 
@@ -92,13 +92,13 @@ namespace Crypto.CommandLine
         #endregion
 
         #region ensure command
-        private void EnsureCommand(Command command, out CommandDefinition commandDef)
+        private void EnsureCommand(Command command, out CommandDefinition cmdDef)
         {
-            if (!this.TryGet(command.Key, out commandDef))
+            if (!this.TryGet(command.Key, out cmdDef))
                 throw new CommandInputException($"No command definition registered for provided command: {command.Key}");
 
             List<string> feedback = new List<string>();
-            this.EnsureCommandOptions(commandDef, command, ref feedback);
+            this.EnsureCommandOptions(cmdDef, command, ref feedback);
 
             if (feedback.Count > 0)
                 throw new CommandInputException(feedback.ToArray());
