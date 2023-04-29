@@ -34,7 +34,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region try set option value
-        internal abstract bool TrySetOptionValue(ShellCommandOption option);
+        internal abstract bool TrySetOptionValue(CommandOption option);
         #endregion
 
         #region ensure
@@ -97,7 +97,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region try set option value
-        internal override bool TrySetOptionValue(ShellCommandOption option)
+        internal override bool TrySetOptionValue(CommandOption option)
         {
             try
             {

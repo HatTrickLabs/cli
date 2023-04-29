@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Crypto.CommandLine
 {
-    public class ShellCommandOption
+    public class CommandOption
     {
         #region internals
         private string _key;
@@ -20,18 +20,18 @@ namespace Crypto.CommandLine
         #endregion
 
         #region constructors
-        public ShellCommandOption(string flag)
+        public CommandOption(string flag)
         {
             _flag = flag;
         }
 
-        public ShellCommandOption(string flag, string argument)
+        public CommandOption(string flag, string argument)
         {
             _flag = flag;
             _arg = argument;
         }
 
-        public ShellCommandOption(string key, string flag, string argument)
+        public CommandOption(string key, string flag, string argument)
         {
             _key = key;
             _flag = flag;
@@ -40,9 +40,9 @@ namespace Crypto.CommandLine
         #endregion
 
         #region parse
-        public static void Parse(ReadOnlySpan<string> arguments, out ShellCommandOption[] options)
+        public static void Parse(ReadOnlySpan<string> arguments, out CommandOption[] options)
         {
-            var ops = new List<ShellCommandOption>();
+            var ops = new List<CommandOption>();
 
             Func<string, bool> isExplicitAssign = (a) => a == "=" || a == ":";
 
@@ -61,18 +61,18 @@ namespace Crypto.CommandLine
 
                         if (arg[1] == '-') //verbose option
                         {
-                            ops.Add(new ShellCommandOption(arg));
+                            ops.Add(new CommandOption(arg));
                         }
                         else if (arg.Length == 2) //single terse option
                         {
-                            ops.Add(new ShellCommandOption(arg));
+                            ops.Add(new CommandOption(arg));
                         }
                         else //must be a compound terse option, split into individual flags
                         {
                             for (int j = 1; j < arg.Length; j++) //start at idx 1 to skip the '-'
                             {
                                 var flag = "-" + arg[j];
-                                ops.Add(new ShellCommandOption(flag));
+                                ops.Add(new CommandOption(flag));
                             }
                         }
                     }

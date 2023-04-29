@@ -4,19 +4,19 @@ using System.Collections.Generic;
 
 namespace Crypto.CommandLine
 {
-    public class ShellCommand
+    public class Command
     {
         #region internals
-        private readonly string _cmd;
-        private readonly ShellCommandOption[] _ops;
+        private readonly string _key;
+        private readonly CommandOption[] _ops;
         #endregion
 
         #region interface
-        public string Command => _cmd;
+        public string Key => _key;
 
-        internal ShellCommandOption[] Options => _ops;
+        internal CommandOption[] Options => _ops;
 
-        public ShellCommandOption this[string key]
+        public CommandOption this[string key]
         {
             get
             {
@@ -27,21 +27,21 @@ namespace Crypto.CommandLine
         #endregion
 
         #region constructors
-        public ShellCommand(string command, ShellCommandOption[] options = null)
+        public Command(string key, CommandOption[] options = null)
         {
-            if (command is null)
-                throw new ArgumentNullException(nameof(command));
+            if (key is null)
+                throw new ArgumentNullException(nameof(key));
 
-            if (string.IsNullOrWhiteSpace(command))
-                throw new ArgumentException($"{nameof(command)} argument must contain a value.");
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException($"{nameof(key)} argument must contain a value.");
 
-            _cmd = command;
+            _key = key;
             _ops = options;
         }
         #endregion
 
         #region [static] parse
-        public static ShellCommand Parse(string[] args)
+        public static Command Parse(string[] args)
         {
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
@@ -55,25 +55,25 @@ namespace Crypto.CommandLine
             string command = args[0];
 
             var ops = new ReadOnlySpan<string>(args, 1, args.Length - 1);
-            ShellCommandOption.Parse(ops, out ShellCommandOption[] options);
+            CommandOption.Parse(ops, out CommandOption[] options);
 
-            var shellCmd = new ShellCommand(command, options);
+            var shellCmd = new Command(command, options);
 
             return shellCmd;
         }
         #endregion
 
         #region get options
-        public ShellCommandOption[] GetOptions(Predicate<ShellCommandOption> where = null)
+        public CommandOption[] GetOptions(Predicate<CommandOption> where = null)
         {
             return Array.FindAll(_ops, where == null ? (o) => true : where);
         }
         #endregion
 
         #region get option
-        public ShellCommandOption GetOption(string optionKey)
+        public CommandOption GetOption(string optionKey)
         {
-            ShellCommandOption op = Array.Find(this.Options, (o) => o.Key == optionKey);
+            CommandOption op = Array.Find(this.Options, (o) => o.Key == optionKey);
             return op;
         }
         #endregion

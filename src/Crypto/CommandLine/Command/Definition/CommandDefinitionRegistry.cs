@@ -80,9 +80,9 @@ namespace Crypto.CommandLine
         #endregion
 
         #region execute shell command
-        public void ExecuteShellCommand(ShellCommand shellCommand)
+        public void ExecuteShellCommand(Command shellCommand)
         {
-            if (shellCommand.Command is null || string.IsNullOrEmpty(shellCommand.Command))
+            if (shellCommand.Key is null || string.IsNullOrEmpty(shellCommand.Key))
                 throw new CommandInputException("No command provided.");
 
             this.EnsureShellCommand(shellCommand, out CommandDefinition cmdDef);
@@ -92,10 +92,10 @@ namespace Crypto.CommandLine
         #endregion
 
         #region ensure shell command
-        private void EnsureShellCommand(ShellCommand shellCommand, out CommandDefinition commandDef)
+        private void EnsureShellCommand(Command shellCommand, out CommandDefinition commandDef)
         {
-            if (!this.TryGet(shellCommand.Command, out commandDef))
-                throw new CommandInputException($"No command definition registered for provided shell command: {shellCommand.Command}");
+            if (!this.TryGet(shellCommand.Key, out commandDef))
+                throw new CommandInputException($"No command definition registered for provided shell command: {shellCommand.Key}");
 
             List<string> feedback = new List<string>();
             this.EnsureShellCommandOptions(commandDef, shellCommand, ref feedback);
@@ -106,7 +106,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region ensure shell command options
-        private void EnsureShellCommandOptions(CommandDefinition cmdDef, ShellCommand shellCmd, ref List<string> feedback)
+        private void EnsureShellCommandOptions(CommandDefinition cmdDef, Command shellCmd, ref List<string> feedback)
         {
             //ensure all provided options are expected / defined
             this.EnsureNoUndefinedShellOptions(cmdDef, shellCmd, ref feedback);
@@ -142,7 +142,7 @@ namespace Crypto.CommandLine
                     //ensure no dupes
                     for (int j = 0; j < (shellCmd.Options?.Length ?? 0); j++)
                     {
-                        ShellCommandOption sco = shellCmd.Options[j];
+                        CommandOption sco = shellCmd.Options[j];
                         if (sco == shellOp)
                             continue;
 
@@ -165,7 +165,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region ensure no undefined shell options
-        private void EnsureNoUndefinedShellOptions(CommandDefinition cmdDef, ShellCommand shellCmd, ref List<string> feedback)
+        private void EnsureNoUndefinedShellOptions(CommandDefinition cmdDef, Command shellCmd, ref List<string> feedback)
         {
             int countProvided = shellCmd.Options?.Length ?? 0;
 

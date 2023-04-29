@@ -9,7 +9,7 @@ namespace Crypto.CommandLine
         #region internals
         private string _commandKey;
         private string _help;
-        private Action<ShellCommand> _entryPoint;
+        private Action<Command> _entryPoint;
         private List<CommandOptionDefinition> _options;
         #endregion
 
@@ -26,13 +26,13 @@ namespace Crypto.CommandLine
             set { _help = value; }
         }
 
-        public Action<ShellCommand> EntryPoint
+        public Action<Command> EntryPoint
         {
             get { return _entryPoint; }
             set { _entryPoint = value; }
         }
 
-        public Func<ShellCommand, System.Threading.Tasks.Task> AsyncEntryPoint
+        public Func<Command, System.Threading.Tasks.Task> AsyncEntryPoint
         { get; set; }
 
         public List<CommandOptionDefinition> Options
@@ -47,7 +47,7 @@ namespace Crypto.CommandLine
         {
         }
 
-        public CommandDefinition(string commandKey, string help, Action<ShellCommand> entryPoint, params CommandOptionDefinition[] options)
+        public CommandDefinition(string commandKey, string help, Action<Command> entryPoint, params CommandOptionDefinition[] options)
         {
             _commandKey = commandKey;
             _help = help;
