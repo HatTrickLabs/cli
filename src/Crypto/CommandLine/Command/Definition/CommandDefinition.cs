@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,18 +8,14 @@ namespace Crypto.CommandLine
     public class CommandDefinition
     {
         #region internals
-        private string _commandKey;
+        private string _name;
         private string _help;
         private Action<Command> _entryPoint;
         private List<CommandOptionDefinition> _options;
         #endregion
 
         #region interface
-        public string Key
-        {
-            get { return _commandKey; }
-            set { _commandKey = value; }
-        }
+        public string Name => _name;
 
         public string Help
         {
@@ -32,7 +29,7 @@ namespace Crypto.CommandLine
             set { _entryPoint = value; }
         }
 
-        public Func<Command, System.Threading.Tasks.Task> AsyncEntryPoint
+        public Func<Command, Task> AsyncEntryPoint
         { get; set; }
 
         public List<CommandOptionDefinition> Options
@@ -40,16 +37,19 @@ namespace Crypto.CommandLine
             get { return _options is null ? _options = new List<CommandOptionDefinition>() : _options; }
             protected set { _options = value; }
         }
+
+        public static string DefaultCommandName => "default";
         #endregion
 
         #region constructors
-        public CommandDefinition()
+        public CommandDefinition(string name)
         {
+            _name = name;
         }
 
-        public CommandDefinition(string commandKey, string help, Action<Command> entryPoint, params CommandOptionDefinition[] options)
+        public CommandDefinition(string name, string help, Action<Command> entryPoint, params CommandOptionDefinition[] options)
         {
-            _commandKey = commandKey;
+            _name = name;
             _help = help;
             _entryPoint = entryPoint;
             _options = options.ToList();
@@ -152,10 +152,10 @@ namespace Crypto.CommandLine
         #region ensure
         internal void Ensure()
         {
-            if (_commandKey is null || _commandKey == string.Empty)
-                throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Key)}.");
+            if (_name is null || _name == string.Empty)
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Name)}.");
 
-            if (_commandKey[0] == '-')
+            if (_name[0] == '-')
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} key cannot start with a '-'.");
 
             if (_entryPoint is null)
@@ -170,5 +170,14 @@ namespace Crypto.CommandLine
             }
         }
         #endregion
+    }
+
+    public class DefaultCommandDefinition : CommandDefinition
+    {
+        public DefaultCommandDefinition() : base(name: DefaultCommandName)
+        { }
+        public DefaultCommandDefinition(string help, Action<Command> entryPoint, params CommandOptionDefinition[] options) 
+            : base(DefaultCommandName, help, entryPoint, options)
+        { }
     }
 }

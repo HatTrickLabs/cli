@@ -58,7 +58,7 @@ namespace Crypto.CommandLine
         public void Add(CommandDefinition commandDef)
         {
             commandDef.Ensure();
-            _definitions.Add(commandDef.Key, commandDef);
+            _definitions.Add(commandDef.Name, commandDef);
         }
         #endregion
 
@@ -173,7 +173,7 @@ namespace Crypto.CommandLine
             if (cmdDef.Options is null || cmdDef.Options.Count == 0)
             {
                 if (countProvided > 0)
-                    feedback.Add($"The '{cmdDef.Key}' command does not accept any options...provided options are invalid.");
+                    feedback.Add($"The '{cmdDef.Name}' command does not accept any options...provided options are invalid.");
             }
             else
             {

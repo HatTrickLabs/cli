@@ -36,7 +36,7 @@ namespace Crypto.CommandLine
                 throw new ArgumentException($"{nameof(key)} argument must contain a value.");
 
             _key = key;
-            _ops = options;
+            _ops = options ?? new CommandOption[0];
         }
         #endregion
 
@@ -46,18 +46,21 @@ namespace Crypto.CommandLine
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
 
-            if (args.Length == 0)//TODO: Need a default command for the exe ... maybe help
-                throw new ArgumentException("Provided args[] cannot be empty.", nameof(args));
+            if (args.Length == 0)
+                return new DefaultCommand();//optionless default command...
 
-            if (args[0].StartsWith('-'))
-                throw new CommandInputException("First argument starts with a '-' ... Input seems to be missing the command.");
 
-            string command = args[0];
-
-            var ops = new ReadOnlySpan<string>(args, 1, args.Length - 1);
-            CommandOption.Parse(ops, out CommandOption[] options);
-
-            var cmd = new Command(command, options);
+            Command cmd = null;
+            if (args[0][0] != '-') //no command, return the default...
+            {
+                CommandOption.Parse(new ReadOnlySpan<string>(args, 0, args.Length), out CommandOption[] options);
+                cmd = new DefaultCommand(options);
+            }
+            else
+            {
+                CommandOption.Parse(new ReadOnlySpan<string>(args, 1, args.Length - 1), out CommandOption[] options);
+                cmd = new Command(args[0], options);
+            }
 
             return cmd;
         }
@@ -77,5 +80,13 @@ namespace Crypto.CommandLine
             return op;
         }
         #endregion
+    }
+
+    public class DefaultCommand : Command
+    {
+        internal DefaultCommand(CommandOption[] options = null) : base(CommandDefinition.DefaultCommandName, options)
+        {
+
+        }
     }
 }
