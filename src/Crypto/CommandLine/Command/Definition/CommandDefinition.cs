@@ -149,8 +149,8 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region ensure
-        internal void Ensure()
+        #region validate
+        internal void Validate()
         {
             if (_name is null || _name == string.Empty)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Name)}.");
@@ -165,7 +165,7 @@ namespace Crypto.CommandLine
             {
                 foreach (var op in _options)
                 {
-                    op.Ensure();
+                    op.Validate();
                 }
             }
         }
@@ -174,10 +174,13 @@ namespace Crypto.CommandLine
 
     public class DefaultCommandDefinition : CommandDefinition
     {
+        #region constructors
         public DefaultCommandDefinition() : base(name: DefaultCommandName)
         { }
+
         public DefaultCommandDefinition(string help, Action<Command> entryPoint, params CommandOptionDefinition[] options) 
             : base(DefaultCommandName, help, entryPoint, options)
         { }
+        #endregion
     }
 }

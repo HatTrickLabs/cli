@@ -37,8 +37,8 @@ namespace Crypto.CommandLine
         internal abstract bool TrySetOptionValue(CommandOption option);
         #endregion
 
-        #region ensure
-        internal virtual void Ensure()
+        #region validate
+        internal virtual void Validate()
         {
             if (_key == string.Empty)
                 throw new CommandDefinitionException("All options must have a valid key...Provided key is empty.");
@@ -112,10 +112,10 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region ensure
-        internal override void Ensure()
+        #region validate
+        internal override void Validate()
         {
-            base.Ensure();
+            base.Validate();
         }
         #endregion
     }

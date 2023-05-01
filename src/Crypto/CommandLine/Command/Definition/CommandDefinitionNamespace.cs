@@ -32,8 +32,8 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region ensure
-        internal void Ensure()
+        #region validate
+        internal void Validate()
         {
             string name = _name;
             string help = _help;

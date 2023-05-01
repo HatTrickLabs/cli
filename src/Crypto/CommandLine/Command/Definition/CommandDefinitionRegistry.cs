@@ -51,13 +51,13 @@ namespace Crypto.CommandLine
         #region add
         public void Add(CommandDefinitionNamespace commandNamespace)
         {
-            commandNamespace.Ensure();
+            commandNamespace.Validate();
             _namespaces.Add(commandNamespace.Name, commandNamespace);
         }
 
         public void Add(CommandDefinition commandDef)
         {
-            commandDef.Ensure();
+            commandDef.Validate();
             _definitions.Add(commandDef.Name, commandDef);
         }
         #endregion
