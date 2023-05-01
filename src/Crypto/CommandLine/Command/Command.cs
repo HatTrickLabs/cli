@@ -51,7 +51,7 @@ namespace Crypto.CommandLine
 
 
             Command cmd = null;
-            if (args[0][0] != '-') //no command, return the default...
+            if (args[0][0] == '-') //no command, return the default...
             {
                 CommandOption.Parse(new ReadOnlySpan<string>(args, 0, args.Length), out CommandOption[] options);
                 cmd = new DefaultCommand(options);
