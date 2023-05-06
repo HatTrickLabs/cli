@@ -20,75 +20,39 @@ namespace Crypto.CommandLine
         #endregion
 
         #region constructors
-        public CommandOption(string flag)
+        protected CommandOption()
+        { }
+
+        internal CommandOption(string flag)
         {
-            _flag = flag;
+            _flag = flag ?? throw new ArgumentNullException(nameof(flag));
         }
 
-        public CommandOption(string flag, string argument)
+        internal CommandOption(string key, string flag)
         {
-            _flag = flag;
-            _arg = argument;
+            _key = key ?? throw new ArgumentNullException(nameof(key));
+            _flag = flag ?? throw new ArgumentNullException(nameof(flag));
         }
 
-        public CommandOption(string key, string flag, string argument)
+        internal CommandOption(string key, string flag, string argument)
         {
-            _key = key;
-            _flag = flag;
-            _arg = argument;
+            _key = key ?? throw new ArgumentNullException(nameof(key));
+            _flag = flag ?? throw new ArgumentNullException(nameof(flag));
+            _arg = argument ?? throw new ArgumentNullException(nameof(flag));
         }
         #endregion
 
-        #region parse
-        public static void Parse(ReadOnlySpan<string> arguments, out CommandOption[] options)
+        #region get empty instance [static]
+        public static EmptyCommandOption GetEmptyInstance(string key)
         {
-            var ops = new List<CommandOption>();
-
-            Func<string, bool> isExplicitAssign = (a) => a == "=" || a == ":";
-
-            string prev = null;
-            for (int i = 0; i < arguments.Length; i++)
-            {
-                string arg = arguments[i];
-
-                if (!isExplicitAssign(arg))
-                {
-                    //starts with '-' then must be option unless prev arg is an explicit assignment char
-                    if (arg[0] == '-' && !isExplicitAssign(prev))
-                    {
-                        if (arg.Length == 1)
-                            throw new CommandInputException($"Invalid command line argument provided: '{arg}' at position:{i + 1}");
-
-                        if (arg[1] == '-') //verbose option
-                        {
-                            ops.Add(new CommandOption(arg));
-                        }
-                        else if (arg.Length == 2) //single terse option
-                        {
-                            ops.Add(new CommandOption(arg));
-                        }
-                        else //must be a compound terse option, split into individual flags
-                        {
-                            for (int j = 1; j < arg.Length; j++) //start at idx 1 to skip the '-'
-                            {
-                                var flag = "-" + arg[j];
-                                ops.Add(new CommandOption(flag));
-                            }
-                        }
-                    }
-                    else //no '-' and prev not an explicit assign, must be an option argument
-                    {
-                        ops[^1].SetArgument(arg);//set the last option in the list with the current arg
-                    }
-                }
-                prev = arg;
-            }
-            options = ops.ToArray();
+            var op = new EmptyCommandOption();
+            op.SetKey(key);
+            return op;
         }
         #endregion
 
         #region set key
-        public void SetKey(string key)
+        internal void SetKey(string key)
         {
             _key = key;
         }

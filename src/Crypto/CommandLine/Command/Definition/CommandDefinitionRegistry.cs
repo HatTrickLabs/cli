@@ -62,20 +62,19 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region get
-        public CommandDefinition Get(string key)
+        #region get command definition namespace
+        public CommandDefinitionNamespace GetNamespace(string name)
+        {
+            return _namespaces[name];
+        }
+        #endregion
+
+        #region get command definition
+        public CommandDefinition GetCommmandDefinition(string key)
         {
             return _definitions.ContainsKey(key) 
                 ? _definitions[key] 
                 : throw new CommandInputException($"No command registered for provided key: {key}");
-        }
-        #endregion
-
-        #region try get
-        public bool TryGet(string key, out CommandDefinition commandDef)
-        {
-            commandDef = _definitions.ContainsKey(key) ? _definitions[key] : null;
-            return commandDef is not null;
         }
         #endregion
 
@@ -85,19 +84,30 @@ namespace Crypto.CommandLine
             if (command.Key is null || string.IsNullOrEmpty(command.Key))
                 throw new CommandInputException("No command provided.");
 
-            this.EnsureCommand(command, out CommandDefinition cmdDef);
+            CommandDefinition cmdDef = this.GetCommmandDefinition(command.Key);
+
+            this.EnsureCommand(command, cmdDef);
 
             cmdDef.EntryPoint(command);
         }
         #endregion
 
         #region ensure command
-        private void EnsureCommand(Command command, out CommandDefinition cmdDef)
+        private void EnsureCommand(Command command, CommandDefinition cmdDef)
         {
-            if (!this.TryGet(command.Key, out cmdDef))
-                throw new CommandInputException($"No command definition registered for provided command: {command.Key}");
-
             List<string> feedback = new List<string>();
+
+            //ensure fully hydrated
+            foreach (var opDef in cmdDef.Options)
+            {
+                var op = command.Options.FirstOrDefault(o => opDef.Flags.Contains(o.Flag));
+
+                if (op is not null)
+                    op.SetKey(opDef.Key);
+                else
+                    command.Options.Add(CommandOption.GetEmptyInstance(opDef.Key));
+            }
+
             this.EnsureCommandOptions(cmdDef, command, ref feedback);
 
             if (feedback.Count > 0)
@@ -108,84 +118,85 @@ namespace Crypto.CommandLine
         #region ensure command options
         private void EnsureCommandOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
         {
-            //ensure all provided options are expected / defined
-            this.EnsureNoUndefinedOptions(cmdDef, cmd, ref feedback);
+            this.EnsureAllInputCommandOptionsDefined(cmdDef, cmd, ref feedback);
 
-            //run all validation for specific provided options
+            this.EnsureNoDuplicateOptions(cmdDef, cmd, ref feedback);
+
             for (int i = 0; i < cmdDef.Options.Count; i++)
             {
                 var opDef = cmdDef.Options[i];
-                var op = cmd.Options?.FirstOrDefault(o => opDef.Flags.Contains(o.Flag));
+                var op = cmd.Options?.FirstOrDefault(o => opDef.Key == o.Key);
 
-                if (opDef.MustAssign)
+                this.EnsureMustAssignOptionsProvidedAndAssigned(opDef, op, ref feedback);
+
+                if (op is not EmptyCommandOption)
                 {
-                    //if must assign, ensure provided
-                    if (op is null)
-                    {
-                        feedback.Add($"Expected option [{string.Join("|", opDef.Flags)}] not found...option is marked '{nameof(CommandOptionDefinition.MustAssign)}'");
-                        continue;
-                    }
-
-                    //if must assign, ensure assigned
-                    if (string.IsNullOrEmpty(op.Argument))//ensure option has supplied argument
-                    {
-                        feedback.Add($"Option '{op.Flag}' requires an argument...no argument provided.");
-                        continue;
-                    }
-                }
-
-                if (op is not null)
-                {
-                    //TODO: to allow dupes or not to allow dupes ... should dupes be utilized for SIMPLE multi imput scenarios (array of items) without
-                    //      the need to define a custom type converter ??? ex: abc.exe get.dir.file.count --path d:\tmp --path d:\img --path d:\my-pics
-
-                    //ensure no dupes
-                    for (int j = 0; j < (cmd.Options?.Length ?? 0); j++)
-                    {
-                        CommandOption sco = cmd.Options[j];
-                        if (sco == op)
-                            continue;
-
-                        if (opDef.Flags.Contains(sco.Flag))
-                            feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{op.Flag}' and '{cmd.Options[j].Flag}'");
-                    }
-
-                    //port the formal option key over to the option from the option definition
-                    op.SetKey(opDef.Key);
-
                     //utilize the typed option definition to convert the command line arg (string) into T and set the typed option value
                     if (!opDef.TrySetOptionValue(op))
                     {
                         string name = opDef.GetType().GetGenericArguments()[0].Name;
-                        feedback.Add($"Option '{op.Flag}' requires an argument of type '{name}' ... invalid value provided: '{op.Argument}'");
+                        feedback.Add($"Option '{op.Flag}' requires an argument of type '{name}'...invalid value provided: '{op.Argument}'");
                     }
+                }
+            }   
+        }
+        #endregion
+
+        #region ensure no duplicate options
+        private void EnsureNoDuplicateOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        {
+            //TODO: to allow dupes or not to allow dupes ... should dupes be utilized for SIMPLE multi imput scenarios (array of items) without
+            //the need to define a custom type converter ??? ex: abc.exe get.dir.file.count --path d:\tmp --path d:\img --path d:\my-pics
+            //ensure no dupes
+            for (int i = 0; i < cmdDef.Options.Count; i++)
+            {
+                CommandOptionDefinition opDef = cmdDef.Options[i];
+                var opUno = cmd.Options?.FirstOrDefault(o => opDef.Flags.Contains(o.Flag));
+                for (int j = 0; j < cmd.Options.Count; j++)
+                {
+                    CommandOption opDos = cmd.Options[j];
+
+                    if (opDos == opUno)
+                        continue;
+
+                    if (opDef.Flags.Contains(opDos.Flag))
+                        feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opUno.Flag}' and '{opDos.Flag}'");
                 }
             }
         }
         #endregion
 
-        #region ensure no undefined options
-        private void EnsureNoUndefinedOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        #region ensure must assign options provided and assigned
+        private void EnsureMustAssignOptionsProvidedAndAssigned(CommandOptionDefinition opDef, CommandOption op, ref List<string> feedback)
         {
-            int countProvided = cmd.Options?.Length ?? 0;
+            if (opDef.MustAssign)
+            {
+                if (op is EmptyCommandOption)
+                    feedback.Add($"Expected option [{string.Join("|", opDef.Flags)}] not found...option is marked '{nameof(CommandOptionDefinition.MustAssign)}'");
 
-            //if no options defined in the definition and options provided in the command, all provided options must be invalid
-            if (cmdDef.Options is null || cmdDef.Options.Count == 0)
-            {
-                if (countProvided > 0)
-                    feedback.Add($"The '{cmdDef.Name}' command does not accept any options...provided options are invalid.");
+                else if (string.IsNullOrEmpty(op.Argument))
+                    feedback.Add($"Option '{op.Flag}' requires an argument...no argument provided.");
             }
-            else
+        }
+        #endregion
+
+        #region ensure all input command options defined
+        private void EnsureAllInputCommandOptionsDefined(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        {
+            if ((cmdDef.Options is null || cmdDef.Options.Count == 0) && cmd.Options.Count > 0)
+                feedback.Add($"The '{cmdDef.Name}' command does not accept any options...provided options are invalid.");
+
+            //if any options are defined for the command, confirm each option provided is valid
+            for (int i = 0; i < cmd.Options.Count; i++)
             {
-                //if options are defined for the command, confirm each option provided is valid
-                for (int i = 0; i < countProvided; i++)
-                {
-                    var op = cmd.Options[i];
-                    if (!cmdDef.Options.Exists(o => o.Flags.Contains(op.Flag)))
-                    {
-                        feedback.Add($"Undefined option at position: {i + 1} ... option: {op.Flag}");
-                    }
-                }
+                var op = cmd.Options[i];
+
+                //empty ops are added to simply fully hydrate all op keys, flags will be null...they are definitely defined.
+                if (op is EmptyCommandOption)
+                    continue;
+
+                if (!cmdDef.Options.Exists(o => o.Flags.Contains(op.Flag)))
+                    feedback.Add($"Undefined option at position: {i + 1} ... option: {op.Flag}");
             }
         }
         #endregion
