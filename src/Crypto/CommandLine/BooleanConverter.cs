@@ -20,11 +20,14 @@ namespace Crypto.CommandLine
         #region convert to boolean
         public static bool ConvertToBoolean(string value)
         {
-            return string.IsNullOrEmpty(value)
-                ? true //boolean is the only option that defaults to true (flag does not require an arg)
-                : IsValidBool(value, out bool boolean)
-                    ? boolean
-                    : throw new FormatException($"Cannot convert value to bool: '{value}'...valid bool values (case insensitive): {string.Join(", ", _validBools)}");
+            //boolean is the only option that defaults to true (flag does not require an arg)
+            if (value == null || value == string.Empty)
+                return true;
+
+            if (BooleanConverter.IsValidBool(value, out bool boolean))
+                return boolean;
+
+            throw new FormatException($"Cannot convert value to bool: '{value}'...valid bool values (case insensitive): {string.Join(", ", _validBools)}");
         }
         #endregion
     }
