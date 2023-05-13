@@ -12,7 +12,7 @@ namespace Crypto.CommandLine
         public static bool IsValidBool(string value, out bool result)
         {
             int idx = Array.FindIndex(_validBools, (b) => string.Compare(b, value, true) == 0);
-            result = idx > 4 ? true : false;
+            result = idx < 4 ? false : true;
             return idx > -1;
         }
         #endregion
