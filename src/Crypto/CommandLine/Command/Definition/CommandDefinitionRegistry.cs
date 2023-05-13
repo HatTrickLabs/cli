@@ -119,8 +119,12 @@ namespace Crypto.CommandLine
         private void EnsureCommandOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
         {
             this.EnsureAllInputCommandOptionsDefined(cmdDef, cmd, ref feedback);
+            if (feedback.Count > 0)
+                return;
 
             this.EnsureNoDuplicateOptions(cmdDef, cmd, ref feedback);
+            if (feedback.Count > 0)
+                return;
 
             for (int i = 0; i < cmdDef.Options.Count; i++)
             {
@@ -134,8 +138,8 @@ namespace Crypto.CommandLine
                     //utilize the typed option definition to convert the command line arg (string) into T and set the typed option value
                     if (!opDef.TrySetOptionValue(op))
                     {
-                        string name = opDef.GetType().GetGenericArguments()[0].Name;
-                        feedback.Add($"Option '{op.Flag}' requires an argument of type '{name}'...invalid value provided: '{op.Argument}'");
+                        string type = opDef.GetType().GetGenericArguments()[0].Name;
+                        feedback.Add($"Option '{op.Flag}' requires an argument of type '{type}'...invalid value provided: '{op.Argument}'");
                     }
                 }
             }   
