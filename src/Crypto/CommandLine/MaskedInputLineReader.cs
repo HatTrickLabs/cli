@@ -286,7 +286,7 @@ namespace Crypto.CommandLine
         #region handle escape key
         private void HandleEscapeKey()
         {
-            //carriage returt to 0, overwrite any mask chars with empty space, then set curser back to 0
+            //carriage return to 0, overwrite any mask chars with empty space, then set curser back to 0
             Console.Write("\r" + new string(' ', _length));
             Console.Write("\r");
             _length = 0;
