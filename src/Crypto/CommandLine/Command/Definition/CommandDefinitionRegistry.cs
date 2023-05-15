@@ -41,10 +41,17 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region get all
-        public CommandDefinition[] GetAllCommandDefinitions()
+        #region get all command definitions
+        public CommandDefinition[] GetAllDefinitions()
         {
             return _definitions.Values.ToArray();
+        }
+        #endregion
+
+        #region get all namespaces
+        public CommandDefinitionNamespace[] GetAllNamespaces()
+        {
+            return _namespaces.Values.ToArray();
         }
         #endregion
 
@@ -62,15 +69,15 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region get command definition namespace
+        #region get namespace
         public CommandDefinitionNamespace GetNamespace(string name)
         {
             return _namespaces[name];
         }
         #endregion
 
-        #region get command definition
-        public CommandDefinition GetCommmandDefinition(string key)
+        #region get definition
+        public CommandDefinition GetDefinition(string key)
         {
             return _definitions.ContainsKey(key) 
                 ? _definitions[key] 
@@ -84,7 +91,7 @@ namespace Crypto.CommandLine
             if (command.Key is null || string.IsNullOrEmpty(command.Key))
                 throw new CommandInputException("No command provided.");
 
-            CommandDefinition cmdDef = this.GetCommmandDefinition(command.Key);
+            CommandDefinition cmdDef = this.GetDefinition(command.Key);
 
             this.EnsureCommand(command, cmdDef);
 
