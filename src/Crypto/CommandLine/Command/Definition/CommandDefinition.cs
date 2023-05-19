@@ -12,6 +12,7 @@ namespace Crypto.CommandLine
         private string _help;
         private Action<Command> _entryPoint;
         private List<CommandOptionDefinition> _options;
+        private MustAssignOneOfConstraint _oneOfConstraint;
         #endregion
 
         #region interface
@@ -19,23 +20,33 @@ namespace Crypto.CommandLine
 
         public string Help
         {
-            get { return _help; }
-            set { _help = value; }
+            get => _help;
+            set => _help = value;
         }
 
         public Action<Command> EntryPoint
         {
-            get { return _entryPoint; }
-            set { _entryPoint = value; }
+            get => _entryPoint;
+            set => _entryPoint = value;
         }
 
         public Func<Command, Task> AsyncEntryPoint
         { get; set; }
 
-        public List<CommandOptionDefinition> Options
+        public IList<CommandOptionDefinition> Options
+        { get => _options is null ? _options = new List<CommandOptionDefinition>() : _options; }
+
+        internal CommandOptionDefinition this[string key]
         {
-            get { return _options is null ? _options = new List<CommandOptionDefinition>() : _options; }
-            protected set { _options = value; }
+            get
+            {
+                var op = _options.Find(o => o.Key == key);
+
+                if (op == default)
+                    throw new KeyNotFoundException($"Provided option key: {key} not found.");
+
+                return op;
+            }
         }
 
         public static string DefaultCommandName => "default";
@@ -45,14 +56,6 @@ namespace Crypto.CommandLine
         public CommandDefinition(string name)
         {
             _name = name;
-        }
-
-        public CommandDefinition(string name, string help, Action<Command> entryPoint, params CommandOptionDefinition[] options)
-        {
-            _name = name;
-            _help = help;
-            _entryPoint = entryPoint;
-            _options = options.ToList();
         }
         #endregion
 
@@ -146,6 +149,86 @@ namespace Crypto.CommandLine
         {
             var op = new CommandOptionDefinition<T>(key: key, converter: converter, mustAssign: mustAssign, help: help, flags: flags);
             this.Options.Add(op);
+        }
+        #endregion
+
+        #region must assign one of
+        public void MustAssignOneOf(bool mutuallyExclusive, params string[] optionKeys)
+        {
+            if (optionKeys is null)
+                throw new ArgumentNullException(nameof(optionKeys));
+
+            if (optionKeys.Length < 2)
+                throw new ArgumentException("Argument must contain at least 2 values.", nameof(optionKeys));
+
+            var opDefs = new CommandOptionDefinition[optionKeys.Length];
+            for (int i = 0; i < optionKeys.Length; i++)
+            {
+                var opDef = this[optionKeys[i]];
+
+                if (opDef.MustAssign)
+                    throw new CommandDefinitionException($"Option '{optionKeys[i]}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'must assign one of' rule cannot be applied.");
+
+                opDefs[i] = opDef;
+            }
+
+            var constraint = new MustAssignOneOfConstraint(opDefs);
+
+            _oneOfConstraint = constraint;
+        }
+        #endregion
+
+        #region set default
+        public void SetDefault<T>(string optionKey, T value)
+        {
+            if (optionKey is null)
+                throw new ArgumentNullException(nameof(optionKey));
+
+            if (optionKey == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(optionKey));
+
+            var opDef = this[optionKey];
+
+            var opDefT = opDef.Of<T>();
+
+            opDefT.SetDefaultValue(value);
+        }
+        #endregion
+
+        #region set accepted
+        public void SetAccepted<T>(string optionKey, params T[] values)
+        {
+            if (optionKey is null)
+                throw new ArgumentNullException(nameof(optionKey));
+
+            if (optionKey == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(optionKey));
+
+            var opDef = this[optionKey];
+
+            var opDefT = opDef.Of<T>();
+
+            opDefT.SetAcceptedValues(values);
+        }
+        #endregion
+
+        #region constrain
+        public void ApplyFunc<T>(string optionKey, Func<T, bool> constraint)
+        {
+        }
+        public void ApplyConstraint<T>(string optionKey, Action<T> constraint)
+        {
+            if (optionKey is null)
+                throw new ArgumentNullException(nameof(optionKey));
+
+            if (optionKey == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(optionKey));
+
+            var opDef = this[optionKey];
+
+            var opDefT = opDef.Of<T>();
+
+            opDefT.ApplyConstraint(constraint);
         }
         #endregion
 

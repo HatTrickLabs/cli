@@ -33,6 +33,23 @@ namespace Crypto.CommandLine
         }
         #endregion
 
+        #region set default value
+        //public virtual void SetDefaultValuex<T>(T value)
+        //{
+        //}
+        public abstract void SetDefaultValuex<T>(T value);
+        #endregion
+
+        #region of T
+        internal CommandOptionDefinition<T> Of<T>()
+        {
+            if (this is CommandOptionDefinition<T> cmdOpDefT)
+                return cmdOpDefT;
+            else
+                throw new InvalidCastException($"Cannot cast {nameof(CommandOptionDefinition)} to {nameof(CommandOptionDefinition)}<{nameof(T)}>");
+        }
+        #endregion
+
         #region try set option value
         internal abstract bool TrySetOptionValue(CommandOption option);
         #endregion
@@ -75,10 +92,13 @@ namespace Crypto.CommandLine
     {
         #region internals
         private readonly Func<string, T> _converter;
+        private T _default;
+        private T[] _accepted;
+        private Action<T> _constraints;
         #endregion
 
         #region interface
-      
+        internal T Default => _default;
         #endregion
 
         #region constructors
@@ -96,12 +116,53 @@ namespace Crypto.CommandLine
         }
         #endregion
 
+        #region set default value
+        public override void SetDefaultValuex<Y>(Y value)
+        {
+            if (typeof(Y) != typeof(T))
+                throw new ArgumentException("");
+        }
+
+        public void SetDefaultValue(T value)
+        {
+            if (base.MustAssign)
+                throw new CommandDefinitionException($"Option '{base.Key}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'default' cannot be applied.");
+
+            _default = value;
+        }
+        #endregion
+
+        #region set accepted values
+        internal void SetAcceptedValues(T[] values)
+        {
+            _accepted = values;
+        }
+        #endregion
+
+        #region apply constraint
+        public void ApplyConstraint(Action<T> constraint)
+        {
+            if (constraint is null)
+                throw new ArgumentNullException(nameof(constraint));
+
+            _constraints += constraint;
+        }
+        #endregion
+
         #region try set option value
         internal override bool TrySetOptionValue(CommandOption option)
         {
+            EqualityComparer<T> eq = EqualityComparer<T>.Default;
+            Func<T, bool> isAcceptedValue = (a) => Array.FindIndex(_accepted, (b) => eq.Equals(a, b)) > -1;
             try
             {
                 T val = _converter.Invoke(option.Argument);
+
+                if (_accepted is not null && !isAcceptedValue(val))
+                        throw new CommandInputException($"Provided argument: {option.Argument} does not exist in accepted value set: {string.Join(", ", _accepted)}");
+
+                _constraints?.Invoke(val);
+
                 option.SetValue(val);
                 return true;
             }

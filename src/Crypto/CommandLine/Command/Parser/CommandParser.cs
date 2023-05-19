@@ -19,14 +19,14 @@ namespace Crypto.CommandLine
             int startAt = isDefault ? 0 : 1;
             var argSet = new ReadOnlySpan<string>(args, startAt, (args.Length - startAt));
 
-            IList<CommandOption> options = CommandParser.ParseCommandOptions(argSet);
+            List<CommandOption> options = CommandParser.ParseCommandOptions(argSet);
 
             return new Command(isDefault ? CommandDefinition.DefaultCommandName : args[0], options);
         }
         #endregion
 
         #region parse command options
-        public static IList<CommandOption> ParseCommandOptions(ReadOnlySpan<string> arguments)
+        public static List<CommandOption> ParseCommandOptions(ReadOnlySpan<string> arguments)
         {
             var ops = new List<CommandOption>();
 

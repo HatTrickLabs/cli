@@ -42,8 +42,8 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region get empty instance [static]
-        public static EmptyCommandOption GetEmptyInstance(string key)
+        #region empty instance [static]
+        internal static EmptyCommandOption EmptyInstance(string key)
         {
             var op = new EmptyCommandOption();
             op.SetKey(key);

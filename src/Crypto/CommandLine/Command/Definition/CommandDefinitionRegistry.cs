@@ -16,11 +16,13 @@ namespace Crypto.CommandLine
         #region interface
         public CommandDefinition this[string key]
         {
-            get { lock(_lock) { return _definitions[key]; } }
+            get { lock (_lock) { return _definitions[key]; } }
             set { lock (_lock) { _definitions[key] = value; } }
         }
 
-        public int Count => _definitions.Count;
+        public int DefinitionCount => _definitions.Count;
+
+        public int NamespaceCount => _namespaces.Count;
         #endregion
 
         #region constructors
@@ -104,17 +106,6 @@ namespace Crypto.CommandLine
         {
             List<string> feedback = new List<string>();
 
-            //ensure fully hydrated
-            foreach (var opDef in cmdDef.Options)
-            {
-                var op = command.Options.FirstOrDefault(o => opDef.Flags.Contains(o.Flag));
-
-                if (op is not null)
-                    op.SetKey(opDef.Key);
-                else
-                    command.Options.Add(CommandOption.GetEmptyInstance(opDef.Key));
-            }
-
             this.EnsureCommandOptions(cmdDef, command, ref feedback);
 
             if (feedback.Count > 0)
@@ -125,6 +116,9 @@ namespace Crypto.CommandLine
         #region ensure command options
         private void EnsureCommandOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
         {
+            //ensure options fully hydrated
+            this.EnsureCommandOptionsFullyHydrated(cmdDef, cmd);
+
             this.EnsureAllInputCommandOptionsDefined(cmdDef, cmd, ref feedback);
             if (feedback.Count > 0)
                 return;
@@ -136,7 +130,7 @@ namespace Crypto.CommandLine
             for (int i = 0; i < cmdDef.Options.Count; i++)
             {
                 var opDef = cmdDef.Options[i];
-                var op = cmd.Options?.FirstOrDefault(o => opDef.Key == o.Key);
+                var op = cmd.GetOption(opDef.Key);
 
                 this.EnsureMustAssignOptionsProvidedAndAssigned(opDef, op, ref feedback);
 
@@ -153,6 +147,42 @@ namespace Crypto.CommandLine
         }
         #endregion
 
+        #region ensure options fully hydrated
+        private void EnsureCommandOptionsFullyHydrated(CommandDefinition cmdDef, Command cmd)
+        {
+            foreach (var opDef in cmdDef.Options)
+            {
+                var op = cmd.GetOptionByFlag(opDef.Flags);
+
+                if (op is not null)
+                    op.SetKey(opDef.Key);
+                else
+                    cmd.ApplyEmptyOption(CommandOption.EmptyInstance(opDef.Key));
+            }
+        }
+        #endregion
+
+        #region ensure all input command options defined
+        private void EnsureAllInputCommandOptionsDefined(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        {
+            if ((cmdDef.Options is null || cmdDef.Options.Count == 0) && cmd.Options.Count > 0)
+                feedback.Add($"The '{cmdDef.Name}' command does not accept any options...provided options are invalid.");
+
+            //if any options are defined for the command, confirm each option provided is valid
+            for (int i = 0; i < cmd.Options.Count; i++)
+            {
+                var op = cmd.Options[i];
+
+                //empty ops are added to simply fully hydrate all op keys, flags will be null...they are definitely defined.
+                if (op is EmptyCommandOption)
+                    continue;
+
+                if (!cmdDef.Options.Any(o => o.Flags.Contains(op.Flag)))
+                    feedback.Add($"Undefined option at position: {i + 1} ... option: {op.Flag}");
+            }
+        }
+        #endregion
+
         #region ensure no duplicate options
         private void EnsureNoDuplicateOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
         {
@@ -162,7 +192,7 @@ namespace Crypto.CommandLine
             for (int i = 0; i < cmdDef.Options.Count; i++)
             {
                 CommandOptionDefinition opDef = cmdDef.Options[i];
-                var opUno = cmd.Options?.FirstOrDefault(o => opDef.Flags.Contains(o.Flag));
+                var opUno = cmd.GetOptionByFlag(opDef.Flags);
                 for (int j = 0; j < cmd.Options.Count; j++)
                 {
                     CommandOption opDos = cmd.Options[j];
@@ -187,27 +217,6 @@ namespace Crypto.CommandLine
 
                 else if (string.IsNullOrEmpty(op.Argument))
                     feedback.Add($"Option '{op.Flag}' requires an argument...no argument provided.");
-            }
-        }
-        #endregion
-
-        #region ensure all input command options defined
-        private void EnsureAllInputCommandOptionsDefined(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
-        {
-            if ((cmdDef.Options is null || cmdDef.Options.Count == 0) && cmd.Options.Count > 0)
-                feedback.Add($"The '{cmdDef.Name}' command does not accept any options...provided options are invalid.");
-
-            //if any options are defined for the command, confirm each option provided is valid
-            for (int i = 0; i < cmd.Options.Count; i++)
-            {
-                var op = cmd.Options[i];
-
-                //empty ops are added to simply fully hydrate all op keys, flags will be null...they are definitely defined.
-                if (op is EmptyCommandOption)
-                    continue;
-
-                if (!cmdDef.Options.Exists(o => o.Flags.Contains(op.Flag)))
-                    feedback.Add($"Undefined option at position: {i + 1} ... option: {op.Flag}");
             }
         }
         #endregion

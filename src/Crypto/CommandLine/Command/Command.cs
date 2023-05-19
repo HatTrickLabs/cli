@@ -9,23 +9,19 @@ namespace Crypto.CommandLine
     {
         #region internals
         private string _key;
-        private IList<CommandOption> _ops;
+        private List<CommandOption> _ops;
         #endregion
 
         #region interface
         public string Key => _key;
 
-        public IList<CommandOption> Options
-        {
-            get => _ops;
-            internal set => _ops = value;
-        }
+        public IList<CommandOption> Options => _ops;
 
         public CommandOption this[string key]
         {
             get
             {
-                var op = _ops.FirstOrDefault(o => o.Key == key);
+                var op = _ops.Find(o => o.Key == key);
 
                 if (op == default)
                     throw new KeyNotFoundException($"Provided option key: {key} not found.");
@@ -36,7 +32,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region constructors
-        public Command(string key, IList<CommandOption> options = null)
+        internal Command(string key, List<CommandOption> options = null)
         {
             if (key is null)
                 throw new ArgumentNullException(nameof(key));
@@ -45,14 +41,21 @@ namespace Crypto.CommandLine
                 throw new ArgumentException($"{nameof(key)} argument must contain a value.");
 
             _key = key;
-            _ops = options ?? new List<CommandOption>(0);
+            _ops = options ?? new List<CommandOption>();
+        }
+        #endregion
+
+        #region apply empty option
+        internal void ApplyEmptyOption(EmptyCommandOption option)
+        {
+            _ops.Add(option);
         }
         #endregion
 
         #region get options
         public IList<CommandOption> GetOptions(Predicate<CommandOption> where = null)
         {
-            List<CommandOption> ops = _ops.ToList().FindAll(where == null ? (o) => true : where);
+            List<CommandOption> ops = _ops.FindAll(where == null ? (o) => true : where);
             return ops;
         }
         #endregion
@@ -60,7 +63,15 @@ namespace Crypto.CommandLine
         #region get option
         public CommandOption GetOption(string optionKey)
         {
-            CommandOption op = this.Options.ToList().Find(o => o.Key == optionKey);
+            CommandOption op = _ops.Find(o => o.Key == optionKey);
+            return op;
+        }
+        #endregion
+
+        #region get option
+        public CommandOption GetOptionByFlag(params string[] flags)
+        {
+            CommandOption op = _ops.Find(o => flags.Contains(o.Flag));
             return op;
         }
         #endregion
