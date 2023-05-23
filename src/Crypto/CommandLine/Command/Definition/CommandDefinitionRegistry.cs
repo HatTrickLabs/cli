@@ -132,17 +132,23 @@ namespace Crypto.CommandLine
                 var opDef = cmdDef.Options[i];
                 var op = cmd.GetOption(opDef.Key);
 
-                this.EnsureMustAssignOptionsProvidedAndAssigned(opDef, op, ref feedback);
+                if (!this.EnsureMustAssignOptionsProvidedAndAssigned(opDef, op, ref feedback))
+                    continue;
 
-                if (op is not EmptyCommandOption)
-                {
-                    //utilize the typed option definition to convert the command line arg (string) into T and set the typed option value
-                    if (!opDef.TrySetOptionValue(op))
-                    {
-                        string type = opDef.GetType().GetGenericArguments()[0].Name;
-                        feedback.Add($"Option '{op.Flag}' requires an argument of type '{type}'...invalid value provided: '{op.Argument}'");
-                    }
-                }
+                if (op is EmptyCommandOption || op is DefaultCommandOption)
+                    continue;
+
+                //pass op to typed definition to convert the command line arg (string) into T and set the typed option value
+                if (!opDef.TrySetValue(op))
+                    feedback.Add($"Option '{op.Flag}' requires an argument of type '{opDef.GetGenericTypeName()}'...invalid value provided: {op.Argument}");
+
+                //ensure passes accepted value set if defined...
+                if (!opDef.ValueIsInAcceptedSet(op))
+                    feedback.Add($"");
+
+                //ensure passes contraints if defined...
+                //TODO: throw specific ex within predicate, or provide arg for format string ???
+                opDef.ValueConformsToConstraints(op);
             }   
         }
         #endregion
@@ -154,10 +160,14 @@ namespace Crypto.CommandLine
             {
                 var op = cmd.GetOptionByFlag(opDef.Flags);
 
-                if (op is not null)
+                if (op is not null)//apply the definition key to the option
                     op.SetKey(opDef.Key);
-                else
-                    cmd.ApplyEmptyOption(CommandOption.EmptyInstance(opDef.Key));
+
+                else if (opDef.HasDefault)//apply the default option value
+                    cmd.ApplyDefaultOption(opDef.DefaultInstance());
+
+                else//empty, just need an empty shell with correct key
+                    cmd.ApplyEmptyOption(opDef.EmptyInstance());
             }
         }
         #endregion
@@ -173,8 +183,12 @@ namespace Crypto.CommandLine
             {
                 var op = cmd.Options[i];
 
-                //empty ops are added to simply fully hydrate all op keys, flags will be null...they are definitely defined.
+                //empty ops are added to simply fully hydrate all op keys, they will always be 'valid'
                 if (op is EmptyCommandOption)
+                    continue;
+
+                //default ops can always be assumed to be valid...
+                if (op is DefaultCommandOption)
                     continue;
 
                 if (!cmdDef.Options.Any(o => o.Flags.Contains(op.Flag)))
@@ -186,9 +200,6 @@ namespace Crypto.CommandLine
         #region ensure no duplicate options
         private void EnsureNoDuplicateOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
         {
-            //TODO: to allow dupes or not to allow dupes ... should dupes be utilized for SIMPLE multi imput scenarios (array of items) without
-            //the need to define a custom type converter ??? ex: abc.exe get.dir.file.count --path d:\tmp --path d:\img --path d:\my-pics
-            //ensure no dupes
             for (int i = 0; i < cmdDef.Options.Count; i++)
             {
                 CommandOptionDefinition opDef = cmdDef.Options[i];
@@ -208,16 +219,22 @@ namespace Crypto.CommandLine
         #endregion
 
         #region ensure must assign options provided and assigned
-        private void EnsureMustAssignOptionsProvidedAndAssigned(CommandOptionDefinition opDef, CommandOption op, ref List<string> feedback)
+        private bool EnsureMustAssignOptionsProvidedAndAssigned(CommandOptionDefinition opDef, CommandOption op, ref List<string> feedback)
         {
             if (opDef.MustAssign)
             {
                 if (op is EmptyCommandOption)
+                {
                     feedback.Add($"Expected option [{string.Join("|", opDef.Flags)}] not found...option is marked '{nameof(CommandOptionDefinition.MustAssign)}'");
-
+                    return false;
+                }
                 else if (string.IsNullOrEmpty(op.Argument))
+                {
                     feedback.Add($"Option '{op.Flag}' requires an argument...no argument provided.");
+                    return false;
+                }
             }
+            return true;
         }
         #endregion
     }

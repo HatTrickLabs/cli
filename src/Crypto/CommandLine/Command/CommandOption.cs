@@ -42,15 +42,6 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region empty instance [static]
-        internal static EmptyCommandOption EmptyInstance(string key)
-        {
-            var op = new EmptyCommandOption();
-            op.SetKey(key);
-            return op;
-        }
-        #endregion
-
         #region set key
         internal void SetKey(string key)
         {
@@ -73,7 +64,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region get value
-        public T GetValue<T>()
+        internal T GetValue<T>()
         {
             return (T)_value;
         }

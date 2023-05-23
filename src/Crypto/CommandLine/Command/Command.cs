@@ -52,6 +52,13 @@ namespace Crypto.CommandLine
         }
         #endregion
 
+        #region apply default option
+        internal void ApplyDefaultOption(DefaultCommandOption option)
+        {
+            _ops.Add(option);
+        }
+        #endregion
+
         #region get options
         public IList<CommandOption> GetOptions(Predicate<CommandOption> where = null)
         {

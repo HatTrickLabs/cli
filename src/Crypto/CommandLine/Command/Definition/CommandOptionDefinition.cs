@@ -11,6 +11,7 @@ namespace Crypto.CommandLine
         private readonly bool _mustAssign;
         private readonly string _help;
         private readonly string[] _flags;
+        private bool _hasDefault;
         #endregion
 
         #region interface
@@ -21,6 +22,8 @@ namespace Crypto.CommandLine
         public string Help => _help;
 
         public string[] Flags => _flags;
+
+        public bool HasDefault => _hasDefault;
         #endregion
 
         #region constructors
@@ -33,15 +36,37 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region set default value
-        //public virtual void SetDefaultValuex<T>(T value)
-        //{
-        //}
-        public abstract void SetDefaultValuex<T>(T value);
+        #region get generic type name
+        internal abstract string GetGenericTypeName();
+        #endregion
+
+        #region set default
+        public void SetDefault<T>(T value)
+        {
+            this.Of<T>().SetDefault(value);
+            _hasDefault = true;
+        }
+        #endregion
+
+        #region set accepted
+        public void SetAccepted<T>(params T[] values)
+        {
+            this.Of<T>().SetAccepted(values);
+        }
+        #endregion
+
+        #region apply constraint
+        public void ApplyConstraint<T>(Predicate<T> constraint)
+        {
+            if (constraint is null)
+                throw new ArgumentNullException(nameof(constraint));
+
+            this.Of<T>().ApplyConstraint(constraint);
+        }
         #endregion
 
         #region of T
-        internal CommandOptionDefinition<T> Of<T>()
+        public CommandOptionDefinition<T> Of<T>()
         {
             if (this is CommandOptionDefinition<T> cmdOpDefT)
                 return cmdOpDefT;
@@ -50,8 +75,24 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region try set option value
-        internal abstract bool TrySetOptionValue(CommandOption option);
+        #region try set value
+        internal abstract bool TrySetValue(CommandOption option);
+        #endregion
+
+        #region value is in accepted set
+        internal abstract bool ValueIsInAcceptedSet(CommandOption option);
+        #endregion
+
+        #region value conforms to constraints
+        internal abstract bool ValueConformsToConstraints(CommandOption option);
+        #endregion
+
+        #region empty instance
+        internal abstract EmptyCommandOption EmptyInstance();
+        #endregion
+
+        #region default instance
+        internal abstract DefaultCommandOption DefaultInstance();
         #endregion
 
         #region validate
@@ -94,7 +135,7 @@ namespace Crypto.CommandLine
         private readonly Func<string, T> _converter;
         private T _default;
         private T[] _accepted;
-        private Action<T> _constraints;
+        private Predicate<T> _constraints;
         #endregion
 
         #region interface
@@ -116,14 +157,36 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region set default value
-        public override void SetDefaultValuex<Y>(Y value)
+        #region get generic type name
+        internal override string GetGenericTypeName()
         {
-            if (typeof(Y) != typeof(T))
-                throw new ArgumentException("");
+            //we can do this because the base is abstract with a protected constructor...
+            string name = this.GetType().GetGenericArguments()[0].Name;
+            return name;
         }
+        #endregion
 
-        public void SetDefaultValue(T value)
+        #region empty instance
+        internal override EmptyCommandOption EmptyInstance()
+        {
+            //TODO: prob impl way to find the most verbose flag
+            var op = new EmptyCommandOption(base.Key, base.Flags[0]);
+            return op;
+        }
+        #endregion
+
+        #region default instance
+        internal override DefaultCommandOption DefaultInstance()
+        {
+            //TODO: prob impl way to find the most verbose flag
+            var op = new DefaultCommandOption(base.Key, base.Flags[0]);
+            op.SetValue(_default);
+            return op;
+        }
+        #endregion
+
+        #region set default
+        public void SetDefault(T value)
         {
             if (base.MustAssign)
                 throw new CommandDefinitionException($"Option '{base.Key}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'default' cannot be applied.");
@@ -132,15 +195,39 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region set accepted values
-        internal void SetAcceptedValues(T[] values)
+        #region set accepted
+        public void SetAccepted(T[] values)
         {
             _accepted = values;
         }
         #endregion
 
+        #region value is in accepted set
+        internal override bool ValueIsInAcceptedSet(CommandOption option)
+        {
+            if (_accepted is null || _accepted.Length == 0)
+                return true;
+
+            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+            T a = option.GetValue<T>();
+            return Array.FindIndex(_accepted, (b) => comparer.Equals(a, b)) > -1;
+        }
+        #endregion
+
+        #region value conforms to constraints
+        internal override bool ValueConformsToConstraints(CommandOption option)
+        {
+            if (_constraints is null)
+                return true;
+
+            T val = option.GetValue<T>();
+
+            return _constraints(val);
+        }
+        #endregion
+
         #region apply constraint
-        public void ApplyConstraint(Action<T> constraint)
+        public void ApplyConstraint(Predicate<T> constraint)
         {
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));
@@ -149,20 +236,12 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region try set option value
-        internal override bool TrySetOptionValue(CommandOption option)
+        #region try set value
+        internal override bool TrySetValue(CommandOption option)
         {
-            EqualityComparer<T> eq = EqualityComparer<T>.Default;
-            Func<T, bool> isAcceptedValue = (a) => Array.FindIndex(_accepted, (b) => eq.Equals(a, b)) > -1;
             try
             {
                 T val = _converter.Invoke(option.Argument);
-
-                if (_accepted is not null && !isAcceptedValue(val))
-                        throw new CommandInputException($"Provided argument: {option.Argument} does not exist in accepted value set: {string.Join(", ", _accepted)}");
-
-                _constraints?.Invoke(val);
-
                 option.SetValue(val);
                 return true;
             }

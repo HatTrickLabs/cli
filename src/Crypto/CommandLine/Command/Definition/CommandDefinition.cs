@@ -11,6 +11,7 @@ namespace Crypto.CommandLine
         private string _name;
         private string _help;
         private Action<Command> _entryPoint;
+        private Func<Command, Task> _asyncEntryPoint;
         private List<CommandOptionDefinition> _options;
         private MustAssignOneOfConstraint _oneOfConstraint;
         #endregion
@@ -31,7 +32,10 @@ namespace Crypto.CommandLine
         }
 
         public Func<Command, Task> AsyncEntryPoint
-        { get; set; }
+        {
+            get => _asyncEntryPoint;
+            set => _asyncEntryPoint = value;
+        }
 
         public IList<CommandOptionDefinition> Options
         { get => _options is null ? _options = new List<CommandOptionDefinition>() : _options; }
@@ -175,60 +179,6 @@ namespace Crypto.CommandLine
             var constraint = new MustAssignOneOfConstraint(opDefs);
 
             _oneOfConstraint = constraint;
-        }
-        #endregion
-
-        #region set default
-        public void SetDefault<T>(string optionKey, T value)
-        {
-            if (optionKey is null)
-                throw new ArgumentNullException(nameof(optionKey));
-
-            if (optionKey == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(optionKey));
-
-            var opDef = this[optionKey];
-
-            var opDefT = opDef.Of<T>();
-
-            opDefT.SetDefaultValue(value);
-        }
-        #endregion
-
-        #region set accepted
-        public void SetAccepted<T>(string optionKey, params T[] values)
-        {
-            if (optionKey is null)
-                throw new ArgumentNullException(nameof(optionKey));
-
-            if (optionKey == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(optionKey));
-
-            var opDef = this[optionKey];
-
-            var opDefT = opDef.Of<T>();
-
-            opDefT.SetAcceptedValues(values);
-        }
-        #endregion
-
-        #region constrain
-        public void ApplyFunc<T>(string optionKey, Func<T, bool> constraint)
-        {
-        }
-        public void ApplyConstraint<T>(string optionKey, Action<T> constraint)
-        {
-            if (optionKey is null)
-                throw new ArgumentNullException(nameof(optionKey));
-
-            if (optionKey == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(optionKey));
-
-            var opDef = this[optionKey];
-
-            var opDefT = opDef.Of<T>();
-
-            opDefT.ApplyConstraint(constraint);
         }
         #endregion
 
