@@ -108,6 +108,9 @@ namespace Crypto.CommandLine
 
             this.EnsureCommandOptions(cmdDef, command, ref feedback);
 
+            if (feedback.Count == 0)
+                cmdDef.EnsureConstraints(command);
+
             if (feedback.Count > 0)
                 throw new CommandInputException(feedback.ToArray());
         }
@@ -127,29 +130,18 @@ namespace Crypto.CommandLine
             if (feedback.Count > 0)
                 return;
 
-            for (int i = 0; i < cmdDef.Options.Count; i++)
+            foreach(var opDef in cmdDef.Options)
             {
-                var opDef = cmdDef.Options[i];
                 var op = cmd.GetOption(opDef.Key);
 
-                if (!this.EnsureMustAssignOptionsProvidedAndAssigned(opDef, op, ref feedback))
+                if (!this.EnsureMustAssignOptionProvidedAndAssigned(opDef, op, ref feedback))
                     continue;
 
                 if (op is EmptyCommandOption || op is DefaultCommandOption)
                     continue;
 
-                //pass op to typed definition to convert the command line arg (string) into T and set the typed option value
-                if (!opDef.TrySetValue(op))
-                    feedback.Add($"Option '{op.Flag}' requires an argument of type '{opDef.GetGenericTypeName()}'...invalid value provided: {op.Argument}");
-
-                //ensure passes accepted value set if defined...
-                if (!opDef.ValueIsInAcceptedSet(op))
-                    feedback.Add($"");
-
-                //ensure passes contraints if defined...
-                //TODO: throw specific ex within predicate, or provide arg for format string ???
-                opDef.ValueConformsToConstraints(op);
-            }   
+                this.EnsureOptionConstraints(opDef, op, ref feedback);
+            }
         }
         #endregion
 
@@ -219,7 +211,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region ensure must assign options provided and assigned
-        private bool EnsureMustAssignOptionsProvidedAndAssigned(CommandOptionDefinition opDef, CommandOption op, ref List<string> feedback)
+        private bool EnsureMustAssignOptionProvidedAndAssigned(CommandOptionDefinition opDef, CommandOption op, ref List<string> feedback)
         {
             if (opDef.MustAssign)
             {
@@ -235,6 +227,38 @@ namespace Crypto.CommandLine
                 }
             }
             return true;
+        }
+        #endregion
+
+        #region ensure option constraints
+        private void EnsureOptionConstraints(CommandOptionDefinition optionDef, CommandOption option, ref List<string> feedback)
+        {
+            try
+            {
+                //pass op to typed definition to convert the command line arg (string) into T and set the typed option value
+                optionDef.SetConvertedValue(option);
+
+                //ensure passes custom contraints if defined...
+                optionDef.EnsureConstraints(option);
+            }
+            catch (CommandArgumentException ex)
+            {
+                feedback.Add(ex.Message);
+            }
+        }
+        #endregion
+
+        #region ensure command constraints
+        private void EnsureCommandConstraints(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        {
+            try
+            {
+                cmdDef.EnsureConstraints(cmd);
+            }
+            catch (CommandArgumentException ex)
+            {
+                feedback.Add(ex.Message);
+            }
         }
         #endregion
     }

@@ -36,10 +36,6 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region get generic type name
-        internal abstract string GetGenericTypeName();
-        #endregion
-
         #region set default
         public void SetDefault<T>(T value)
         {
@@ -56,12 +52,18 @@ namespace Crypto.CommandLine
         #endregion
 
         #region apply constraint
-        public void ApplyConstraint<T>(Predicate<T> constraint)
+        public void ApplyConstraint<T>(Func<T, bool> constraint, string errorTemplate)
         {
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));
 
-            this.Of<T>().ApplyConstraint(constraint);
+            if (errorTemplate is null)
+                throw new ArgumentNullException(nameof(errorTemplate));
+
+            if (errorTemplate == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(errorTemplate));
+
+            this.Of<T>().ApplyConstraint(constraint, errorTemplate);
         }
         #endregion
 
@@ -75,16 +77,12 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region try set value
-        internal abstract bool TrySetValue(CommandOption option);
+        #region set converted value
+        internal abstract void SetConvertedValue(CommandOption option);
         #endregion
 
-        #region value is in accepted set
-        internal abstract bool ValueIsInAcceptedSet(CommandOption option);
-        #endregion
-
-        #region value conforms to constraints
-        internal abstract bool ValueConformsToConstraints(CommandOption option);
+        #region ensure custom constraints
+        internal abstract void EnsureConstraints(CommandOption option);
         #endregion
 
         #region empty instance
@@ -134,12 +132,17 @@ namespace Crypto.CommandLine
         #region internals
         private readonly Func<string, T> _converter;
         private T _default;
-        private T[] _accepted;
-        private Predicate<T> _constraints;
+        private List<ArgumentConstraint<T>> _constraints;
         #endregion
 
         #region interface
         internal T Default => _default;
+
+        private List<ArgumentConstraint<T>> Constraints
+        {
+            get => _constraints is null ? _constraints = new List<ArgumentConstraint<T>>() : _constraints;
+            set => _constraints = value;
+        }
         #endregion
 
         #region constructors
@@ -154,15 +157,6 @@ namespace Crypto.CommandLine
         internal CommandOptionDefinition(string key, Func<string, T> converter, bool mustAssign, string help, params string[] flags) : base(key, mustAssign, help, flags)
         {
             _converter = converter ?? throw new ArgumentNullException(nameof(key));
-        }
-        #endregion
-
-        #region get generic type name
-        internal override string GetGenericTypeName()
-        {
-            //we can do this because the base is abstract with a protected constructor...
-            string name = this.GetType().GetGenericArguments()[0].Name;
-            return name;
         }
         #endregion
 
@@ -198,56 +192,70 @@ namespace Crypto.CommandLine
         #region set accepted
         public void SetAccepted(T[] values)
         {
-            _accepted = values;
-        }
-        #endregion
+            if (values is null)
+                throw new ArgumentNullException(nameof(values));
 
-        #region value is in accepted set
-        internal override bool ValueIsInAcceptedSet(CommandOption option)
-        {
-            if (_accepted is null || _accepted.Length == 0)
-                return true;
+            if (values.Length == 0)
+            {
+                var c = _constraints.Find(c => c is AcceptedSetConstraint<T>);
+                if (c is not null)
+                {
+                    _constraints.Remove(c);
+                    return;
+                }
+            }
 
-            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
-            T a = option.GetValue<T>();
-            return Array.FindIndex(_accepted, (b) => comparer.Equals(a, b)) > -1;
-        }
-        #endregion
-
-        #region value conforms to constraints
-        internal override bool ValueConformsToConstraints(CommandOption option)
-        {
-            if (_constraints is null)
-                return true;
-
-            T val = option.GetValue<T>();
-
-            return _constraints(val);
+            var constraint = new AcceptedSetConstraint<T>(values);
+            this.Constraints.Add(constraint);
         }
         #endregion
 
         #region apply constraint
-        public void ApplyConstraint(Predicate<T> constraint)
+        public void ApplyConstraint(Func<T, bool> constraint, string errorTemplate)
         {
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));
 
-            _constraints += constraint;
+            if (errorTemplate is null)
+                throw new ArgumentNullException(nameof(errorTemplate));
+
+            if (errorTemplate == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(errorTemplate));
+
+            if (_constraints is null)
+                _constraints = new();
+
+            _constraints.Add(new ArgumentConstraint<T>(constraint, errorTemplate));
         }
         #endregion
 
-        #region try set value
-        internal override bool TrySetValue(CommandOption option)
+        #region set converted value
+        internal override void SetConvertedValue(CommandOption option)
         {
             try
             {
                 T val = _converter.Invoke(option.Argument);
                 option.SetValue(val);
-                return true;
             }
             catch
             {
-                return false;
+                var flag = option.Flag;
+                var name = this.GetType().GetGenericArguments()[0].Name;
+                var arg = option.Argument;
+                throw new CommandArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: {arg}"); ;
+            }
+        }
+        #endregion
+
+        #region ensure constraints
+        internal override void EnsureConstraints(CommandOption option)
+        {
+            if (_constraints is null || _constraints.Count == 0)
+                return;
+
+            foreach (var c in _constraints)
+            {
+                c.Ensure(option);
             }
         }
         #endregion

@@ -13,7 +13,8 @@ namespace Crypto.CommandLine
         private Action<Command> _entryPoint;
         private Func<Command, Task> _asyncEntryPoint;
         private List<CommandOptionDefinition> _options;
-        private MustAssignOneOfConstraint _oneOfConstraint;
+        //private List<MustAssignOneOfConstraint> _oneOfConstraints;
+        private List<CommandConstraint> _constraints;
         #endregion
 
         #region interface
@@ -47,10 +48,16 @@ namespace Crypto.CommandLine
                 var op = _options.Find(o => o.Key == key);
 
                 if (op == default)
-                    throw new KeyNotFoundException($"Provided option key: {key} not found.");
+                    throw new KeyNotFoundException($"Provided option key: '{key}' not found.");
 
                 return op;
             }
+        }
+
+        private List<CommandConstraint> Constraints
+        {
+            get => _constraints is null ? _constraints = new List<CommandConstraint>() : _constraints;
+            set => _constraints = value;
         }
 
         public static string DefaultCommandName => "default";
@@ -165,20 +172,48 @@ namespace Crypto.CommandLine
             if (optionKeys.Length < 2)
                 throw new ArgumentException("Argument must contain at least 2 values.", nameof(optionKeys));
 
-            var opDefs = new CommandOptionDefinition[optionKeys.Length];
             for (int i = 0; i < optionKeys.Length; i++)
             {
                 var opDef = this[optionKeys[i]];
 
                 if (opDef.MustAssign)
                     throw new CommandDefinitionException($"Option '{optionKeys[i]}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'must assign one of' rule cannot be applied.");
-
-                opDefs[i] = opDef;
             }
 
-            var constraint = new MustAssignOneOfConstraint(opDefs);
+            var constraint = new MustAssignOneOfConstraint(mutuallyExclusive, optionKeys);
 
-            _oneOfConstraint = constraint;
+            this.Constraints.Add(constraint);
+        }
+        #endregion
+
+        #region apply constraint
+        public void ApplyConstraint(Func<Command, bool> constraint, string error)
+        {
+            if (constraint is null)
+                throw new ArgumentNullException(nameof(constraint));
+
+            if (error is null)
+                throw new ArgumentNullException(nameof(error));
+
+            if (error == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(error));
+
+            var customConstraint = new CommandConstraint(constraint, error);
+
+            this.Constraints.Add(customConstraint);
+        }
+        #endregion
+
+        #region ensure constraints
+        internal void EnsureConstraints(Command command)
+        {
+            if (_constraints is null || _constraints.Count == 0)
+                return;
+
+            foreach (var c in _constraints)
+            {
+                c.Ensure(command);
+            }
         }
         #endregion
 
