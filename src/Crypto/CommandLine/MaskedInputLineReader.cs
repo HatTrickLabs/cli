@@ -195,7 +195,7 @@ namespace Crypto.CommandLine
                 else
                 {
                     //shift all buffer chars past current position to the right by 1
-                    this.ShiftRight(_position, _length);
+                    this.ShiftRight(_buffer, _position, _length);
 
                     //insert one space at current position to RIGHT of cursor, cursor left DOES NOT increment, shifts all chars to the right by 1
                     Console.Write("\x1B[1@");
@@ -260,7 +260,7 @@ namespace Crypto.CommandLine
 
                 //shift out the deleted char
                 _position -= 1;
-                this.ShiftLeft(_position, _length);
+                this.ShiftLeft(_buffer, _position, _length);
 
                 _length -= 1;
             }
@@ -273,7 +273,7 @@ namespace Crypto.CommandLine
             if (_position < _length)
             {
                 //shift out the deleted char
-                this.ShiftLeft(_position, _length);
+                this.ShiftLeft(_buffer, _position, _length);
 
                 //length decreases due to the left shift
                 _length -= 1;
@@ -342,31 +342,38 @@ namespace Crypto.CommandLine
         #endregion
 
         #region shift left
-        private void ShiftLeft(int from, int to)
+        private void ShiftLeft(char[] target, int from, int to)
         {
-            if (to > _buffer.Length)
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
+            if (to > target.Length)
                 throw new ArgumentOutOfRangeException(nameof(to));
 
             do
             {
-                _buffer[from] = _buffer[++from];
+                target[from] = target[++from];
             }
             while (from < to);
         }
         #endregion
 
         #region shift right
-        private void ShiftRight(int from, int to)
+        private void ShiftRight(char[] target, int from, int to)
         {
-            if (to > _buffer.Length)
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
+            if (to > target.Length)
                 throw new ArgumentOutOfRangeException(nameof(to));
 
             do
             {
-                _buffer[to] = _buffer[--to];
+                target[to] = target[--to];
             }
             while (to > from);
-            _buffer[from] = '\0';
+
+            target[from] = '\0';
         }
         #endregion
     }
