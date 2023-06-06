@@ -97,7 +97,7 @@ namespace Crypto.CommandLine
 
             this.EnsureCommand(command, cmdDef);
 
-            cmdDef.EntryPoint(command);
+            cmdDef.Handler(command);
         }
         #endregion
 

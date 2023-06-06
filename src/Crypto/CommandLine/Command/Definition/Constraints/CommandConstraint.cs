@@ -5,12 +5,12 @@ namespace Crypto.CommandLine
     public class CommandConstraint
     {
         #region internals
-        private Func<Command, bool> _constraint;
+        private Func<IConstrainedCommand, bool> _constraint;
         private string _error;
         #endregion
 
         #region interface
-        protected Func<Command, bool> Constraint
+        protected Func<IConstrainedCommand, bool> Constraint
         {
             set => _constraint = value;
         }
@@ -23,7 +23,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region constructors
-        internal CommandConstraint(Func<Command, bool> constraint, string error)
+        internal CommandConstraint(Func<IConstrainedCommand, bool> constraint, string error)
         {
             _constraint = constraint ?? throw new ArgumentNullException(nameof(constraint));
             _error = error ?? throw new ArgumentNullException(nameof(error));

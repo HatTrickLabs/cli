@@ -59,7 +59,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region at least one assigned
-        private bool AtLeastOneAssigned(Command command)
+        private bool AtLeastOneAssigned(IConstrainedCommand command)
         {
             Func<string, CommandOption> getOptionByKey = (key) => command[key];
 
@@ -70,7 +70,7 @@ namespace Crypto.CommandLine
         #endregion
 
         #region one and only one assigned
-        private bool OneAndOnlyOneAssigned(Command command)
+        private bool OneAndOnlyOneAssigned(IConstrainedCommand command)
         {
             Func<string, CommandOption> getOptionByKey = (key) => command[key];
 

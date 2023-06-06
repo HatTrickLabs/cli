@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Crypto.CommandLine
 {
-    public class Command
+    public class Command : IConstrainedCommand
     {
         #region internals
         private string _key;
@@ -15,7 +15,7 @@ namespace Crypto.CommandLine
         #region interface
         public string Key => _key;
 
-        public IList<CommandOption> Options => _ops;
+        internal IList<CommandOption> Options => _ops;
 
         public CommandOption this[string key]
         {

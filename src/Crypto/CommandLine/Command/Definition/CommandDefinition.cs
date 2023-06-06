@@ -10,10 +10,9 @@ namespace Crypto.CommandLine
         #region internals
         private string _name;
         private string _help;
-        private Action<Command> _entryPoint;
-        private Func<Command, Task> _asyncEntryPoint;
+        private Action<Command> _handler;
+        private Func<Command, Task> _asyncHandler;
         private List<CommandOptionDefinition> _options;
-        //private List<MustAssignOneOfConstraint> _oneOfConstraints;
         private List<CommandConstraint> _constraints;
         #endregion
 
@@ -26,16 +25,16 @@ namespace Crypto.CommandLine
             set => _help = value;
         }
 
-        public Action<Command> EntryPoint
+        public Action<Command> Handler
         {
-            get => _entryPoint;
-            set => _entryPoint = value;
+            get => _handler;
+            set => _handler = value;
         }
 
-        public Func<Command, Task> AsyncEntryPoint
+        public Func<Command, Task> AsyncHandler
         {
-            get => _asyncEntryPoint;
-            set => _asyncEntryPoint = value;
+            get => _asyncHandler;
+            set => _asyncHandler = value;
         }
 
         public IList<CommandOptionDefinition> Options
@@ -187,21 +186,21 @@ namespace Crypto.CommandLine
         #endregion
 
         #region apply constraint
-        public void ApplyConstraint(Func<Command, bool> constraint, string error)
-        {
-            if (constraint is null)
-                throw new ArgumentNullException(nameof(constraint));
+        //public void ApplyConstraint(Func<IConstrainedCommand, bool> constraint, string error)
+        //{
+        //    if (constraint is null)
+        //        throw new ArgumentNullException(nameof(constraint));
 
-            if (error is null)
-                throw new ArgumentNullException(nameof(error));
+        //    if (error is null)
+        //        throw new ArgumentNullException(nameof(error));
 
-            if (error == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(error));
+        //    if (error == string.Empty)
+        //        throw new ArgumentException("Argument must contain a value.", nameof(error));
 
-            var customConstraint = new CommandConstraint(constraint, error);
+        //    var customConstraint = new CommandConstraint(constraint, error);
 
-            this.Constraints.Add(customConstraint);
-        }
+        //    this.Constraints.Add(customConstraint);
+        //}
         #endregion
 
         #region ensure constraints
@@ -226,8 +225,8 @@ namespace Crypto.CommandLine
             if (_name[0] == '-')
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} key cannot start with a '-'.");
 
-            if (_entryPoint is null)
-                throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(EntryPoint)}.");
+            if (_handler is null)
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Handler)}.");
 
             if (_options is not null && _options.Count > 0)
             {
