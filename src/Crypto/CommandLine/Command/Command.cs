@@ -75,7 +75,7 @@ namespace Crypto.CommandLine
         }
         #endregion
 
-        #region get option
+        #region get option by flag
         public CommandOption GetOptionByFlag(params string[] flags)
         {
             CommandOption op = _ops.Find(o => flags.Contains(o.Flag));

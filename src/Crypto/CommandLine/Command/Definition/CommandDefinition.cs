@@ -10,6 +10,7 @@ namespace Crypto.CommandLine
         #region internals
         private string _name;
         private string _help;
+        private Action _mappedHanderValidators;
         private Action<Command> _handler;
         private Func<Command, Task> _asyncHandler;
         private List<CommandOptionDefinition> _options;
@@ -70,76 +71,76 @@ namespace Crypto.CommandLine
         #endregion
 
         #region add option
-        public void AddOption(string key, OptionType type, params string[] flags)
+        public void AddOption(string key, OpType type, params string[] flags)
         {
             this.AddOption(key: key, null, type: type, flags);
         }
 
-        public void AddOption(string key, string help, OptionType type, params string[] flags)
+        public void AddOption(string key, string help, OpType type, params string[] flags)
         {
             this.AddOption(key, false, help, type, flags);
         }
 
-        public void AddOption(string key, bool mustAssign, string help, OptionType type, params string[] flags)
+        public void AddOption(string key, bool mustAssign, string help, OpType type, params string[] flags)
         {
             switch (type)
             {
-                case OptionType.String:
+                case OpType.String:
                     this.AddOptionOf<string>(key, mustAssign, help, Convert.ToString, flags);
                     break;
-                case OptionType.Boolean:
+                case OpType.Bool:
                     this.AddOptionOf<bool>(key, mustAssign, help, BooleanConverter.ConvertToBoolean, flags);
                     break;
-                case OptionType.Char:
+                case OpType.Char:
                     this.AddOptionOf<char>(key, mustAssign, help, Convert.ToChar, flags);
                     break;
-                case OptionType.Byte:
+                case OpType.Byte:
                     this.AddOptionOf<byte>(key, mustAssign, help, Convert.ToByte, flags);
                     break;
-                case OptionType.SByte:
+                case OpType.SByte:
                     this.AddOptionOf<sbyte>(key, mustAssign, help, Convert.ToSByte, flags);
                     break;
-                case OptionType.Short:
+                case OpType.Short:
                     this.AddOptionOf<short>(key, mustAssign, help, Convert.ToInt16, flags);
                     break;
-                case OptionType.UShort:
+                case OpType.UShort:
                     this.AddOptionOf<ushort>(key, mustAssign, help, Convert.ToUInt16, flags);
                     break;
-                case OptionType.Int32:
+                case OpType.Int32:
                     this.AddOptionOf<int>(key, mustAssign, help, Convert.ToInt32, flags);
                     break;
-                case OptionType.UInt32:
+                case OpType.UInt32:
                     this.AddOptionOf<uint>(key, mustAssign, help, Convert.ToUInt32, flags);
                     break;
-                case OptionType.Int64:
+                case OpType.Int64:
                     this.AddOptionOf<long>(key, mustAssign, help, Convert.ToInt64, flags);
                     break;
-                case OptionType.UInt64:
+                case OpType.UInt64:
                     this.AddOptionOf<ulong>(key, mustAssign, help, Convert.ToUInt64, flags);
                     break;
-                case OptionType.NInt:
+                case OpType.NInt:
                     this.AddOptionOf<nint>(key, mustAssign, help, nint.Parse, flags);
                     break;
-                case OptionType.NUInt:
+                case OpType.NUInt:
                     this.AddOptionOf<nuint>(key, mustAssign, help, nuint.Parse, flags);
                     break;
-                case OptionType.Float:
+                case OpType.Float:
                     this.AddOptionOf<float>(key, mustAssign, help, Convert.ToSingle, flags);
                     break;
-                case OptionType.Double:
+                case OpType.Double:
                     this.AddOptionOf<double>(key, mustAssign, help, Convert.ToDouble, flags);
                     break;
-                case OptionType.Decimal:
+                case OpType.Decimal:
                     this.AddOptionOf<decimal>(key, mustAssign, help, Convert.ToDecimal, flags);
                     break;
-                case OptionType.DateTime:
+                case OpType.DateTime:
                     this.AddOptionOf<DateTime>(key, mustAssign, help, Convert.ToDateTime, flags);
                     break;
-                case OptionType.Guid:
+                case OpType.Guid:
                     this.AddOptionOf<Guid>(key, mustAssign, help, Guid.Parse, flags);
                     break;
                 default:
-                    throw new InvalidOperationException($"Encountered un-expected {nameof(OptionType)}: {type}");
+                    throw new InvalidOperationException($"Encountered un-expected {nameof(OpType)}: {type}");
             }
         }
         #endregion
@@ -159,6 +160,14 @@ namespace Crypto.CommandLine
         {
             var op = new CommandOptionDefinition<T>(key: key, converter: converter, mustAssign: mustAssign, help: help, flags: flags);
             this.Options.Add(op);
+        }
+        #endregion
+
+        #region get option
+        internal CommandOptionDefinition GetOption(string key)
+        {
+            var op = _options.Find(o => o.Key == key);
+            return op;
         }
         #endregion
 
@@ -216,6 +225,13 @@ namespace Crypto.CommandLine
         }
         #endregion
 
+        #region register mapped handler validator
+        internal void RegisterMappedHandlerValidator(Action validator)
+        {
+            _mappedHanderValidators += validator;
+        }
+        #endregion
+
         #region validate
         internal void Validate()
         {
@@ -235,6 +251,8 @@ namespace Crypto.CommandLine
                     op.Validate();
                 }
             }
+
+            _mappedHanderValidators?.Invoke();
         }
         #endregion
     }

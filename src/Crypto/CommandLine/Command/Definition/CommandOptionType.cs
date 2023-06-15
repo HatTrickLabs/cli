@@ -3,10 +3,10 @@
 namespace Crypto.CommandLine
 {
     #region option type [enum]
-    public enum OptionType
+    public enum OpType
     {
         String,
-        Boolean,
+        Bool,
         Char,
         Byte,
         SByte,
