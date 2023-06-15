@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Crypto.CommandLine
 {
@@ -10,30 +11,6 @@ namespace Crypto.CommandLine
         {
             return new Continuation(commandDef);
         }
-        #endregion
-
-        #region to
-        //public static Continuation<T> To<T>() where T : new()
-        //{
-        //    return new Continuation<T>(new MapOf<T>());
-        //}
-
-        //public static Continuation<T> To<T>(params (string optionKey, string propertyName)[] correlationMap) where T : new()
-        //{
-        //    return new Continuation<T>(new MapOf<T>(correlationMap));
-        //}
-        #endregion
-
-        #region to signature
-        //public static SignatureContinuation<T> ToSignature<T>() where T : Delegate
-        //{
-        //    return new SignatureContinuation<T>(new SignatureMapOf<T>());
-        //}
-
-        //public static SignatureContinuation<T> ToSignature<T>(params (string optionKey, string parameterName)[] correlationMap) where T : Delegate
-        //{
-        //    return new SignatureContinuation<T>(new SignatureMapOf<T>(correlationMap));
-        //}
         #endregion
 
         #region continuation [class]
@@ -102,6 +79,19 @@ namespace Crypto.CommandLine
                 return action;
             }
             #endregion
+
+            #region then async
+            public Func<Command, Task> ThenAsync(Func<T, Task> handler)
+            {
+                Func<Command, Task> function = async (cmd) =>
+                {
+                    _mapper.Map(cmd, out T instance);
+                    await handler(instance);
+                };
+
+                return function;
+            }
+            #endregion
         }
         #endregion
 
@@ -129,7 +119,23 @@ namespace Crypto.CommandLine
                     _mapper.Map(cmd, out object[] parameters);
                     target.DynamicInvoke(parameters);
                 };
+
                 return action;
+            }
+            #endregion
+
+            #region then async
+            public Func<Command, Task> ThenAsync(T target)
+            {
+                _mapper.SetTarget(target);
+
+                Func<Command, Task> function = async (cmd) =>
+                {
+                    _mapper.Map(cmd, out object[] parameters);
+                    await (Task)target.DynamicInvoke(parameters);
+                };
+
+                return function;
             }
             #endregion
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Crypto.CommandLine
 {
@@ -14,11 +15,11 @@ namespace Crypto.CommandLine
         #endregion
 
         #region interface
-        public CommandDefinition this[string key]
-        {
-            get { lock (_lock) { return _definitions[key]; } }
-            set { lock (_lock) { _definitions[key] = value; } }
-        }
+        //public CommandDefinition this[string key]
+        //{
+        //    get { lock (_lock) { return _definitions[key]; } }
+        //    set { lock (_lock) { _definitions[key] = value; } }
+        //}
 
         public int DefinitionCount => _definitions.Count;
 
@@ -98,6 +99,20 @@ namespace Crypto.CommandLine
             this.EnsureCommand(command, cmdDef);
 
             cmdDef.Handler(command);
+        }
+        #endregion
+
+        #region execute command async
+        public async Task ExecuteCommandAsync(Command command)
+        {
+            if (command.Key is null || string.IsNullOrEmpty(command.Key))
+                throw new CommandInputException("No command provided.");
+
+            CommandDefinition cmdDef = this.GetDefinition(command.Key);
+
+            this.EnsureCommand(command, cmdDef);
+
+            await cmdDef.AsyncHandler(command);
         }
         #endregion
 

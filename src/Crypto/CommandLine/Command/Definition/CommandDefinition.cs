@@ -241,8 +241,8 @@ namespace Crypto.CommandLine
             if (_name[0] == '-')
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} key cannot start with a '-'.");
 
-            if (_handler is null)
-                throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Handler)}.");
+            if (_handler is null && _asyncHandler is null)
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for one of: {nameof(Handler)}, {nameof(AsyncHandler)}.");
 
             if (_options is not null && _options.Count > 0)
             {
