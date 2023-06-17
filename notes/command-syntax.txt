@@ -1,0 +1,58 @@
+Command line rules
+-------------------
+Based on basic Unix style with some noted diffs.
+
+	- all args require an option flag... we do not support the following in any way:
+	
+	copy c:\tmp\file.txt c:\tmp2\file.exe
+	
+	... the above copy command has 2 args that are NOT named / flagged.   This gets confusing fast... you must remember order, etc.
+	... in our world the above copy command would look like one of the following:
+	
+	copy --from c:\tmp\file.txt --to c:\tmp2\file.exe
+	copy -f c:\tmp\file.txt -t c:\tmp2\file.exe
+	
+	
+	
+	
+	- all flags can have multipe variations (as seen in the copy examples above) typically a terse and a verbose option.  
+	  REASON::terse flags are useful for interactive users running many commands.  You know what you are doing and its shorter / simpler.
+	        ::verbose flags are usefule for batch type executions that some other person may need to read and understand 3 years in the future (not an expert...need to understand with a quick glance).
+	
+	
+	
+	
+	- boolean args do not require a value...if the arg / flag is supplied with no value it is implied to be true.
+	
+	copy --from c:\hello.txt --to c:\archive\hello.txt --overwrite
+	
+	...the above copy command supplies the --overwrite flag / arg...not implied value of --overwrite is true...equiv to the following:
+	
+	copy --from c:\hello.txt --to c:\archive\hello.txt --overwrite true
+	
+	
+	
+	
+	- valid boolean literals are as follows:
+	
+	{ "False", "false", "No", "no", "N", "n", "0", "True", "true", "Yes", "yes", "Y", "y", "1" };
+	
+	
+	
+	
+	- terse flags always start with a single '-' verbose flags always start with '--'
+	
+	
+	
+	- terse boolean flags can be chained similar to old school Unix style.  If our copy command had the following options: --from|-f   --to|-t   --overwrite|-o   --silent|-s, the following would be valid:
+	  
+	  copy -osf c:\tmp\hello.txt -t c:\tmp2\hello.txt
+	  
+	
+	- valid arg / option types:  boolean, string, double, int, DateTime
+
+	- args requiring mulitple values (set or array of values) can be comma separated with no spaces, or space separated if the entire set is wrapped in parens
+	
+		--product-ids BTC-USD,ETH-USD,DOGE-USD
+		--product-ids "BTC-USD ETH-USD DOGE-USD"
+		--product-ids "BTC-USD, ETH-USD, DOGE-USD"

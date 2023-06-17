@@ -1,0 +1,23 @@
+myapp.exe persist -k keyval -v valueval --correlation-key:--hello-- -s --encrypt
+
+args[]
+------
+persist
+-k
+keyval
+-v
+valueval
+--correlation-key:--hello--
+-s
+--encrypt
+
+***************************************************************************************************************
+
+x myapp.exe persist -k keyval -v valueval --correlation-key:--hello-- -s --encrypt
+x myapp.exe persist -k keyval -v valueval --correlation-key=--hello-- -s --encrypt
+myapp.exe persist -k keyval -v valueval --correlation-key = --hello-- -s : --encrypt
+myapp.exe persist -k keyval -v valueval --correlation-key : --hello-- -s : --encrypt
+
+
+crypto.exe vault.set -k abc -v = --hello--
+crypto.exe vault.set -k abc -v : --hello--

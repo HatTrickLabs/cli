@@ -1,0 +1,50 @@
+MustAssignOneOfConstraint: Command options did not comply|satisfy||meet|
+  opDef[] options
+Satisfies
+
+DefaultConstraint: Sets the op value to x if op not supplied or op value not supplied
+  opDef option
+Applies
+
+CheckConstraint: Check what  ????
+  opDef option
+Satisfies
+
+
+
+
+
+GeneratedRule
+
+DefaultRule op value
+100
+
+
+Value Check Constraint Type:
+> < = <= >= != between(a,b), in(a,b,c ...)
+
+
+CheckValueConstraint
+CheckValueIn
+
+
+cmd[""].DefaultValue<T>(x);
+
+cmd[""].ValidValues<T>(params T[] set);
+
+cmd.MustAssignOneOf(params string[] optionKeys);
+
+cmd.MustAssignOneOf(params string[] optionKeys).MutuallyExclusive(true);
+	OR
+cmd.MustAssignOneOf(bool mutuallyExclusive = true, params string[] optionKeys);
+
+cmd[""].CheckConstraint(Func<T> check); //if fails, should throw a System.ArgumentException
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,41 @@
+application arguments: cb.ord\\ers.get -a true --silent --id =   "--\"x\", \"y\", \"z\"" 
+
+
+            Func<string[], string[], bool> isEqual = (a, b) =>
+            {
+                if (a is null && b is not null)
+                    return false;
+
+                if (b is null && a is not null)
+                    return false;
+
+                if (a.Length != b.Length)
+                    return false;
+
+                for (int i = 0; i < a.Length; i++)
+                    if (a[i] != b[i])
+                        return false;
+
+                return true;
+            };
+
+            Console.WriteLine("Enter a command and press [Enter]");
+            string input = Console.ReadLine();
+            var tokenizer = new InputTokenizer(input);
+            string[] args2 = tokenizer.Tokenize();
+
+            if (isEqual(args, args2))
+                Console.WriteLine("Equal");
+            else
+                Console.WriteLine("!!!Equal");
+
+            var tokenizer2 = new InputTokenizer("cb.ord\\\\ers.get -a true --silent --id =   \"--\\\"x\\\", \\\"y\\\", \\\"z\\\"\" ");
+            string[] args3 = tokenizer2.Tokenize();
+
+            if (isEqual(args, args3))
+                Console.Write("Equal");
+            else
+                Console.WriteLine("!!!Equal");
+
+            Console.ReadLine();
+            return;

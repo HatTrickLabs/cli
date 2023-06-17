@@ -1,0 +1,198 @@
+D:\crypto.exe
+
+Usage: crypto.exe [default_option]
+Usage: crypto.exe command [command_options]
+
+Default Options:
+  -?|-h|--help		Display help (accepts a command or namespace as argument).
+  -v|--version		Display crypto.exe version information.
+  -r|--run			Run crypto.exe in a non-exiting command loop.
+
+
+*************************************************No Arg*********************************************************
+D:\crypto.exe -?
+
+Namespaces:
+  cb				Namespace identifier for all Coinbase related commands.
+  vault				Namespace identifier for all vault secret related commands.
+  
+Commands:
+  xxx				Help xxx.
+
+Run 'crypto.exe -? [namespace]' to view help content for the above listed namespaces.
+Run 'crypto.exe -? [command]' to view help content for the above listed commands.
+
+************************************************Namespace Arg***************************************************
+D:\crypto.exe -? vault
+
+Namespace commands:
+  set				Encrypts data into a vault json file.
+  unset				Removed encrypted data from a vault json file.
+
+Run 'crypto.exe -? vault.[command]' to view help content for the above listed commands.
+
+**************************************************************************************************************
+D:\crypto.exe -? vault.set
+
+Usage: crypto.exe valut.set [options]
+
+Options:
+  -k|--key 				Key pointer within vault json file...{must-assign:true, type: boolean}
+  -v|--value			Value to encrypt.
+
+
+*****************************************************************************************************************
+D:\crypto.exe -? cb
+
+Sub namespaces:D:\crypto.exe
+
+Usage: crypto.exe [default_option]
+Usage: crypto.exe command [command_options]
+
+Default Options:
+  -?|-h|--help		Display help (accepts a command or namespace as argument).
+  -v|--version		Display crypto.exe version information.
+  -r|--run			Run crypto.exe in a non-exiting command loop.
+
+
+*************************************************No Arg*********************************************************
+D:\crypto.exe -?
+
+Namespaces:
+  cb				Namespace identifier for all Coinbase related commands.
+  vault				Namespace identifier for all vault secret related commands.
+  
+Commands:
+  xxx				Help xxx.
+
+Run 'crypto.exe -? [namespace]' to view help content for the above listed namespaces.
+Run 'crypto.exe -? [command]' to view help content for the above listed commands.
+
+************************************************Namespace Arg***************************************************
+D:\crypto.exe -? vault
+
+Namespace commands:
+  set				Encrypts data into a vault json file.
+  unset				Removed encrypted data from a vault json file.
+
+Run 'crypto.exe -? vault.[command]' to view help content for the above listed commands.
+
+**************************************************************************************************************
+D:\crypto.exe -? vault.set
+
+Usage: crypto.exe valut.set [options]
+
+Options:
+  -k|--key 				Key pointer within vault json file...{must-assign:true, type: boolean}
+  -v|--value			Value to encrypt.
+
+
+*****************************************************************************************************************
+D:\crypto.exe -? cb
+
+Sub namespaces:
+  cb.profiles
+  cb.accounts
+  cb.products
+  cb.orders
+  cb.profiles.orders
+  cb.products.orders
+  cb.currencies
+  cb.fees
+  cb.oracle
+  cb.withdrawals
+  cb.wallets
+  cb.profiles.conversions
+  cb.users
+  cb.accounts.transfers
+  cb.payment-methods
+  cb.deposits
+  cb.socket
+  
+Run 'crypto.exe -? cb.[namespace]' to view help content for the above listed namespaces.
+  
+*****************************************************************************************************************
+D:\crypto.exe -? cb.accounts
+
+Namespace commands:
+  cb.accounts.get
+
+Sub namespaces:
+  cb.accounts.transfers
+  
+Run 'crypto.exe -? cb.accounts.[namespace]' to view help content for the above listed namespaces.
+Run 'crypto.exe -? cb.accounts.[command]' to view help content for the above listed commands.
+  
+*****************************************************************************************************************
+D:\crypto.exe -? cb.accounts.get
+
+Usage: cb.accounts.get [--id <account_id>]
+
+Options:
+  -i|--id				Filter to specific account id, else gets all accounts for the default profile of the API key.
+
+******************************************************************************************************************
+D:\crypto.exe -? cb.accounts.transfers.get
+
+Usage: cb.accounts.transfers.get --account-id <account_id> [--type <type>] [--limit <limit>]
+
+Options:
+  -a|--account-id		The Coinbase account id.
+  -t|--type				The type of transfer (deposit|withdrawl).
+  -l|--limit			Limit on number of results to return.
+
+******************************************************************************************************************
+D:\crypto.exe -? cb.orders.all.get
+
+Usage: cb.orders.all.get 
+  cb.profiles
+  cb.accounts
+  cb.products
+  cb.orders
+  cb.profiles.orders
+  cb.products.orders
+  cb.currencies
+  cb.fees
+  cb.oracle
+  cb.withdrawals
+  cb.wallets
+  cb.profiles.conversions
+  cb.users
+  cb.accounts.transfers
+  cb.payment-methods
+  cb.deposits
+  cb.socket
+  
+Run 'crypto.exe -? cb.[namespace]' to view help content for the above listed namespaces.
+  
+*****************************************************************************************************************
+D:\crypto.exe -? cb.accounts
+
+Namespace commands:
+  cb.accounts.get
+
+Sub namespaces:
+  cb.accounts.transfers
+  
+Run 'crypto.exe -? cb.accounts.[namespace]' to view help content for the above listed namespaces.
+Run 'crypto.exe -? cb.accounts.[command]' to view help content for the above listed commands.
+  
+*****************************************************************************************************************
+D:\crypto.exe -? cb.accounts.get
+
+Usage: cb.accounts.get [--id <account_id>]
+
+Options:
+  -i|--id				Filter to specific account id, else gets all accounts for the default profile of the API key.
+
+******************************************************************************************************************
+D:\crypto.exe -? cb.accounts.transfers.get
+
+Usage: cb.accounts.transfers.get --account-id <account_id> [--type <type>] [--limit <limit>]
+
+Options:
+  -a|--account-id		The Coinbase account id.
+  -t|--type				The type of transfer (deposit|withdrawl).
+  -l|--limit			Limit on number of results to return.
+
+******************************************************************************************************************
