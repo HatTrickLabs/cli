@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Crypto.CommandLine
+namespace HatTrick.CommandLine
 {
     public class DefaultCommandDefinition : CommandDefinition
     {

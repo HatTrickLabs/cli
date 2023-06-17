@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Crypto.CommandLine
+namespace HatTrick.CommandLine
 {
     public class SignatureMapOf<T> : Map where T : Delegate
     {

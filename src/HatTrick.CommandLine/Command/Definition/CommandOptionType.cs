@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Crypto.CommandLine
+namespace HatTrick.CommandLine
 {
     #region option type [enum]
     public enum OpType

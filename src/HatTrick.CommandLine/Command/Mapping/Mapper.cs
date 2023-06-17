@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Crypto.CommandLine
+namespace HatTrick.CommandLine
 {
     public class Mapper
     {

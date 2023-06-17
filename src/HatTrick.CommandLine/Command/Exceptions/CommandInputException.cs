@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Crypto.CommandLine
+namespace HatTrick.CommandLine
 {
     public class CommandInputException : Exception
     {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Crypto.CommandLine
+namespace HatTrick.CommandLine
 {
     public class CommandDefinitionRegistry
     {

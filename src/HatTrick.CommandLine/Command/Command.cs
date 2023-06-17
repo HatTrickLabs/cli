@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Crypto.CommandLine
+namespace HatTrick.CommandLine
 {
     public class Command : IConstrainedCommand
     {
