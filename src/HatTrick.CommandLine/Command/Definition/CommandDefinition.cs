@@ -41,7 +41,7 @@ namespace HatTrick.CommandLine
         public IList<CommandOptionDefinition> Options
         { get => _options is null ? _options = new List<CommandOptionDefinition>() : _options; }
 
-        internal CommandOptionDefinition this[string key]
+        public CommandOptionDefinition this[string key]
         {
             get
             {
