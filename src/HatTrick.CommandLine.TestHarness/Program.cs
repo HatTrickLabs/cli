@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using HatTrick.CommandLine;
 using Microsoft.Win32;
@@ -9,9 +10,13 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
+            RegisterCommands(out CommandDefinitionRegistry registry);
+
+            registry.ExecuteCommand(CommandParser.Parse(args));
+
             //TestMaskedInputReader();
-            RegisterCommands(out CommandDefinitionRegistry r);
-            r.ExecuteCommand(CommandParser.Parse(args));
+            //TestGetTemplateResource();
+
             Console.WriteLine("Press [Enter] to exit.");
             Console.ReadLine();
         }
@@ -20,6 +25,15 @@ namespace HatTrick.CommandLine.TestHarness
         {
             string input = new MaskedInputLineReader().ReadMaskedInput();
             Console.WriteLine(input);
+        }
+
+        static void TestGetTemplateResource()
+        {
+            Console.WriteLine(Path.GetFileName(Environment.ProcessPath));
+            string shortName = "usage-help";
+            TemplateAccessor accessor = new TemplateAccessor();
+
+            string template = accessor.GetTemplate(shortName);
         }
 
         static void RegisterCommands(out CommandDefinitionRegistry registry)
@@ -33,7 +47,12 @@ namespace HatTrick.CommandLine.TestHarness
             /********** Register Default Command **********/
             defCmd = new();
             defCmd.Help = "???";
-            defCmd.Handler = (c) => { };
+            defCmd.Handler = Mapper.MapCommand(defCmd).To<DefaultCommandArgs>(
+                ("help","Help"),
+                ("version","Version"),
+                ("run","Run")
+             )
+            .Then(DefaultCommand);
             defCmd.AddOption(key: "help", mustAssign: false, help: "Display help.", type: OpType.Bool, "-?", "-h", "--help");
             defCmd.AddOption(key: "version", mustAssign: false, help: "Display crypto.exe version information.", type: OpType.Bool, "-v", "--version");
             defCmd.AddOption(key: "run", mustAssign: false, help: "Run crypto.exe in a non-exiting command loop.", type: OpType.Bool, "-r", "--run");
@@ -41,8 +60,10 @@ namespace HatTrick.CommandLine.TestHarness
             registry.Add(defCmd);
 
 
+
             cmd = new(name: "add-person");
             cmd.Help = "Help content for the add person test command.";
+
             cmd.Handler = (sc) =>{ };
 
             cmd.AsyncHandler = Mapper.MapCommand(cmd).To<Person>(
@@ -105,6 +126,20 @@ namespace HatTrick.CommandLine.TestHarness
             //option-key, option-flag (the one provided), option-argument (the one provided) 
             registry.Add(cmd);
 
+        }
+
+        static void DefaultCommand(DefaultCommandArgs args)
+        {
+            Console.WriteLine(args.Help);
+            Console.WriteLine(args.Version);
+            Console.WriteLine(args.Run);
+        }
+
+        public class DefaultCommandArgs
+        {
+            public bool Help { get; set; }
+            public bool Version { get; set; }
+            public bool Run { get; set; }
         }
     }
 }

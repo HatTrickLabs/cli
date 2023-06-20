@@ -21,6 +21,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Command\Definition\Help\Templates\command-help.htt" />
+    <None Remove="Command\Definition\Help\Templates\namespace-help.htt" />
+    <None Remove="Command\Definition\Help\Templates\root-help.htt" />
+    <None Remove="Command\Definition\Help\Templates\usage-help.htt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Command\Definition\Help\Templates\command-help.htt" />
+    <EmbeddedResource Include="Command\Definition\Help\Templates\namespace-help.htt" />
+    <EmbeddedResource Include="Command\Definition\Help\Templates\root-help.htt" />
+    <EmbeddedResource Include="Command\Definition\Help\Templates\usage-help.htt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\build\htl-nuget-logo.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

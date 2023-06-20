@@ -25,6 +25,7 @@ x Rules: MustAssignOneOfRule, DefaultValueRule, ValidArgumentSetRule
 - Imple keyword that will generate a new GUID on command execution for 'generated' arg... i.e. a nonce for an api request.
 - On signature mapping, what if the signature has a = null...Accounts(Guid id = null).  See GetAccounts
 - Make sure SetAccepted works with d@MN enums....
+- Environment.ProcessPath
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository
