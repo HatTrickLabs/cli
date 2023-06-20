@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic.FileIO;
 
 namespace HatTrick.CommandLine
 {
@@ -155,6 +156,9 @@ namespace HatTrick.CommandLine
                 if (op is EmptyCommandOption || op is DefaultCommandOption)
                     continue;
 
+                //pass op to typed definition to convert the command line arg (string) into T and set the typed option value
+                opDef.SetConvertedValue(op);
+
                 this.EnsureOptionConstraints(opDef, op, ref feedback);
             }
         }
@@ -246,29 +250,12 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure option constraints
-        private void EnsureOptionConstraints(CommandOptionDefinition optionDef, CommandOption option, ref List<string> feedback)
+        private void EnsureOptionConstraints(CommandOptionDefinition opDef, CommandOption op, ref List<string> feedback)
         {
             try
             {
-                //pass op to typed definition to convert the command line arg (string) into T and set the typed option value
-                optionDef.SetConvertedValue(option);
-
                 //ensure passes custom contraints if defined...
-                optionDef.EnsureConstraints(option);
-            }
-            catch (CommandArgumentException ex)
-            {
-                feedback.Add(ex.Message);
-            }
-        }
-        #endregion
-
-        #region ensure command constraints
-        private void EnsureCommandConstraints(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
-        {
-            try
-            {
-                cmdDef.EnsureConstraints(cmd);
+                opDef.EnsureConstraints(op);
             }
             catch (CommandArgumentException ex)
             {

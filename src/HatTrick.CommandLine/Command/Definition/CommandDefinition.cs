@@ -172,7 +172,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region must assign one of
-        public void MustAssignOneOf(bool mutuallyExclusive, params string[] optionKeys)
+        public void MustAssignOneOf(params string[] optionKeys)
         {
             if (optionKeys is null)
                 throw new ArgumentNullException(nameof(optionKeys));
@@ -185,10 +185,33 @@ namespace HatTrick.CommandLine
                 var opDef = this[optionKeys[i]];
 
                 if (opDef.MustAssign)
-                    throw new CommandDefinitionException($"Option '{optionKeys[i]}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'must assign one of' rule cannot be applied.");
+                    throw new CommandDefinitionException($"Option '{opDef}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'Must Assign One of' constraint cannot be applied.");
             }
 
-            var constraint = new MustAssignOneOfConstraint(mutuallyExclusive, optionKeys);
+            var constraint = new MustAssignOneOfConstraint(optionKeys);
+
+            this.Constraints.Add(constraint);
+        }
+        #endregion
+
+        #region mutually exclusive set
+        public void MutaullyExclusiveSet(params string[] optionKeys)
+        {
+            if (optionKeys is null)
+                throw new ArgumentNullException(nameof(optionKeys));
+
+            if (optionKeys.Length < 2)
+                throw new ArgumentException("Argument must contain at least 2 values.", nameof(optionKeys));
+
+            for (int i = 0; i < optionKeys.Length; i++)
+            {
+                var opDef = this[optionKeys[i]];
+
+                if (opDef.MustAssign)
+                    throw new CommandDefinitionException($"Option '{opDef}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'Mutually Exclusive Set' constraint cannot be applied.");
+            }
+
+            var constraint = new MutuallyExclusiveSetConstraint(optionKeys);
 
             this.Constraints.Add(constraint);
         }
