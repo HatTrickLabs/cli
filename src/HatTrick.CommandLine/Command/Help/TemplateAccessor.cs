@@ -8,26 +8,22 @@ using System.Reflection;
 namespace HatTrick.CommandLine
 {
     #region resource accessor
-    public class TemplateAccessor
+    internal class TemplateAccessor
     {
         #region interface
         private Assembly ExecutingAssembly => Assembly.GetExecutingAssembly();
         #endregion
 
         #region get template
-        public string GetTemplate(string shortName)
+        internal string GetTemplate(string shortName)
         {
-            //string fullName = $"{typeof(TemplateAccessor).Namespace}.Command.Definition.telp.templates.{shortName}.htt";
-            //string value = this.GetResource(fullName);
-            //return value;
-
-            string[] names = this.ExecutingAssembly.GetManifestResourceNames();
-            string name = Array.Find(names, (n) => n.Contains(shortName, StringComparison.OrdinalIgnoreCase));
+            string[] names = ExecutingAssembly.GetManifestResourceNames();
+            string name = Array.Find(names, (n) => n.Contains(shortName, StringComparison.Ordinal));
 
             if (name is null)
                 throw new ArgumentException($"No resource found containing provided short name: {shortName}", nameof(shortName));
 
-            string value = this.GetResource(name);
+            string value = GetResource(name);
             return value;
         }
         #endregion

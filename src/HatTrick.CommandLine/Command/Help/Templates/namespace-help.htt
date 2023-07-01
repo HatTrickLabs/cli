@@ -1,0 +1,23 @@
+
+{Target.Name}			{Target.Help}
+
+{#if Namespaces}
+{#if IsWildcard}Descendent{/if}{#if !IsWildcard}Child{/if+} namespaces:
+  {#each Namespaces}
+{$.Name}				{$.Help}
+{/each}
+{/if}
+
+{#if Commands}
+{#if IsWildcard}Descendent{/if}{#if !IsWildcard}Child{/if+} commands:
+{#each Commands}
+  {$.Name}				{$.Help}
+{/each}
+{/if}
+
+{#if Namespaces}
+Run {() => GetExecutableName} -? [namespace] to see help content for the above listed namespaces.
+{/if}
+{#if Commands}
+Run {() => GetExecutableName} -? [command] to see help content for the above listed commands.
+{/if}

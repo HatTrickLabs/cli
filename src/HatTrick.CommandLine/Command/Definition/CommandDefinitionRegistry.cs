@@ -3,6 +3,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.FileIO;
+using Microsoft.Win32;
+using HatTrick.CommandLine.Namespace;
+using System.Globalization;
 
 namespace HatTrick.CommandLine
 {
@@ -11,8 +14,8 @@ namespace HatTrick.CommandLine
         #region internals
         private static CommandDefinitionRegistry _instance;
         private static object _lock = new();
-        private Dictionary<string, CommandDefinitionNamespace> _namespaces;
-        private Dictionary<string, CommandDefinition> _definitions;
+        private Dictionary<string, NamespaceDefinition> _namespaceDefs;
+        private Dictionary<string, CommandDefinition> _cmdDefs;
         #endregion
 
         #region interface
@@ -22,16 +25,16 @@ namespace HatTrick.CommandLine
         //    set { lock (_lock) { _definitions[key] = value; } }
         //}
 
-        public int DefinitionCount => _definitions.Count;
+        public int CommandDefinitionCount => _cmdDefs.Count;
 
-        public int NamespaceCount => _namespaces.Count;
+        public int NamespaceDefinitionCount => _namespaceDefs.Count;
         #endregion
 
         #region constructors
         private CommandDefinitionRegistry()
         {
-            _definitions = new Dictionary<string, CommandDefinition>();
-            _namespaces = new Dictionary<string, CommandDefinitionNamespace>();
+            _cmdDefs = new Dictionary<string, CommandDefinition>();
+            _namespaceDefs = new Dictionary<string, NamespaceDefinition>();
         }
         #endregion
 
@@ -40,52 +43,101 @@ namespace HatTrick.CommandLine
         {
             lock (_lock)
             {
-                return _instance is null ? _instance = new CommandDefinitionRegistry() : _instance;
+                if (_instance is null)
+                {
+                    _instance = new CommandDefinitionRegistry();
+                    _instance.Add(new DefaultCommandDefinition());
+                }
             }
+            return _instance;
         }
         #endregion
 
-        #region get all command definitions
-        public CommandDefinition[] GetAllDefinitions()
+        #region get command definitions
+        public CommandDefinition[] GetCommandDefinitions(Predicate<CommandDefinition> where = null)
         {
-            return _definitions.Values.ToArray();
+            return Array.FindAll(_cmdDefs.Values.ToArray(), (where is null) ? (cmd) => true : where);
         }
         #endregion
 
-        #region get all namespaces
-        public CommandDefinitionNamespace[] GetAllNamespaces()
+        #region get namespace definitions
+        public NamespaceDefinition[] GetNamespaceDefinitions(Predicate<NamespaceDefinition> where = null)
         {
-            return _namespaces.Values.ToArray();
+            return Array.FindAll(_namespaceDefs.Values.ToArray(), (where is null) ? (ns) => true : where);
         }
         #endregion
 
         #region add
-        public void Add(CommandDefinitionNamespace commandNamespace)
+        public void Add(NamespaceDefinition ns)
         {
-            commandNamespace.Validate();
-            _namespaces.Add(commandNamespace.Name, commandNamespace);
+            ns.Validate();
+
+            //ensure no command name collisions
+            if (_cmdDefs.ContainsKey(ns.Name))
+                throw new NamespaceDefinitionException($"Naming collision between namespace and command definition: {ns.Name}");
+
+            if (ns.Name.Contains('.'))
+            {
+                //ensure no segment gaps
+                string[] segments = ns.Name.Split('.');
+                string segment = null;
+                for (int i = 0; i < (segments.Length - 1); i++)
+                {
+                    segment = (i > 0) 
+                        ? string.Concat(segment, '.', segments[i])
+                        : segments[i];
+
+                    if (!_namespaceDefs.ContainsKey(segment))
+                    {
+                        string msg = $"Cannot register namespace {ns.Name}...no parent namespace for '{segment}' exists.";
+                        throw new NamespaceDefinitionException(msg);
+                    }
+                }
+            }
+            _namespaceDefs.Add(ns.Name, ns);
         }
 
         public void Add(CommandDefinition commandDef)
         {
             commandDef.Validate();
-            _definitions.Add(commandDef.Name, commandDef);
+
+            //ensure no namespace name collisions
+            if (_namespaceDefs.ContainsKey(commandDef.Name))
+                throw new NamespaceDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
+
+            _cmdDefs.Add(commandDef.Name, commandDef);
         }
         #endregion
 
-        #region get namespace
-        public CommandDefinitionNamespace GetNamespace(string name)
+        #region try get namespace
+        public bool TryGetNamespaceDefinition(string name, out NamespaceDefinition namespaceDef)
         {
-            return _namespaces[name];
+            return _namespaceDefs.TryGetValue(name, out namespaceDef);
+        }
+        #endregion
+
+        #region try get command definition
+        public bool TryGetCommandDefinition(string name, out CommandDefinition cmdDef)
+        {
+            return _cmdDefs.TryGetValue(name, out cmdDef);
+        }
+        #endregion
+
+        #region get namespace definition
+        public NamespaceDefinition GetNamespaceDefinition(string name)
+        {
+            return _namespaceDefs.ContainsKey(name)
+                ? _namespaceDefs[name]
+                : throw new CommandInputException($"No namespace registered for provided name: {name}");
         }
         #endregion
 
         #region get definition
-        public CommandDefinition GetDefinition(string key)
+        public CommandDefinition GetDefinition(string name)
         {
-            return _definitions.ContainsKey(key) 
-                ? _definitions[key] 
-                : throw new CommandInputException($"No command registered for provided key: {key}");
+            return _cmdDefs.ContainsKey(name) 
+                ? _cmdDefs[name] 
+                : throw new CommandInputException($"No command registered for provided name: {name}");
         }
         #endregion
 

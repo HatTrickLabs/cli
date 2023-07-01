@@ -2,7 +2,7 @@
   "profiles": {
     "HatTrick.CommandLine.TestHarness": {
       "commandName": "Project",
-      "commandLineArgs": "xxx -d \"3/28/2007 2:13:50 PM -05:00\" -a 899.00"
+      "commandLineArgs": "-? cb.products"
     }
   }
 }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -21,17 +21,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Command\Definition\Help\Templates\command-help.htt" />
-    <None Remove="Command\Definition\Help\Templates\namespace-help.htt" />
-    <None Remove="Command\Definition\Help\Templates\root-help.htt" />
-    <None Remove="Command\Definition\Help\Templates\usage-help.htt" />
+    <None Remove="Command\Help\Templates\command-help.htt" />
+    <None Remove="Command\Help\Templates\invalid-input-help.htt" />
+    <None Remove="Command\Help\Templates\namespace-help.htt" />
+    <None Remove="Command\Help\Templates\root-help.htt" />
+    <None Remove="Command\Help\Templates\usage-help.htt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Command\Definition\Help\Templates\command-help.htt" />
-    <EmbeddedResource Include="Command\Definition\Help\Templates\namespace-help.htt" />
-    <EmbeddedResource Include="Command\Definition\Help\Templates\root-help.htt" />
-    <EmbeddedResource Include="Command\Definition\Help\Templates\usage-help.htt" />
+    <EmbeddedResource Include="Command\Help\Templates\command-help.htt" />
+    <EmbeddedResource Include="Command\Help\Templates\namespace-help.htt" />
+    <EmbeddedResource Include="Command\Help\Templates\root-help.htt" />
+    <EmbeddedResource Include="Command\Help\Templates\usage-help.htt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +48,10 @@
 
   <ItemGroup>
     <PackageReference Include="HatTrick.Text.Templating" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Command\Help\Templates\invalid-input-help.htt" />
   </ItemGroup>
 
 </Project>

@@ -14,11 +14,14 @@ x Refactor CommandDefinitionRegistry.EnsureCommandOptions...need to allow for al
 x Implement root command concept..Root command is command run when NO command provided...Root command is run for keeping similarity to old school stuff...crypto.exe --version | crypto.exe -?  | crypto.exe --list
 x Implement command namespaces to alleviate pains in rendering help content.
 - Implement interactive mode...inner process command loop...will enable tab based command help in the future.
+  - experiment with a 'using' expression that scopes my command loop to a specific namespace
 x Vault.cs  public set value method adds passed char[] value (a ref) directly into the Dictionary<string, char[]>...that ref char[] could EASILY be corrupted
 - Implement ability to pass in a prefix/prompt value into the masked input line reader ex: password:********** or password>****** or secret key:>
+x Ensure no name collisions between namespaces and commands.
 x Refactor BooleanConverter.  Just janky
 x Default option value???
 x Registered valid option values (Enums???)
+- Implement the ability to hide entire commands and/or command options from help output.
 x one of a set of options (i.e. one of profile_id or product_id is required).
   x or is it a better practice to simply register 2 commands supporting the differing options ???
 x Rules: MustAssignOneOfRule, DefaultValueRule, ValidArgumentSetRule
@@ -26,6 +29,12 @@ x Rules: MustAssignOneOfRule, DefaultValueRule, ValidArgumentSetRule
 - On signature mapping, what if the signature has a = null...Accounts(Guid id = null).  See GetAccounts
 - Make sure SetAccepted works with d@MN enums....
 - Environment.ProcessPath
+- Expose a 'DefaultCommand' on command registery to handle any built in command func I want to expose...ie: help, version, run
+- Move tokenizer to a 'Command\Input' folder...Rename CommandParser to just parser.
+- F'n MS FUBARed the command line args...Framework maintained quoted tokens...Core+ strips them...Will it stay or will it go.. may need 2 versions of Tokenizer for exitless cmd loop.
+  - write another version of the tokenizer that matches the NEW .net output and make the version used configurable
+- I think the early returns on ReadMaskedInput need re-org.  Remask AFTER escape ????'
+- Use -? for sparse help...Use -h for normal help...Use --help for annoyingly verbose help...
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

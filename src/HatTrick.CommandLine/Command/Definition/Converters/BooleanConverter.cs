@@ -27,7 +27,7 @@ namespace HatTrick.CommandLine
             if (BooleanConverter.IsValidBool(value, out bool boolean))
                 return boolean;
 
-            throw new FormatException($"Cannot convert value to bool: '{value}'...valid bool values (case insensitive): {string.Join(", ", _validBools)}");
+            throw new FormatException($"Cannot convert value to bool: '{value}'...valid bool values (case insensitive): {string.Join("|", _validBools)}");
         }
         #endregion
     }

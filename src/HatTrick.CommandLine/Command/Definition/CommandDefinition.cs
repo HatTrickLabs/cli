@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace HatTrick.CommandLine
 {
@@ -10,6 +11,8 @@ namespace HatTrick.CommandLine
         #region internals
         private string _name;
         private string _help;
+        private int _depth;
+        private bool _hidden;
         private Action _mappedHanderValidators;
         private Action<Command> _handler;
         private Func<Command, Task> _asyncHandler;
@@ -25,6 +28,10 @@ namespace HatTrick.CommandLine
             get => _help;
             set => _help = value;
         }
+
+        public bool Hidden => _hidden;
+
+        internal int Depth => _depth;
 
         public Action<Command> Handler
         {
@@ -60,13 +67,20 @@ namespace HatTrick.CommandLine
             set => _constraints = value;
         }
 
-        public static string DefaultCommandName => "default";
+        public static string DefaultCommandName => "usage-help";
         #endregion
 
         #region constructors
         public CommandDefinition(string name)
         {
             _name = name;
+        }
+        #endregion
+
+        #region hide
+        public void Hide()
+        {
+            _hidden = true;
         }
         #endregion
 
@@ -262,10 +276,23 @@ namespace HatTrick.CommandLine
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Name)}.");
 
             if (_name[0] == '-')
-                throw new CommandDefinitionException($"{nameof(CommandDefinition)} key cannot start with a '-'.");
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} {nameof(CommandDefinition.Name)} cannot start with a '-'.");
 
             if (_handler is null && _asyncHandler is null)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for one of: {nameof(Handler)}, {nameof(AsyncHandler)}.");
+
+            int depth = 0;
+            for (int i = 1; i < _name.Length; i++)
+            {
+                char c = _name[i];
+                if (!(char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-'))
+                    throw new NamespaceDefinitionException("Invalid Command definition...Command names can only contain letters, digits, '-' and '.'");
+
+                if (c == '.')
+                    depth += 1;
+            }
+
+            _depth = depth;
 
             if (_options is not null && _options.Count > 0)
             {

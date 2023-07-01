@@ -26,8 +26,8 @@ Run 'crypto.exe -? [command]' to view help content for the above listed commands
 D:\crypto.exe -? vault
 
 Namespace commands:
-  set				Encrypts data into a vault json file.
-  unset				Removed encrypted data from a vault json file.
+  vault.set				Encrypts data into a vault json file.
+  vault.unset			Removed encrypted data from a vault json file.
 
 Run 'crypto.exe -? vault.[command]' to view help content for the above listed commands.
 

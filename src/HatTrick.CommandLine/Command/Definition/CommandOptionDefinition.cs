@@ -10,6 +10,7 @@ namespace HatTrick.CommandLine
         private readonly string _key;
         private readonly bool _mustAssign;
         private readonly string _help;
+        private bool _hidden;
         private readonly string[] _flags;
         private bool _hasDefault;
         #endregion
@@ -20,6 +21,8 @@ namespace HatTrick.CommandLine
         public bool MustAssign => _mustAssign;
 
         public string Help => _help;
+
+        public bool Hidden => _hidden;
 
         public string[] Flags => _flags;
 
@@ -33,6 +36,13 @@ namespace HatTrick.CommandLine
             _mustAssign = mustAssign;
             _help = help;
             _flags = flags ?? throw new ArgumentNullException(nameof(flags));
+        }
+        #endregion
+
+        #region hide
+        public void Hide()
+        {
+            _hidden = true;
         }
         #endregion
 

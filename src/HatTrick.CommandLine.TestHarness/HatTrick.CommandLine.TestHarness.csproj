@@ -5,6 +5,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <AssemblyName>test</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

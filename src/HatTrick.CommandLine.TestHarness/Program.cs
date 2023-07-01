@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using HatTrick.CommandLine;
+using HatTrick.CommandLine.Namespace;
 using Microsoft.Win32;
 
 namespace HatTrick.CommandLine.TestHarness
@@ -15,7 +15,6 @@ namespace HatTrick.CommandLine.TestHarness
             registry.ExecuteCommand(CommandParser.Parse(args));
 
             //TestMaskedInputReader();
-            //TestGetTemplateResource();
 
             Console.WriteLine("Press [Enter] to exit.");
             Console.ReadLine();
@@ -27,119 +26,127 @@ namespace HatTrick.CommandLine.TestHarness
             Console.WriteLine(input);
         }
 
-        static void TestGetTemplateResource()
-        {
-            Console.WriteLine(Path.GetFileName(Environment.ProcessPath));
-            string shortName = "usage-help";
-            TemplateAccessor accessor = new TemplateAccessor();
-
-            string template = accessor.GetTemplate(shortName);
-        }
-
         static void RegisterCommands(out CommandDefinitionRegistry registry)
         {
             registry = CommandDefinitionRegistry.GetInstance();
 
-            DefaultCommandDefinition defCmd = null;
             CommandDefinition cmd = null;
-            CommandDefinitionNamespace ns = null;
+            NamespaceDefinition ns = null;
 
-            /********** Register Default Command **********/
-            defCmd = new();
-            defCmd.Help = "???";
-            defCmd.Handler = Mapper.MapCommand(defCmd).To<DefaultCommandArgs>(
-                ("help","Help"),
-                ("version","Version"),
-                ("run","Run")
-             )
-            .Then(DefaultCommand);
-            defCmd.AddOption(key: "help", mustAssign: false, help: "Display help.", type: OpType.Bool, "-?", "-h", "--help");
-            defCmd.AddOption(key: "version", mustAssign: false, help: "Display crypto.exe version information.", type: OpType.Bool, "-v", "--version");
-            defCmd.AddOption(key: "run", mustAssign: false, help: "Run crypto.exe in a non-exiting command loop.", type: OpType.Bool, "-r", "--run");
-            defCmd.MutaullyExclusiveSet("help", "version", "run");
-            registry.Add(defCmd);
+            /********** Register Command Namespaces **********/
+            ns = new(name: "vault", help: "Namespace for vault secret related commands.");
+            registry.Add(ns);
 
+            ns = new(name: "cb", help: "Namespace for all Coinbase related commands.");
+            registry.Add(ns);
 
+            ns = new(name: "cb.profiles", help: "Namespace for all Coinbase profile related commands.");
+            registry.Add(ns);
 
-            cmd = new(name: "add-person");
-            cmd.Help = "Help content for the add person test command.";
+            ns = new(name: "cb.products", help: "Namespace for all Coinbase product related commands.");
+            registry.Add(ns);
 
-            cmd.Handler = (sc) =>{ };
-
-            cmd.AsyncHandler = Mapper.MapCommand(cmd).To<Person>(
-                    ("first_name", "FirstName"),
-                    ("last_name", "LastName"),
-                    ("birth_date", "BirthDate")
-                ).ThenAsync(PersonService.AddAsync);
-
-            cmd.Handler = Mapper.MapCommand(cmd).To<Person>(
-                ("first_name", "FirstName"),
-                ("last_name", "LastName"),
-                ("birth_date", "BirthDate")
-                ).Then(PersonService.Add);
-
-            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime>>(
-                ("first_name", "firstName"),
-                ("last_name", "lastName"),
-                ("birth_date", "birthDate")
-                ).Then(PersonService.AddPerson);
-
-            cmd.AsyncHandler += Mapper.MapCommand(cmd).ToSignature<Func<string, string, DateTime, Task>>(
-                ("first_name", "firstName"),
-                ("last_name", "lastName"),
-                ("birth_date", "birthDate")
-                ).ThenAsync(PersonService.AddPersonAsync);
-
-            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime>>(
-                ("first_name", "firstName"),
-                ("last_name", "lastName"),
-                ("birth_date", "birthDate")
-                ).Then((firstName, lastName, birthDate) => Console.WriteLine($"Person: {lastName}, {firstName} born on {birthDate.Date.ToString("yyyy-MM-dd")}"));
-
-            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime?>>(
-                ("first_name", "firstName"),
-                ("last_name", "lastName"),
-                ("birth_date", "birthDate")
-                ).Then(PersonService.AddPesonTest);
-
-            cmd.AddOption(key: "first_name", mustAssign: true, help: "Person's first name.", type: OpType.String, "-f", "--first");
-            cmd.AddOption(key: "birth_date", mustAssign: false, help: "Person's birth date.", type: OpType.DateTime, "--dob");
-            cmd.AddOption(key: "last_name", mustAssign: true, help: "Person's last name.", type: OpType.String, "-l", "--last");
+            /********** Register Vault Commands **********/
+            cmd = new(name: "vault.set");
+            cmd.Help = "Encrypts data into a vault json file.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "key", mustAssign: true, help: "Key pointer within vault json file.", type: OpType.String, "-k", "--key");
+            cmd.AddOption(key: "value", mustAssign: true, help: "Value to encrypt.", type: OpType.String, "-v", "--value");
             registry.Add(cmd);
 
-            cmd = new(name: "xxx");
-            cmd.Help = "Help content for the xxx test command.";
-            cmd.Handler = (sc) => {
-                int abc = 3;
-            };
-            cmd.AddOption(key: "profile_id", mustAssign: false, help: "Coinbase profile Id.", type: OpType.Guid, "--profile-id");
-            cmd.AddOption(key: "product_id", mustAssign: false, help: "Coinbase crypto currencty product Id.", type: OpType.String, "--product-id");
-            cmd.AddOption(key: "Amount", mustAssign: true, help: "Amount help.", type: OpType.Double, "-a", "--amount");
-            cmd.AddOptionOf<LogLevel>(key: "log_level", help: "Log level help.", converter: (ll) => Enum.Parse<LogLevel>(ll), "-l", "--log-level");
-            cmd.AddOptionOf<DateTimeOffset>(key: "uri", help: "Uri help.", converter: (dto) => DateTimeOffset.Parse(dto), "-d", "--dto");
-            cmd.MustAssignOneOf("profile_id", "product_id");
-            cmd.MutaullyExclusiveSet("profile_id", "product_id");
-            cmd["product_id"].SetAccepted("BTC-USD", "ETH-USD");
-            cmd["log_level"].SetAccepted(Enum.GetValues<LogLevel>());
-            cmd["log_level"].SetDefault(LogLevel.Info);
-            //cmd["Amount"].ApplyConstraint((double amt) => amt < 1_000, "Argument '{option-key}' provided for option flag '{option-flag}' cannot exceed 1,000.00");
-            //option-key, option-flag (the one provided), option-argument (the one provided) 
+            cmd = new(name: "vault.unset");
+            cmd.Help = "Remove encrypted data from a vault json file.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "key", mustAssign: true, help: "Key pointer within vault json file.", type: OpType.String, "-k", "--key");
             registry.Add(cmd);
 
-        }
+            /********** Register REST commands **********/
+            cmd = new(name: "cb.profiles.get");
+            cmd.Help = "Get Coinbase profiles.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "active", mustAssign: false, help: "Active profiles only.", type: OpType.Bool, "-a", "--active");
+            registry.Add(cmd);
 
-        static void DefaultCommand(DefaultCommandArgs args)
-        {
-            Console.WriteLine(args.Help);
-            Console.WriteLine(args.Version);
-            Console.WriteLine(args.Run);
-        }
+            cmd = new(name: "cb.profiles.rename.put");
+            cmd.Help = "Rename a Coinbase profile.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "profile_id", mustAssign: true, help: "The profile id.", type: OpType.Guid, "-p", "--profile-id");
+            cmd.AddOption(key: "name", mustAssign: true, help: "The new profile name.", type: OpType.String, "-n", "--name");
+            registry.Add(cmd);
 
-        public class DefaultCommandArgs
-        {
-            public bool Help { get; set; }
-            public bool Version { get; set; }
-            public bool Run { get; set; }
+            cmd = new(name: "cb.profiles.deactivate.put");
+            cmd.Help = "Deactivate a Coinbase profile.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "profile_id", mustAssign: true, help: "The profile id.", type: OpType.Guid, "-p", "--profile-id");
+            cmd.AddOption(key: "to", mustAssign: true, help: "Profile id all existing funds will be moved to.", type: OpType.Guid, "-t", "--to");
+            registry.Add(cmd);
+
+            cmd = new(name: "cb.products.get");
+            cmd.Help = "Get Coinbase trading products or 'currency pairs'.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "id", mustAssign: false, help: "Filter to specific product id.", type: OpType.String, "-i", "--id");
+            registry.Add(cmd);
+
+            cmd = new(name: "cb.products.book.get");
+            cmd.Help = "Get a list of open orders for a product order book.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "product_id", mustAssign: true, help: "The product id.", type: OpType.String, "-p", "--product-id");
+            cmd.AddOption(
+                key: "level",
+                mustAssign: true,
+                help: "The aggregation level (1|2|3). 1: Best bid ask and auction info. 2: Full order book (aggregated) and auction info. 3: Full order book (not aggregated) and auction info.",
+                type: OpType.Int32,
+                "-l", "--level");
+            cmd["level"].SetAccepted(1, 2, 3);
+            registry.Add(cmd);
+
+            cmd = new(name: "cb.products.candles.get");
+            cmd.Help = "Get historical product rates in grouped buckets or 'Candles'.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "product_id", mustAssign: true, help: "The product id.", type: OpType.String, "-p", "--product-id");
+            cmd.AddOption(key: "granularity", mustAssign: true, help: "Timeslice granularity (60|300|900|3600|21600|86400) in seconds.", type: OpType.Int32, "-g", "--granularity");
+            cmd.AddOption(key: "start", mustAssign: false, help: "Start timestamp for aggregation range.  Ignored if no end timestamp provided.", type: OpType.DateTime, "-s", "--start");
+            cmd.AddOption(key: "end", mustAssign: false, help: "End timestamp for aggregation range.  Ignored if no start timestamp provided.", type: OpType.DateTime, "-e", "--end");
+            cmd["granularity"].SetAccepted(60, 300, 900, 3600, 21600, 86400);
+            registry.Add(cmd);
+
+            cmd = new(name: "cb.products.stats.get");
+            cmd.Help = "Gets 30 day and 24 hour stats for a product.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "product_id", mustAssign: true, help: "The product id.", type: OpType.String, "-p", "--product-id");
+            registry.Add(cmd);
+
+            cmd = new(name: "cb.products.ticker.get");
+            cmd.Help = "Gets snapshot information about the last trade 'tick', best bid/ask and 24 hour volume for a Coinbase product.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "product_id", mustAssign: true, help: "The product id.", type: OpType.String, "-p", "--product-id");
+            registry.Add(cmd);
+
+            cmd = new(name: "cb.products.trades.get");
+            cmd.Help = "Gets a list the latest trades for a product.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "product_id", mustAssign: true, help: "The product id.", type: OpType.String, "-p", "--product-id");
+            cmd.AddOption(key: "limit", mustAssign: false, help: "Limit on number of results to return.", type: OpType.Int32, "-l", "--limit");
+            //TODO: add before and after filter options...
+            cmd.AddOption(key: "max", mustAssign: false, help: "Max number of trades to request (limit * iteration count).", type: OpType.Int32, "-m", "--max");
+            cmd["limit"].SetDefault(200);
+            cmd["max"].SetDefault(200);
+            registry.Add(cmd);
+
+            cmd = new(name: "cb.products.fills.get");
+            cmd.Help = "Get Coinbase product fills.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "product_id", mustAssign: true, help: "The product id.", type: OpType.String, "--prod-id", "--product-id");
+            cmd.AddOption(key: "profile_id", mustAssign: false, help: "The profile id.", type: OpType.Guid, "--prof-id", "--profile-id");
+            cmd.AddOption(key: "limit", mustAssign: false, help: "Limit on number of results to return.", type: OpType.Int32, "-l", "--limit");
+            cmd.AddOption(key: "max", mustAssign: false, help: "Max number of fills to request (limit * iteration count).", type: OpType.Int32, "-m", "--max");
+            registry.Add(cmd);
+
+            cmd = new(name: "cb.products.orders.delete");
+            cmd.Help = "Cancel all open Coinbase orders.";
+            cmd.Handler = (command) => { };
+            cmd.AddOption(key: "product_id", mustAssign: false, help: "Cancel all open orders for a specific product id.", type: OpType.String, "-p", "--product-id");
+            registry.Add(cmd);
         }
     }
 }

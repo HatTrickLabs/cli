@@ -39,6 +39,8 @@ namespace HatTrick.CommandLine
 
                 if (isExplicitAssign(arg))
                 {
+                    //TODO: expand on this...it could be a syntax error...ie: copy :--from c:\test -to c:\test2
+                    //maybe check i%2 == 1
                     prev = arg;
                     continue;
                 }

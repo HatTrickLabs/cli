@@ -1,0 +1,10 @@
+
+Usage:
+{() => GetExecutableName} {Target.Name}{#if Target.Options+} [options]{/if+}
+
+{#if Target.Options}
+Options:
+{#each Target.Options}
+  {('|', $.Flags) => Join}			{$.Help}
+{/each}
+{/if+}

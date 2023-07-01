@@ -1,9 +1,0 @@
-D:\crypto.exe
-
-Usage: crypto.exe [default_option]
-Usage: crypto.exe command [command_options]
-
-Default Options:
-  -?|-h|--help		Display help (accepts a command or namespace as argument).
-  -v|--version		Display crypto.exe version information.
-  -r|--run			Run crypto.exe in a non-exiting command loop.

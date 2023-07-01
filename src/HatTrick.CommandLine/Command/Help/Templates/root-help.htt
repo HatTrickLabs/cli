@@ -1,0 +1,20 @@
+
+{#if Namespaces-}
+Namespaces:
+{#each Namespaces-}
+  {$.Name}			{$.Help}
+{/each-}
+{/if-}
+
+{#if Commands-}  
+Commands:
+{#each Commands-}
+  {$.Name}			{$.Help}
+{/each-}
+{/if-}
+{-#if Namespaces-}
+Run '{() => GetExecutableName} -? [namespace]' to view help content for the above listed namespaces.
+{/if}
+{-#if Commands-}
+Run '{() => GetExecutableName} -? [command]' to view help content for the above listed commands.
+{/if}

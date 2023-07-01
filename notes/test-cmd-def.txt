@@ -1,0 +1,67 @@
+            cmd = new(name: "abcdefg");
+            registry.Add(cmd);
+
+            cmd = new(name: "add-person");
+            cmd.Help = "Help content for the add person test command.";
+
+            cmd.Handler = (sc) => { };
+
+            cmd.AsyncHandler = Mapper.MapCommand(cmd).To<Person>(
+                    ("first_name", "FirstName"),
+                    ("last_name", "LastName"),
+                    ("birth_date", "BirthDate")
+                ).ThenAsync(PersonService.AddAsync);
+
+            cmd.Handler = Mapper.MapCommand(cmd).To<Person>(
+                    ("first_name", "FirstName"),
+                    ("last_name", "LastName"),
+                    ("birth_date", "BirthDate")
+                ).Then(PersonService.Add);
+
+            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime>>(
+                    ("first_name", "firstName"),
+                    ("last_name", "lastName"),
+                    ("birth_date", "birthDate")
+                ).Then(PersonService.AddPerson);
+
+            cmd.AsyncHandler += Mapper.MapCommand(cmd).ToSignature<Func<string, string, DateTime, Task>>(
+                    ("first_name", "firstName"),
+                    ("last_name", "lastName"),
+                    ("birth_date", "birthDate")
+                ).ThenAsync(PersonService.AddPersonAsync);
+
+            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime>>(
+                    ("first_name", "firstName"),
+                    ("last_name", "lastName"),
+                    ("birth_date", "birthDate")
+                ).Then((firstName, lastName, birthDate) => Console.WriteLine($"Person: {lastName}, {firstName} born on {birthDate.Date.ToString("yyyy-MM-dd")}"));
+
+            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime?>>(
+                    ("first_name", "firstName"),
+                    ("last_name", "lastName"),
+                    ("birth_date", "birthDate")
+                ).Then(PersonService.AddPesonTest);
+
+            cmd.AddOption(key: "first_name", mustAssign: true, help: "Person's first name.", type: OpType.String, "-f", "--first");
+            cmd.AddOption(key: "birth_date", mustAssign: false, help: "Person's birth date.", type: OpType.DateTime, "--dob");
+            cmd.AddOption(key: "last_name", mustAssign: true, help: "Person's last name.", type: OpType.String, "-l", "--last");
+            registry.Add(cmd);
+
+            cmd = new(name: "xxx");
+            cmd.Help = "Help content for the xxx test command.";
+            cmd.Handler = (sc) => {
+                int abc = 3;
+            };
+            cmd.AddOption(key: "profile_id", mustAssign: false, help: "Coinbase profile Id.", type: OpType.Guid, "--profile-id");
+            cmd.AddOption(key: "product_id", mustAssign: false, help: "Coinbase crypto currencty product Id.", type: OpType.String, "--product-id");
+            cmd.AddOption(key: "Amount", mustAssign: true, help: "Amount help.", type: OpType.Double, "-a", "--amount");
+            cmd.AddOptionOf<LogLevel>(key: "log_level", help: "Log level help.", converter: (ll) => Enum.Parse<LogLevel>(ll), "-l", "--log-level");
+            cmd.AddOptionOf<DateTimeOffset>(key: "uri", help: "Uri help.", converter: (dto) => DateTimeOffset.Parse(dto), "-d", "--dto");
+            cmd.MustAssignOneOf("profile_id", "product_id");
+            cmd.MutaullyExclusiveSet("profile_id", "product_id");
+            cmd["product_id"].SetAccepted("BTC-USD", "ETH-USD");
+            cmd["log_level"].SetAccepted(Enum.GetValues<LogLevel>());
+            cmd["log_level"].SetDefault(LogLevel.Info);
+            //cmd["Amount"].ApplyConstraint((double amt) => amt < 1_000, "Argument '{option-key}' provided for option flag '{option-flag}' cannot exceed 1,000.00");
+            //option-key, option-flag (the one provided), option-argument (the one provided) 
+            registry.Add(cmd);

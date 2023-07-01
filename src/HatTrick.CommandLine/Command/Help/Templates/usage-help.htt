@@ -1,0 +1,8 @@
+
+Usage: {() => GetExecutableName} [default_option]
+Usage: {() => GetExecutableName} command [command_options]
+
+Default Options:
+{#each $.Options-}
+  {('|', $.Flags) => Join}			{$.Help}
+{/each+}
