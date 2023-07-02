@@ -35,6 +35,7 @@ x Rules: MustAssignOneOfRule, DefaultValueRule, ValidArgumentSetRule
   - write another version of the tokenizer that matches the NEW .net output and make the version used configurable
 - I think the early returns on ReadMaskedInput need re-org.  Remask AFTER escape ????'
 - Use -? for sparse help...Use -h for normal help...Use --help for annoyingly verbose help...
+- Consider a max command name length of 32 chars...namespace 31...flag 32
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

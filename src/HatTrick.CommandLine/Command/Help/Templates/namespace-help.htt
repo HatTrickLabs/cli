@@ -1,17 +1,22 @@
-
-{Target.Name}			{Target.Help}
+{?var:len = Target.Name.Length}
+{?var:pad = (:len) => Pad}
+{Target.Name}{:pad}{Target.Help}
 
 {#if Namespaces}
 {#if IsWildcard}Descendent{/if}{#if !IsWildcard}Child{/if+} namespaces:
-  {#each Namespaces}
-{$.Name}				{$.Help}
+{#each Namespaces}
+{?:len = ($.Name.Length, 2) => Add}
+{?var:pad = (:len) => Pad}
+  {$.Name}{:pad}{($.Help) => RollAndIndent}
 {/each}
 {/if}
 
 {#if Commands}
 {#if IsWildcard}Descendent{/if}{#if !IsWildcard}Child{/if+} commands:
 {#each Commands}
-  {$.Name}				{$.Help}
+{?:len = ($.Name.Length, 2) => Add}
+{?var:pad = (:len) => Pad}
+  {$.Name}{:pad}{($.Help) => RollAndIndent}
 {/each}
 {/if}
 

@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace HatTrick.CommandLine
 {
     #region command option definition
     public abstract class CommandOptionDefinition
     {
+        #region const
+        public const int MaxKeyLength = 32;
+        public const int MaxFlagLength = 32;
+        #endregion
+
         #region internals
         private readonly string _key;
         private readonly bool _mustAssign;
@@ -109,6 +115,9 @@ namespace HatTrick.CommandLine
             if (_key == string.Empty)
                 throw new CommandDefinitionException("All options must have a valid key...Provided key is empty.");
 
+            if (_key.Length > CommandOptionDefinition.MaxKeyLength)
+                throw new CommandDefinitionException($"{nameof(CommandOptionDefinition)}.{nameof(Key)}...max accepted char length is {CommandOptionDefinition.MaxKeyLength}.");
+
             if (_flags is null || _flags.Length == 0)
                 throw new CommandDefinitionException($"Options[{_key}] must contain at least 1 {nameof(CommandOptionDefinition.Flags)}.");
 
@@ -124,6 +133,9 @@ namespace HatTrick.CommandLine
                 {
                     if (flag.Length < 4)
                         throw new CommandDefinitionException($"Verbose option flags begin with '--' and must be longer than 1 char...'{flag}' is not valid.");
+
+                    if (flag.Length > CommandOptionDefinition.MaxFlagLength)
+                        throw new CommandDefinitionException($"Verbose option flags cannot be > {CommandOptionDefinition.MaxFlagLength} chars in length.");
                 }
                 else //terse definition
                 {

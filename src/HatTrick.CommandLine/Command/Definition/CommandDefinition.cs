@@ -8,6 +8,10 @@ namespace HatTrick.CommandLine
 {
     public class CommandDefinition
     {
+        #region const
+        public const int MaxNameLength = 32;
+        #endregion
+
         #region internals
         private string _name;
         private string _help;
@@ -276,7 +280,10 @@ namespace HatTrick.CommandLine
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Name)}.");
 
             if (_name[0] == '-')
-                throw new CommandDefinitionException($"{nameof(CommandDefinition)} {nameof(CommandDefinition.Name)} cannot start with a '-'.");
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} {nameof(Name)} cannot start with a '-'.");
+
+            if (_name.Length > CommandDefinition.MaxNameLength)
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)}...max accepted char length is {CommandDefinition.MaxNameLength}.");
 
             if (_handler is null && _asyncHandler is null)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for one of: {nameof(Handler)}, {nameof(AsyncHandler)}.");
@@ -286,7 +293,7 @@ namespace HatTrick.CommandLine
             {
                 char c = _name[i];
                 if (!(char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-'))
-                    throw new NamespaceDefinitionException("Invalid Command definition...Command names can only contain letters, digits, '-' and '.'");
+                    throw new NamespaceDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)} can only contain letters, digits, '-' and '.'");
 
                 if (c == '.')
                     depth += 1;
