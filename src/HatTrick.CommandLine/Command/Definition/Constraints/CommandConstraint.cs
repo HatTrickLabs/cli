@@ -6,34 +6,41 @@ namespace HatTrick.CommandLine
     {
         #region internals
         private Func<IConstrainedCommand, bool> _constraint;
-        private string _error;
+        private string _description;
         #endregion
 
         #region interface
-        protected Func<IConstrainedCommand, bool> Constraint
-        {
-            set => _constraint = value;
-        }
+        protected Func<IConstrainedCommand, bool> Constraint => _constraint;
 
-        internal string Error
-        {
-            get => _error;
-            set => _error = value;
-        }
+        internal string Description => _description;
         #endregion
 
         #region constructors
-        internal CommandConstraint(Func<IConstrainedCommand, bool> constraint, string error)
+        internal CommandConstraint(Func<IConstrainedCommand, bool> constraint, string description)
         {
             _constraint = constraint ?? throw new ArgumentNullException(nameof(constraint));
-            _error = error ?? throw new ArgumentNullException(nameof(error));
+            _description = description ?? throw new ArgumentNullException(nameof(description));
 
-            if (error == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(error));
+            if (description == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(description));
         }
 
         protected CommandConstraint()
         {
+        }
+        #endregion
+
+        #region set constraint
+        protected void SetConstraint(Func<IConstrainedCommand, bool> constraint)
+        {
+            _constraint = constraint;
+        }
+        #endregion
+
+        #region set description
+        protected void SetDescription(string description)
+        {
+            _description = description;
         }
         #endregion
 
@@ -62,8 +69,11 @@ namespace HatTrick.CommandLine
         internal void Ensure(Command command)
         {
             bool pass = _constraint(command);
+
+            string error = "Failed " + _description;
+
             if (!pass)
-                throw new CommandArgumentException(_error);
+                throw new CommandArgumentException(error);
         }
         #endregion
     }

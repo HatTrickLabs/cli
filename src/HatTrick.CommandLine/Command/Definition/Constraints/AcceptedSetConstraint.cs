@@ -14,9 +14,9 @@ namespace HatTrick.CommandLine
         {
             _accepted = values ?? throw new ArgumentNullException(nameof(values));
 
-            base.Constraint = this.IsInAcceptedSet;
+            base.SetConstraint(this.IsInAcceptedSet);
             var accepted = string.Join("|", values);
-            base.ErrorTemplate = $"Argument provided for '{{option-flag}}' is not within accepted set: {accepted}"; ;
+            base.SetDescription($"'Accepted Set' constraint...set: {accepted}");
         }
         #endregion
 

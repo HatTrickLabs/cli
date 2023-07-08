@@ -132,12 +132,80 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get definition
-        public CommandDefinition GetDefinition(string name)
+        #region get child namespace definitions
+        internal NamespaceDefinition[] GetChildNamespaceDefinitions(NamespaceDefinition parent, bool includeHidden)
+        {
+            if (parent is null)
+                throw new ArgumentNullException(nameof(parent));
+
+            int atDepth = parent.Depth + 1;
+            var children = this.GetNamespaceDefinitions((ns) => 
+                ns.Hidden == includeHidden &&
+                ns.Depth == atDepth &&
+                ns.Name.StartsWith(parent.Name)
+            );
+
+            return children;
+        }
+        #endregion
+
+        #region get descendent namespaces
+        internal NamespaceDefinition[] GetDescendentNamespaces(NamespaceDefinition parent, bool includeHidden)
+        {
+            if (parent is null)
+                throw new ArgumentNullException(nameof(parent));
+
+            var descendents = this.GetNamespaceDefinitions((ns) =>
+                ns.Hidden == includeHidden && 
+                ns.Depth > parent.Depth &&
+                ns.Name.StartsWith(parent.Name)
+            );
+
+            return descendents;
+        }
+        #endregion
+
+        #region get command definition
+        public CommandDefinition GetCommandDefinition(string name)
         {
             return _cmdDefs.ContainsKey(name) 
                 ? _cmdDefs[name] 
                 : throw new CommandInputException($"No command registered for provided name: {name}");
+        }
+        #endregion
+
+        #region get child command definitions
+        internal CommandDefinition[] GetChildCommandDefinitions(NamespaceDefinition parent, bool includeHidden)
+        {
+            if (parent is null)
+                throw new ArgumentNullException(nameof(parent));
+
+            NamespaceDefinition[] descNamespaces = this.GetDescendentNamespaces(parent, includeHidden);
+
+            var children = this.GetCommandDefinitions((cmd) => 
+                      cmd.Hidden == includeHidden &&
+                      cmd.Depth > parent.Depth && //must check for > because commands can have segment gaps...
+                      cmd.Name.StartsWith(parent.Name) &&
+                      !Array.Exists(descNamespaces, (ns) => cmd.Name.StartsWith(ns.Name))
+            );
+
+            return children;
+        }
+        #endregion
+
+        #region get descendent command definitions
+        internal CommandDefinition[] GetDescendentCommandDefinitions(NamespaceDefinition parent, bool includeHidden)
+        {
+            if (parent is null)
+                throw new ArgumentNullException(nameof(parent));
+
+            var descendents = this.GetCommandDefinitions((cmd) => 
+                    cmd.Hidden == includeHidden && 
+                    cmd.Depth > parent.Depth &&
+                    cmd.Name.StartsWith(parent.Name)
+            );
+
+            return descendents;
         }
         #endregion
 
@@ -147,7 +215,7 @@ namespace HatTrick.CommandLine
             if (command.Key is null || string.IsNullOrEmpty(command.Key))
                 throw new CommandInputException("No command provided.");
 
-            CommandDefinition cmdDef = this.GetDefinition(command.Key);
+            CommandDefinition cmdDef = this.GetCommandDefinition(command.Key);
 
             this.EnsureCommand(command, cmdDef);
 
@@ -161,7 +229,7 @@ namespace HatTrick.CommandLine
             if (command.Key is null || string.IsNullOrEmpty(command.Key))
                 throw new CommandInputException("No command provided.");
 
-            CommandDefinition cmdDef = this.GetDefinition(command.Key);
+            CommandDefinition cmdDef = this.GetCommandDefinition(command.Key);
 
             this.EnsureCommand(command, cmdDef);
 

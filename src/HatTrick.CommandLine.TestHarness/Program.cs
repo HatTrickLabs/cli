@@ -46,6 +46,9 @@ namespace HatTrick.CommandLine.TestHarness
             ns = new(name: "cb.products", help: "Namespace for all Coinbase product related commands.");
             registry.Add(ns);
 
+            ns = new(name: "cb.withdrawals", help: "Namespace for all Coinbase withdrawals related commands.");
+            registry.Add(ns);
+
             /********** Register Vault Commands **********/
             cmd = new(name: "vault.set");
             cmd.Help = "Encrypts data into a vault json file.";
@@ -108,6 +111,8 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption(key: "start", mustAssign: false, help: "Start timestamp for aggregation range.  Ignored if no end timestamp provided.", type: OpType.DateTime, "-s", "--start");
             cmd.AddOption(key: "end", mustAssign: false, help: "End timestamp for aggregation range.  Ignored if no start timestamp provided.", type: OpType.DateTime, "-e", "--end");
             cmd["granularity"].SetAccepted(60, 300, 900, 3600, 21600, 86400);
+            cmd["start"].ApplyConstraint<DateTime>((s) => s > DateTime.Now.AddDays(-180), "Arg must be within the past 180 days.");
+            cmd["end"].ApplyConstraint<DateTime>((e) => e <= DateTime.Now.Date, "Arg must be less than or equal today's date.");
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.stats.get");

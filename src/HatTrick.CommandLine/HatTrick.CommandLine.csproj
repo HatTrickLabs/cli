@@ -24,6 +24,7 @@
     <None Remove="Command\Help\Templates\command-help.htt" />
     <None Remove="Command\Help\Templates\invalid-input-help.htt" />
     <None Remove="Command\Help\Templates\namespace-help.htt" />
+    <None Remove="Command\Help\Templates\namespace-wildcard-help.htt" />
     <None Remove="Command\Help\Templates\root-help.htt" />
     <None Remove="Command\Help\Templates\usage-help.htt" />
   </ItemGroup>
@@ -31,6 +32,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Command\Help\Templates\command-help.htt" />
     <EmbeddedResource Include="Command\Help\Templates\namespace-help.htt" />
+    <EmbeddedResource Include="Command\Help\Templates\namespace-wildcard-help.htt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Command\Help\Templates\root-help.htt" />
     <EmbeddedResource Include="Command\Help\Templates\usage-help.htt" />
   </ItemGroup>

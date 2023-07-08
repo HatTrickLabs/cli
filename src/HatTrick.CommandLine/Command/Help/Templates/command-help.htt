@@ -1,10 +1,16 @@
+{?var:indent = $.Indent}
+{?var:blockAt = $.HelpStartPos}
+{?var:startingAt}
 
 Usage:
-{() => GetExecutableName} {Target.Name}{#if Target.Options+} [options]{/if+}
+{() => GetExecutableName} {Target.Name} {+#each Target.Options+}{#if !$.MustAssign}[{/if}{$.MostVerboseFlag} {$.GenericType.Name}{#if !$.MustAssign}]{/if+} {+/each+}
 
 {#if Target.Options}
 Options:
 {#each Target.Options}
-  {('|', $.Flags) => Join}			{$.Help}
+{?var:startingAt = ('|', $.Flags) => Join}
+{?var:startingAt = :startingAt.Length}
+{?var:startingAt = (:startingAt, :indent.Length) => Add}
+{:indent}{('|', $.Flags) => Join}{($.Help, :blockAt, :startingAt) => GetBlockedContent}
 {/each}
 {/if+}

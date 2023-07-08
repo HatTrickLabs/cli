@@ -3,8 +3,12 @@ using System.Reflection.Metadata;
 
 namespace HatTrick.CommandLine.Namespace
 {
-    public class NamespaceDefinition
+    public class NamespaceDefinition : INamedDefinition
     {
+        #region const
+        public const int MaxNameLength = 31;//one less than max command name length...
+        #endregion
+
         #region internals
         private string _name;
         private string _help;
@@ -55,6 +59,9 @@ namespace HatTrick.CommandLine.Namespace
             if (!char.IsLetter(name[0]))
                 throw new NamespaceDefinitionException("Invalid namespace...Namespace definitions must begin with a letter.");
 
+            if (_name.Length > NamespaceDefinition.MaxNameLength)
+                throw new CommandDefinitionException($"{nameof(NamespaceDefinition)}.{nameof(Name)}...max accepted char length is {NamespaceDefinition.MaxNameLength}.");
+
             int depth = 0;
             for (int i = 1; i < name.Length; i++)
             {
@@ -67,7 +74,6 @@ namespace HatTrick.CommandLine.Namespace
             }
 
             _depth = depth;
-            //TODO: What to do about carriage returns or line feeds ???
         }
         #endregion
     }

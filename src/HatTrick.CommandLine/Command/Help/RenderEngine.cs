@@ -4,20 +4,28 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using HatTrick.CommandLine.Namespace;
 using HatTrick.Text.Templating;
+using Microsoft.VisualBasic;
 
 namespace HatTrick.CommandLine
 {
     internal class RenderEngine
     {
+        #region const
+        private const int Indent = 2;
+        private const int HelpBlockLeftPad = 5;
+        private const int MinHelpBlockStartPosition = 20;
+        #endregion
+
         #region internals
         private TemplateAccessor _templateAccessor;
-        private int _bufferWidth;
+        private int _bufferLen;
         #endregion
 
         #region interface
@@ -28,7 +36,8 @@ namespace HatTrick.CommandLine
         #region constructors
         internal RenderEngine()
         {
-            _bufferWidth = Console.BufferWidth;
+            _bufferLen = Console.BufferWidth - 1;
+
         }
         #endregion
 
@@ -40,73 +49,81 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get child namespaces
-        private NamespaceDefinition[] GetChildNamespaces(NamespaceDefinition parent)
+        #region resolve help block start position
+        private int ResolveHelpBlockStartPosition(INamedDefinition[] definitions)
         {
-            if (parent is null)
-                throw new ArgumentNullException(nameof(parent));
+            if (definitions is null)
+                throw new ArgumentNullException(nameof(definitions));
 
-            var registry = CommandDefinitionRegistry.GetInstance();
+            if (definitions.Length == 0)
+                throw new ArgumentException("Argument must contain at least 1 element.", nameof(definitions));
 
-            int atDepth = parent.Depth + 1;
-            var children = registry.GetNamespaceDefinitions((ns) => ns.Depth == atDepth && ns.Name.StartsWith(parent.Name));
+            int maxNameLen = definitions.Max(d => d.Name.Length);
 
-            return children;
+            return this.ResolveHelpBlockStartPosition(maxNameLen);
+        }
+
+        private int ResolveHelpBlockStartPosition(int maxLeftContentLength)
+        {
+            //add the indent and the desired padding
+            int blockStart = maxLeftContentLength + RenderEngine.Indent + RenderEngine.HelpBlockLeftPad;
+
+            return Math.Max(blockStart, RenderEngine.MinHelpBlockStartPosition);
         }
         #endregion
 
-        #region get descendent namespaces
-        private NamespaceDefinition[] GetDescendentNamespaces(NamespaceDefinition parent)
+        #region get blocked content
+        private string GetBlockedContent(string content, int blockAt, int startingAt)
         {
-            if (parent is null)
-                throw new ArgumentNullException(nameof(parent));
+            if (content is null || content == string.Empty)
+                return content;
 
-            var registry = CommandDefinitionRegistry.GetInstance();
+            int maxLen = _bufferLen;
+            StringBuilder output = new StringBuilder((int)(content.Length * 1.1));//add 10%
 
-            var descendents = registry.GetNamespaceDefinitions((ns) => ns.Depth > parent.Depth && ns.Name.StartsWith(parent.Name));
+            char[] delims = new char[] { ' ', '\n', '\r', '\t' };
 
-            return descendents;
-        }
-        #endregion
+            string[] words = content.Split(delims, StringSplitOptions.RemoveEmptyEntries);
 
-        #region get child command definitions
-        private CommandDefinition[] GetChildCommandDefinitions(NamespaceDefinition parent)
-        {
-            if (parent is null)
-                throw new ArgumentNullException(nameof(parent));
+            int linePostion = startingAt;
 
-            var registry = CommandDefinitionRegistry.GetInstance();
+            string pad = new string('.', (blockAt - startingAt));
 
-            NamespaceDefinition[] descNamespaces = this.GetDescendentNamespaces(parent);
+            output.Append(pad);
+            linePostion += pad.Length;
+            string word = words[0];
+            output.Append(word);
+            linePostion += word.Length;
 
-            var children = registry.GetCommandDefinitions(
-                (cmd) => cmd.Depth > parent.Depth 
-                      && cmd.Name.StartsWith(parent.Name) 
-                      && !Array.Exists(descNamespaces, (ns) => cmd.Name.StartsWith(ns.Name))
-            );
+            pad = new string(' ', blockAt);
 
-            return children;
-        }
-        #endregion
-
-        #region get descendent command definitions
-        private CommandDefinition[] GetDescendentCommandDefinitions(NamespaceDefinition parent)
-        {
-            if (parent is null)
-                throw new ArgumentNullException(nameof(parent));
-
-            var registry = CommandDefinitionRegistry.GetInstance();
-
-            var descendents = registry.GetCommandDefinitions((cmd) => cmd.Depth > parent.Depth && cmd.Name.StartsWith(parent.Name));
-
-            return descendents;
+            for (int i = 1; i < words.Length; i++)
+            {
+                word = words[i];
+                if ((linePostion + word.Length) > maxLen)
+                {
+                    output.Append(Environment.NewLine);//roll to next line
+                    output.Append(pad);//pad to block start
+                    linePostion = blockAt;
+                    output.Append(word);
+                    linePostion += word.Length;
+                }
+                else
+                {
+                    output.Append(' ');//word spacing
+                    linePostion += 1;
+                    output.Append(word);
+                    linePostion += word.Length;
+                }
+            }
+            return output.ToString();
         }
         #endregion
 
         #region render usage help
         internal void RenderUsageHelp()
         {
-            var cmdDef = CommandDefinitionRegistry.GetInstance().GetDefinition(CommandDefinition.DefaultCommandName);
+            var cmdDef = CommandDefinitionRegistry.GetInstance().GetCommandDefinition(CommandDefinition.DefaultCommandName);
             string template = TemplateAccessor.GetTemplate("usage-help");
 
             var ngin = new TemplateEngine(template);
@@ -144,102 +161,103 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region render help
-        internal void RenderHelp(NamespaceDefinition namespaceDef, bool wildcard)
+        #region render namespace help
+        internal void RenderNamespaceHelp(NamespaceDefinition target)
         {
             string template = TemplateAccessor.GetTemplate("namespace-help");
             var registry = CommandDefinitionRegistry.GetInstance();
 
-            NamespaceDefinition[] namespaces = (wildcard)
-                ? new NamespaceDefinition[0]// Array.FindAll(this.GetDescendentNamespaces(namespaceDef), (nsd) => !nsd.Hidden)
-                : Array.FindAll(this.GetChildNamespaces(namespaceDef), (nsd) => !nsd.Hidden);
+            NamespaceDefinition[] namespaces = registry.GetChildNamespaceDefinitions(target, false);
+            CommandDefinition[] commands = registry.GetChildCommandDefinitions(target, false);
 
-            CommandDefinition[] commands = wildcard
-                ? Array.FindAll(this.GetDescendentCommandDefinitions(namespaceDef), (cmd) => !cmd.Hidden)
-                : Array.FindAll(this.GetChildCommandDefinitions(namespaceDef), (cmd) => !cmd.Hidden);
+            var defs = new INamedDefinition[namespaces.Length + commands.Length + 1];
+            namespaces.CopyTo(defs, 0);
+            commands.CopyTo(defs, namespaces.Length);
+            defs[^1] = target;
 
-            int maxNs = namespaces.Any() ? namespaces.Max(ns => ns.Name.Length) : 0;
-            int maxCmd = commands.Any() ? commands.Max(cmd => cmd.Name.Length) : 0;
-
-            int helpStart = Math.Max(maxNs, maxCmd);
-
-            helpStart += 2; //add the 2 char indent
-
-            helpStart += 5;//add the buffer we want between the end of the ns/cmd and the help (at least 5 chars width)
-
-            if (helpStart < 20)
-                helpStart = 20;
-
-            //min start for help should be 20
-            //max start for help should be ~40
-
-            Func<int, int, int> Add = (int a, int b) => a + b;
-
-            Func<int, string> Pad = (int postion) => new string(' ', (helpStart - postion));
-
-            Func<string, string> RollAndIndent = (string help) =>
-            {
-                int max = Console.BufferWidth - 1;
-                StringBuilder output = new StringBuilder((int)(help.Length * 1.1));//add 10%
-                string[] words = help.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                int linePostion = helpStart;
-
-                output.Append(words[0]);
-                linePostion += words[0].Length;
-                for (int i = 1; i < words.Length; i++)
-                {
-                    string word = words[i];
-                    int wordLen = word.Length;
-                    if ((linePostion + wordLen) > max)
-                    {
-                        output.Append(Environment.NewLine);
-                        output.Append(new string(' ', helpStart));
-                        linePostion = helpStart;
-                        output.Append(word);
-                        linePostion += word.Length;
-                    }
-                    else
-                    {
-                        output.Append(' ').Append(word);
-                        linePostion += (word.Length + 1);
-                    }
-                }
-                return output.ToString();
-            };
+            int blockStart = this.ResolveHelpBlockStartPosition(defs);
+            string indent = new string(' ', RenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()
             {
-                { "IsWildcard", wildcard        },
-                { "Target",     namespaceDef    },
-                { "Namespaces", namespaces      },
-                { "Commands",   commands        }
+                { "Target",         target      },
+                { "Indent",         indent      },
+                { "HelpStartPos",   blockStart  },
+                { "Namespaces",     namespaces  },
+                { "Commands",       commands    }
             };
 
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
-            ngin.LambdaRepo.Register(nameof(Add), Add);
-            ngin.LambdaRepo.Register(nameof(Pad), Pad);
-            ngin.LambdaRepo.Register(nameof(RollAndIndent), RollAndIndent);
+            ngin.LambdaRepo.Register(nameof(this.GetBlockedContent), this.GetBlockedContent);
+            ngin.LambdaRepo.Register("Add", (int a, int b) => a + b);
 
             string output = ngin.Merge(bindTo);
 
             Console.Write(output);
         }
+        #endregion
 
-        internal void RenderHelp(CommandDefinition commandDef, bool wildcard)
+        #region render namespace wildcard help
+        internal void RenderNamespaceWildcardHelp(NamespaceDefinition target)
         {
-            string template = TemplateAccessor.GetTemplate("command-help");
+            string template = TemplateAccessor.GetTemplate("namespace-wildcard-help");
+            var registry = CommandDefinitionRegistry.GetInstance();
 
+            //EMPTY..on wildcard, only interested in descendent commands
+            NamespaceDefinition[] namespaces = Array.Empty<NamespaceDefinition>();
+            CommandDefinition[] commands = registry.GetDescendentCommandDefinitions(target, false);
+
+            var defs = new INamedDefinition[commands.Length + 1];
+            commands.CopyTo(defs, 0);
+            defs[^1] = target;
+
+            int blockStart = this.ResolveHelpBlockStartPosition(defs);
+            string indent = new string(' ', RenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()
             {
-                { "Target",     commandDef },
+                { "Target",         target      },
+                { "Indent",         indent      },
+                { "HelpStartPos",   blockStart  },
+                { "Namespaces",     namespaces  },
+                { "Commands",       commands    }
             };
 
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
+            ngin.LambdaRepo.Register(nameof(this.GetBlockedContent), this.GetBlockedContent);
+            ngin.LambdaRepo.Register("Add", (int a, int b) => a + b);
+
+            string output = ngin.Merge(bindTo);
+
+            Console.Write(output);
+        }
+        #endregion
+
+        #region render command help
+        internal void RenderCommandHelp(CommandDefinition target)
+        {
+            string template = TemplateAccessor.GetTemplate("command-help");
+
+            //TODO: refactor this... doing this string join here AND within the template...
+            int blockStart = this.ResolveHelpBlockStartPosition(target.Options.Max(o => string.Join('|', o.Flags).Length));
+            string indent = new string(' ', RenderEngine.Indent);
+
+            var bindTo = new Dictionary<string, object>()
+            {
+                { "Target",         target      },
+                { "Indent",         indent      },
+                { "HelpStartPos",   blockStart  },
+            };
+
+            TemplateEngine ngin = new TemplateEngine(template);
+            ngin.TrimWhitespace = true;
+            ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
+            ngin.LambdaRepo.Register(nameof(this.GetBlockedContent), this.GetBlockedContent);
+            ngin.LambdaRepo.Register("Add", (int a, int b) => a + b);
             ngin.LambdaRepo.Register(nameof(string.Join), (Func<char, object[], string>)string.Join);
 
             string output = ngin.Merge(bindTo);

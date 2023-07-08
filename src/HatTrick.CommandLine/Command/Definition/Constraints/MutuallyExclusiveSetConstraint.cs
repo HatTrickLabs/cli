@@ -21,11 +21,11 @@ namespace HatTrick.CommandLine
         {
             _opDefKeys = optionDefinitionKeys ?? throw new ArgumentNullException(nameof(optionDefinitionKeys));
 
-            base.Constraint = this.ZeroOrOneAssigned;
+            base.SetConstraint(this.ZeroOrOneAssigned);
 
             string keys = string.Join("|", optionDefinitionKeys);
-            string error = $"Failed 'Mutually Exclusive Set' constraint...Set: {keys}";
-            base.Error = error;
+            string description= $"'Mutually Exclusive Set' constraint...Set: {keys}";
+            base.SetDescription(description);
         }
         #endregion
 

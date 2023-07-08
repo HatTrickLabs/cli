@@ -4,16 +4,8 @@
 
 {$.Target.Name}{($.Target.Help, :blockAt, :startingAt) => GetBlockedContent}
 
-{#if $.Namespaces}
-Child namespaces:
-{#each $.Namespaces}
-{?:startingAt = (:indent.Length, $.Name.Length) => Add}
-{:indent}{$.Name}{($.Help, :blockAt, :startingAt) => GetBlockedContent}
-{/each}
-{/if}
-
 {#if $.Commands}
-Child commands:
+Descendent commands:
 {#each $.Commands}
 {?:startingAt = (:indent.Length, $.Name.Length) => Add}
 {:indent}{$.Name}{($.Help, :blockAt, :startingAt) => GetBlockedContent}

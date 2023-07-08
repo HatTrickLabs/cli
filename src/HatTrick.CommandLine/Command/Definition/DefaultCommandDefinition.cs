@@ -1,6 +1,7 @@
 ﻿using HatTrick.CommandLine.Namespace;
 using Microsoft.Win32.SafeHandles;
 using System;
+using System.Net.Http.Headers;
 
 namespace HatTrick.CommandLine
 {
@@ -86,28 +87,34 @@ namespace HatTrick.CommandLine
             if (cmd["help"] is EmptyCommandOption) //no option flag provided at all...
             {
                 renderer.RenderUsageHelp();
+                return;
+            }
+
+            string argument = cmd["help"].Value;
+            if (argument is null)//no argument provided for the help option
+            {
+                renderer.RenderRootHelp();
+                return;
+            }
+
+            //an arg was provided for the help option
+            string input = this.EnsureHelpArgument(argument, out bool hasWildcard);
+            if (registry.TryGetNamespaceDefinition(input, out NamespaceDefinition namespaceDef))
+            {
+                if (hasWildcard)
+                    renderer.RenderNamespaceWildcardHelp(namespaceDef);
+                else
+                    renderer.RenderNamespaceHelp(namespaceDef);
+            }
+            else if (registry.TryGetCommandDefinition(input, out CommandDefinition cmdDef))
+            {
+                if (hasWildcard)
+                    throw new CommandInputException("Provided argument is a command...Command help does not support wildcards");
+
+                renderer.RenderCommandHelp(cmdDef);
             }
             else
-            {
-                string argument = cmd["help"].Value;
-                if (argument is null)//no argument provided for the help option
-                {
-                    renderer.RenderRootHelp();
-                }
-                else//arg provided for the help option flag
-                {
-                    string input = this.EnsureHelpArgument(argument, out bool hasWildcard);
-
-                    if (registry.TryGetNamespaceDefinition(input, out NamespaceDefinition namespaceDef))
-                        renderer.RenderHelp(namespaceDef, hasWildcard);
-
-                    else if (registry.TryGetCommandDefinition(input, out CommandDefinition cmdDef))
-                        renderer.RenderHelp(cmdDef, hasWildcard);
-
-                    else
-                        throw new CommandInputException($"Provided arguemnt is not a command or namespace: {input}");
-                }
-            }
+                throw new CommandInputException($"Provided argument is not a command or namespace: {input}");
         }
         #endregion
 

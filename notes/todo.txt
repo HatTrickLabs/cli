@@ -28,14 +28,19 @@ x Rules: MustAssignOneOfRule, DefaultValueRule, ValidArgumentSetRule
 - Imple keyword that will generate a new GUID on command execution for 'generated' arg... i.e. a nonce for an api request.
 - On signature mapping, what if the signature has a = null...Accounts(Guid id = null).  See GetAccounts
 - Make sure SetAccepted works with d@MN enums....
-- Environment.ProcessPath
-- Expose a 'DefaultCommand' on command registery to handle any built in command func I want to expose...ie: help, version, run
+x Environment.ProcessPath
+x Environment.ProcessPath
+x Expose a 'DefaultCommand' on command registery to handle any built in command func I want to expose...ie: help, version, run
 - Move tokenizer to a 'Command\Input' folder...Rename CommandParser to just parser.
 - F'n MS FUBARed the command line args...Framework maintained quoted tokens...Core+ strips them...Will it stay or will it go.. may need 2 versions of Tokenizer for exitless cmd loop.
   - write another version of the tokenizer that matches the NEW .net output and make the version used configurable
 - I think the early returns on ReadMaskedInput need re-org.  Remask AFTER escape ????'
-- Use -? for sparse help...Use -h for normal help...Use --help for annoyingly verbose help...
-- Consider a max command name length of 32 chars...namespace 31...flag 32
+x Consider a max command name length of 32 chars...namespace 31...flag 32
+- Add help property to all constraints (allow implementor to provide the help content).
+x Render usage with most verbose flags [mustAssign] options wrapped in square brackets.
+x Render usage option args as a short/terse data type.... ie:  --granualrity int [--start DateTime] [--end DateTime]
+- Render help for constraints in the blocked help content area (new line per constraint)
+
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

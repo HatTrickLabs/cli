@@ -17,7 +17,7 @@ namespace HatTrick.CommandLine
         #region get template
         internal string GetTemplate(string shortName)
         {
-            string[] names = ExecutingAssembly.GetManifestResourceNames();
+            string[] names = this.ExecutingAssembly.GetManifestResourceNames();
             string name = Array.Find(names, (n) => n.Contains(shortName, StringComparison.Ordinal));
 
             if (name is null)
@@ -28,10 +28,10 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get
+        #region get resource
         private string GetResource(string fullName)
         {
-            Assembly assem = Assembly.GetExecutingAssembly();
+            Assembly assem = this.ExecutingAssembly;
 
             string output = null;
             using (Stream stream = assem.GetManifestResourceStream(fullName))

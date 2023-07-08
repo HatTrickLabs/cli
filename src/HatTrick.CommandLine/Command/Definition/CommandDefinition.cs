@@ -6,10 +6,10 @@ using System.Xml.Linq;
 
 namespace HatTrick.CommandLine
 {
-    public class CommandDefinition
+    public class CommandDefinition : INamedDefinition
     {
         #region const
-        public const int MaxNameLength = 32;
+        public const int MaxNameLength = 40;
         #endregion
 
         #region internals

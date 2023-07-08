@@ -19,11 +19,11 @@ namespace HatTrick.CommandLine
         {
             _opDefKeys = optionDefinitionKeys ?? throw new ArgumentNullException(nameof(optionDefinitionKeys));
 
-            base.Constraint = this.AtLeastOneAssigned;
+            base.SetConstraint(this.AtLeastOneAssigned);
 
             string keys = string.Join("|", optionDefinitionKeys);
-            string error = $"Failed 'Must Assign One of' constraint...One of: {keys}";
-            base.Error = error;
+            string description = $"'Must Assign One of' constraint...One of: {keys}";
+            base.SetDescription(description);
         }
         #endregion
 

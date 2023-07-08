@@ -63,7 +63,7 @@ namespace HatTrick.CommandLine
                     throw new CommandMappingException(message);
                 }
 
-                Type valType = op.GetType().GetGenericArguments()[0];
+                Type valType = op.GenericType;
 
                 if (!parameter.ParameterType.IsAssignableFrom(valType))
                 {

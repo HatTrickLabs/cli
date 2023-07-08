@@ -6,33 +6,41 @@ namespace HatTrick.CommandLine
     {
         #region internals
         private Func<T, bool> _constraint;
-        private string _errorTemplate;
+        private string _description;
         #endregion
 
         #region interface
-        protected Func<T, bool> Constraint
-        {
-            set => _constraint = value;
-        }
+        protected Func<T, bool> Constraint => _constraint;
 
-        protected string ErrorTemplate
-        {
-            set => _errorTemplate = value;
-        }
+        protected string Description => _description;
         #endregion
 
         #region constructors
-        internal ArgumentConstraint(Func<T, bool> constraint, string errorTemplate)
+        internal ArgumentConstraint(Func<T, bool> constraint, string description)
         {
             _constraint = constraint ?? throw new ArgumentNullException(nameof(constraint));
-            _errorTemplate = errorTemplate ?? throw new ArgumentNullException(nameof(errorTemplate));
+            _description = description ?? throw new ArgumentNullException(nameof(description));
 
-            if (errorTemplate == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(errorTemplate));
+            if (description == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(description));
         }
 
         protected ArgumentConstraint()
         {
+        }
+        #endregion
+
+        #region set constraint
+        protected void SetConstraint(Func<T, bool> constraint)
+        {
+            _constraint = constraint;
+        }
+        #endregion
+
+        #region set description
+        protected void SetDescription(string description)
+        {
+            _description = description;
         }
         #endregion
 
@@ -43,11 +51,7 @@ namespace HatTrick.CommandLine
             if (_constraint(val))
                 return;
 
-            //TODO: eliminate replaces with HTL template engine...
-            string error = _errorTemplate;
-            error = error.Replace("{option-flag}", option.Flag)
-                         .Replace("{option-argument}", option.Argument)
-                         .Replace("{option-key}", option.Key);
+            string error = "Failed " + _description;
 
             throw new CommandArgumentException(error);
         }
