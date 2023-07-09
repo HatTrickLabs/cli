@@ -110,9 +110,17 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption(key: "granularity", mustAssign: true, help: "Timeslice granularity (60|300|900|3600|21600|86400) in seconds.", type: OpType.Int32, "-g", "--granularity");
             cmd.AddOption(key: "start", mustAssign: false, help: "Start timestamp for aggregation range.  Ignored if no end timestamp provided.", type: OpType.DateTime, "-s", "--start");
             cmd.AddOption(key: "end", mustAssign: false, help: "End timestamp for aggregation range.  Ignored if no start timestamp provided.", type: OpType.DateTime, "-e", "--end");
+            cmd.MustAssignOneOf("start", "end");
+            cmd.MutaullyExclusiveSet("start", "end");
             cmd["granularity"].SetAccepted(60, 300, 900, 3600, 21600, 86400);
-            cmd["start"].ApplyConstraint<DateTime>((s) => s > DateTime.Now.AddDays(-180), "Arg must be within the past 180 days.");
-            cmd["end"].ApplyConstraint<DateTime>((e) => e <= DateTime.Now.Date, "Arg must be less than or equal today's date.");
+            cmd["start"].ApplyConstraint<DateTime>(
+                constraint: (s) => s > DateTime.Now.AddDays(-180), 
+                name: "Restriction",
+                description: "Arg must be within the past 180 days.");
+            cmd["end"].ApplyConstraint<DateTime>(
+                constraint: (e) => e <= DateTime.Now.Date,
+                name: "Restriction",
+                description: "Arg must be less than or equal today's date.");
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.stats.get");

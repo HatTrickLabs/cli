@@ -198,15 +198,18 @@ namespace HatTrick.CommandLine
             if (optionKeys.Length < 2)
                 throw new ArgumentException("Argument must contain at least 2 values.", nameof(optionKeys));
 
+            var opDefKeys = new (string key, string flag)[optionKeys.Length];
             for (int i = 0; i < optionKeys.Length; i++)
             {
                 var opDef = this[optionKeys[i]];
 
                 if (opDef.MustAssign)
                     throw new CommandDefinitionException($"Option '{opDef}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'Must Assign One of' constraint cannot be applied.");
+
+                opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
             }
 
-            var constraint = new MustAssignOneOfConstraint(optionKeys);
+            var constraint = new MustAssignOneOfConstraint(opDefKeys);
 
             this.Constraints.Add(constraint);
         }
@@ -221,36 +224,45 @@ namespace HatTrick.CommandLine
             if (optionKeys.Length < 2)
                 throw new ArgumentException("Argument must contain at least 2 values.", nameof(optionKeys));
 
+            var opDefKeys = new (string key, string flag)[optionKeys.Length];
             for (int i = 0; i < optionKeys.Length; i++)
             {
                 var opDef = this[optionKeys[i]];
 
                 if (opDef.MustAssign)
                     throw new CommandDefinitionException($"Option '{opDef}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'Mutually Exclusive Set' constraint cannot be applied.");
+
+                opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
             }
 
-            var constraint = new MutuallyExclusiveSetConstraint(optionKeys);
+            var constraint = new MutuallyExclusiveSetConstraint(opDefKeys);
 
             this.Constraints.Add(constraint);
         }
         #endregion
 
         #region apply constraint
-        //public void ApplyConstraint(Func<IConstrainedCommand, bool> constraint, string error)
-        //{
-        //    if (constraint is null)
-        //        throw new ArgumentNullException(nameof(constraint));
+        public void ApplyConstraint(Func<IConstrainedCommand, bool> constraint, string name, string description)
+        {
+            if (constraint is null)
+                throw new ArgumentNullException(nameof(constraint));
 
-        //    if (error is null)
-        //        throw new ArgumentNullException(nameof(error));
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
 
-        //    if (error == string.Empty)
-        //        throw new ArgumentException("Argument must contain a value.", nameof(error));
+            if (description is null)
+                throw new ArgumentNullException(nameof(description));
 
-        //    var customConstraint = new CommandConstraint(constraint, error);
+            if (name == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(name));
 
-        //    this.Constraints.Add(customConstraint);
-        //}
+            if (description == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(description));
+
+            var customConstraint = new CommandConstraint(constraint, name, description);
+
+            this.Constraints.Add(customConstraint);
+        }
         #endregion
 
         #region ensure constraints

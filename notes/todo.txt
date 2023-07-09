@@ -40,6 +40,7 @@ x Consider a max command name length of 32 chars...namespace 31...flag 32
 x Render usage with most verbose flags [mustAssign] options wrapped in square brackets.
 x Render usage option args as a short/terse data type.... ie:  --granualrity int [--start DateTime] [--end DateTime]
 - Render help for constraints in the blocked help content area (new line per constraint)
+- Impl support for DateOnly as a baked in argument type (add it to the OpType enum).
 
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository

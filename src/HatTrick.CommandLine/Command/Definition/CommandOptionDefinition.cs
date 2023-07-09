@@ -87,18 +87,18 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply constraint
-        public void ApplyConstraint<T>(Func<T, bool> constraint, string errorTemplate)
+        public void ApplyConstraint<T>(Func<T, bool> constraint, string name, string description)
         {
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));
 
-            if (errorTemplate is null)
-                throw new ArgumentNullException(nameof(errorTemplate));
+            if (description is null)
+                throw new ArgumentNullException(nameof(description));
 
-            if (errorTemplate == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(errorTemplate));
+            if (description == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(description));
 
-            this.Of<T>().ApplyConstraint(constraint, errorTemplate);
+            this.Of<T>().ApplyConstraint(constraint, name, description);
         }
         #endregion
 
@@ -257,18 +257,18 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply constraint
-        public void ApplyConstraint(Func<T, bool> constraint, string errorTemplate)
+        public void ApplyConstraint(Func<T, bool> constraint, string name, string description)
         {
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));
 
-            if (errorTemplate is null)
-                throw new ArgumentNullException(nameof(errorTemplate));
+            if (description is null)
+                throw new ArgumentNullException(nameof(description));
 
-            if (errorTemplate == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(errorTemplate));
+            if (description == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(description));
 
-            this.Constraints.Add(new ArgumentConstraint<T>(constraint, errorTemplate));
+            this.Constraints.Add(new ArgumentConstraint<T>(constraint, name, description));
         }
         #endregion
 

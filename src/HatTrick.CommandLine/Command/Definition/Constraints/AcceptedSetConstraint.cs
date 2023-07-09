@@ -5,18 +5,21 @@ namespace HatTrick.CommandLine
 {
     internal class AcceptedSetConstraint<T> : ArgumentConstraint<T>
     {
+        #region const
+        public const string ConstraintName = "Accepted Set";
+        #endregion
+
         #region internals
         private T[] _accepted;
         #endregion
 
         #region constructors
-        internal AcceptedSetConstraint(T[] values)
+        internal AcceptedSetConstraint(T[] values) : base(AcceptedSetConstraint<T>.ConstraintName)
         {
             _accepted = values ?? throw new ArgumentNullException(nameof(values));
 
             base.SetConstraint(this.IsInAcceptedSet);
-            var accepted = string.Join("|", values);
-            base.SetDescription($"'Accepted Set' constraint...set: {accepted}");
+            base.SetDescription(string.Join("|", values));
         }
         #endregion
 

@@ -1,29 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 
 namespace HatTrick.CommandLine
 {
     public class MustAssignOneOfConstraint : CommandConstraint
     {
+        #region const
+        public const string ConstraintName = "Must Assign One Of";
+        #endregion
+
         #region internals
-        private string[] _opDefKeys;
+        private (string key, string flag)[] _opDefKeys;
         #endregion
 
         #region interface
-        internal string[] OptionDefinitionKeys => _opDefKeys;
+        internal (string key, string flag)[] OptionDefinitionKeys => _opDefKeys;
         #endregion
 
         #region constructors
-        internal MustAssignOneOfConstraint(string[] optionDefinitionKeys) 
+        internal MustAssignOneOfConstraint((string key, string flag)[] optionDefinitionKeys) : base(MustAssignOneOfConstraint.ConstraintName)
         {
             _opDefKeys = optionDefinitionKeys ?? throw new ArgumentNullException(nameof(optionDefinitionKeys));
 
             base.SetConstraint(this.AtLeastOneAssigned);
 
-            string keys = string.Join("|", optionDefinitionKeys);
-            string description = $"'Must Assign One of' constraint...One of: {keys}";
-            base.SetDescription(description);
+            base.SetDescription(string.Join("|", Array.ConvertAll(optionDefinitionKeys, o => o.flag)));
         }
         #endregion
 
@@ -32,7 +35,7 @@ namespace HatTrick.CommandLine
         {
             Func<string, CommandOption> getOptionByKey = (key) => command[key];
 
-            bool[] results = base.ResolveAssignmentResults(getOptionByKey, _opDefKeys);
+            bool[] results = base.ResolveAssignmentResults(getOptionByKey, Array.ConvertAll(_opDefKeys, o => o.key));
 
             return Array.Exists(results, (r) => r == true);
         }

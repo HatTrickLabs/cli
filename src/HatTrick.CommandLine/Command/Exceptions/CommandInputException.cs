@@ -10,6 +10,12 @@ namespace HatTrick.CommandLine
 
         private static string FormatMessages(string[] messages)
         {
+            if (messages is null || messages.Length == 0)
+                return string.Empty;
+
+            if (messages.Length == 1)
+                return messages[0];
+
             for (int i = 0; i < messages.Length; i++)
             {
                 messages[i] = "- " + messages[i];

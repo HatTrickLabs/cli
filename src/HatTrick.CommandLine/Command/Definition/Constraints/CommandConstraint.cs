@@ -6,27 +6,35 @@ namespace HatTrick.CommandLine
     {
         #region internals
         private Func<IConstrainedCommand, bool> _constraint;
+        private string _name;
         private string _description;
         #endregion
 
         #region interface
         protected Func<IConstrainedCommand, bool> Constraint => _constraint;
 
-        internal string Description => _description;
+        public string Name => _name;
+
+        public string Description => _description;
         #endregion
 
         #region constructors
-        internal CommandConstraint(Func<IConstrainedCommand, bool> constraint, string description)
+        internal CommandConstraint(Func<IConstrainedCommand, bool> constraint, string name, string description)
         {
             _constraint = constraint ?? throw new ArgumentNullException(nameof(constraint));
+            _name = name ?? throw new ArgumentNullException(nameof(name));
             _description = description ?? throw new ArgumentNullException(nameof(description));
+
+            if (name == string.Empty)
+                throw new ArgumentException("Argument must contain a value.", nameof(name));
 
             if (description == string.Empty)
                 throw new ArgumentException("Argument must contain a value.", nameof(description));
         }
 
-        protected CommandConstraint()
+        protected CommandConstraint(string name)
         {
+            _name = name ?? throw new ArgumentException(nameof(name));
         }
         #endregion
 
@@ -70,10 +78,8 @@ namespace HatTrick.CommandLine
         {
             bool pass = _constraint(command);
 
-            string error = "Failed " + _description;
-
             if (!pass)
-                throw new CommandArgumentException(error);
+                throw new CommandArgumentException($"Constraint Failed...{_name}:  {_description}");
         }
         #endregion
     }
