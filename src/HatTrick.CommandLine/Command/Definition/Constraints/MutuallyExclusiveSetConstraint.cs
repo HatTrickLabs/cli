@@ -9,7 +9,7 @@ namespace HatTrick.CommandLine
     public class MutuallyExclusiveSetConstraint : CommandConstraint
     {
         #region const 
-        public const string ConstraintName = "Mutually Exclusive Set";
+        public const string ConstraintName = "Mutually exclusive";
         #endregion
 
         #region internals
@@ -27,7 +27,7 @@ namespace HatTrick.CommandLine
 
             base.SetConstraint(this.ZeroOrOneAssigned);
 
-            base.SetDescription(string.Join("|", Array.ConvertAll(optionDefinitionKeys, o => o.flag)));
+            base.SetDescription(string.Join(", ", Array.ConvertAll(optionDefinitionKeys, o => o.flag)));
         }
         #endregion
 

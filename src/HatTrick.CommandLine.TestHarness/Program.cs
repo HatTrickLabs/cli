@@ -31,23 +31,13 @@ namespace HatTrick.CommandLine.TestHarness
             registry = CommandDefinitionRegistry.GetInstance();
 
             CommandDefinition cmd = null;
-            NamespaceDefinition ns = null;
 
             /********** Register Command Namespaces **********/
-            ns = new(name: "vault", help: "Namespace for vault secret related commands.");
-            registry.Add(ns);
-
-            ns = new(name: "cb", help: "Namespace for all Coinbase related commands.");
-            registry.Add(ns);
-
-            ns = new(name: "cb.profiles", help: "Namespace for all Coinbase profile related commands.");
-            registry.Add(ns);
-
-            ns = new(name: "cb.products", help: "Namespace for all Coinbase product related commands.");
-            registry.Add(ns);
-
-            ns = new(name: "cb.withdrawals", help: "Namespace for all Coinbase withdrawals related commands.");
-            registry.Add(ns);
+            registry.Add(new NamespaceDefinition(name: "vault", help: "Namespace for vault secret related commands."));
+            registry.Add(new NamespaceDefinition(name: "cb", help: "Namespace for all Coinbase related commands."));
+            registry.Add(new NamespaceDefinition(name: "cb.profiles", help: "Namespace for all Coinbase profile related commands."));
+            registry.Add(new NamespaceDefinition(name: "cb.products", help: "Namespace for all Coinbase product related commands."));
+            registry.Add(new NamespaceDefinition(name: "cb.withdrawals", help: "Namespace for all Coinbase withdrawals related commands."));
 
             /********** Register Vault Commands **********/
             cmd = new(name: "vault.set");
@@ -111,7 +101,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption(key: "start", mustAssign: false, help: "Start timestamp for aggregation range.  Ignored if no end timestamp provided.", type: OpType.DateTime, "-s", "--start");
             cmd.AddOption(key: "end", mustAssign: false, help: "End timestamp for aggregation range.  Ignored if no start timestamp provided.", type: OpType.DateTime, "-e", "--end");
             cmd.MustAssignOneOf("start", "end");
-            cmd.MutaullyExclusiveSet("start", "end");
+            //cmd.MutaullyExclusiveSet("start", "end");
             cmd["granularity"].SetAccepted(60, 300, 900, 3600, 21600, 86400);
             cmd["start"].ApplyConstraint<DateTime>(
                 constraint: (s) => s > DateTime.Now.AddDays(-180), 

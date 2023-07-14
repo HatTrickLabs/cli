@@ -41,7 +41,9 @@ x Render usage with most verbose flags [mustAssign] options wrapped in square br
 x Render usage option args as a short/terse data type.... ie:  --granualrity int [--start DateTime] [--end DateTime]
 - Render help for constraints in the blocked help content area (new line per constraint)
 - Impl support for DateOnly as a baked in argument type (add it to the OpType enum).
-
+- On setting a default constraint...need to ensure there is no 'must assign one of', 'mutually exlcusive set' or 'must assign' constraints that affect the option.
+x Nix must EnsureMustAssignOptionProvidedAndAssigned...must assign has been implemented as a first class constraint
+- MustAssignOneOf and MustAssign should be mutually exclusive.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

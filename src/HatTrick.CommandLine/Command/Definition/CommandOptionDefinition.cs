@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -17,19 +18,16 @@ namespace HatTrick.CommandLine
 
         #region internals
         private readonly string _key;
-        private readonly bool _mustAssign;
         private readonly string _help;
         private bool _hidden;
         private readonly string[] _flags;
-        private bool _hasDefault;
+        private List<ArgumentConstraint> _constraints;
         #endregion
 
         #region interface
         public string Key => _key;
 
         public abstract Type GenericType { get; }
-
-        public bool MustAssign => _mustAssign;
 
         public string Help => _help;
 
@@ -41,16 +39,30 @@ namespace HatTrick.CommandLine
 
         public string LeastVerboseFlag => _flags.MinBy((f) => f.Length);
 
-        public bool HasDefault => _hasDefault;
+        internal List<ArgumentConstraint> Constraints
+        {
+            get => _constraints is null ? _constraints = new List<ArgumentConstraint>() : _constraints;
+            set => _constraints = value;
+        }
+
+        internal bool HasConstraints => _constraints is not null;
+
+        //TODO: cache or set when defined
+        public bool HasDefault => this.HasConstraints && _constraints.Exists(c => c is IDefaultConstraint);
+
+        //TODO: cache or set when defined
+        public bool MustAssign => this.HasConstraints && _constraints.Exists(c => c is MustAssignConstraint);
         #endregion
 
         #region constructors
         protected CommandOptionDefinition(string key, bool mustAssign, string help, params string[] flags)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));
-            _mustAssign = mustAssign;
             _help = help;
             _flags = flags ?? throw new ArgumentNullException(nameof(flags));
+
+            if (mustAssign)
+                this.Constraints.Add(new MustAssignConstraint(this.Flags));
         }
         #endregion
 
@@ -75,7 +87,6 @@ namespace HatTrick.CommandLine
         public void SetDefault<T>(T value)
         {
             this.Of<T>().SetDefault(value);
-            _hasDefault = true;
         }
         #endregion
 
@@ -107,11 +118,25 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure custom constraints
-        internal abstract void EnsureConstraints(CommandOption option);
+        internal void EnsureConstraints(CommandOption option, ref List<string> feedback)
+        {
+            if (!this.HasConstraints)
+                return;
+
+            foreach (var c in this.Constraints)
+            {
+                if (!c.Ensure(option, out string fb))
+                    feedback.Add(fb);
+            }
+        }
         #endregion
 
         #region empty instance
-        internal abstract EmptyCommandOption EmptyInstance();
+        internal EmptyCommandOption EmptyInstance()
+        {
+            var op = new EmptyCommandOption(_key, this.MostVerboseFlag);
+            return op;
+        }
         #endregion
 
         #region default instance
@@ -163,20 +188,10 @@ namespace HatTrick.CommandLine
         #region internals
         private Type _genericType;
         private readonly Func<string, T> _converter;
-        private T _default;
-        private List<ArgumentConstraint<T>> _constraints;
         #endregion
 
         #region interface
-        internal T Default => _default;
-
         public override Type GenericType => this.GetGenericType();
-
-        private List<ArgumentConstraint<T>> Constraints
-        {
-            get => _constraints is null ? _constraints = new List<ArgumentConstraint<T>>() : _constraints;
-            set => _constraints = value;
-        }
         #endregion
 
         #region constructors
@@ -194,31 +209,23 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get generic type name
+        #region get generic type
         private Type GetGenericType()
         {
-            var name = _genericType is null 
+            var type = _genericType is null 
                 ? _genericType = this.GetType().GetGenericArguments()[0] 
                 : _genericType;
 
-            return name;
-        }
-        #endregion
-
-        #region empty instance
-        internal override EmptyCommandOption EmptyInstance()
-        {
-            var op = new EmptyCommandOption(base.Key, base.MostVerboseFlag);
-            return op;
+            return type;
         }
         #endregion
 
         #region default instance
         internal override DefaultCommandOption DefaultInstance()
         {
-            //TODO: prob impl way to find the most verbose flag
-            var op = new DefaultCommandOption(base.Key, base.Flags[0]);
-            op.SetValue(_default);
+            var def = (DefaultConstraint<T>)base.Constraints.Find(c => c is DefaultConstraint<T>);
+            var op = new DefaultCommandOption(base.Key, base.MostVerboseFlag);
+            op.SetValue(def.DefaultValue);
             return op;
         }
         #endregion
@@ -226,10 +233,12 @@ namespace HatTrick.CommandLine
         #region set default
         public void SetDefault(T value)
         {
-            if (base.MustAssign)
-                throw new CommandDefinitionException($"Option '{base.Key}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'default' cannot be applied.");
+            bool mustAssign = base.HasConstraints && base.Constraints.Exists(c => c is MustAssignConstraint);
 
-            _default = value;
+            if (mustAssign)
+                throw new CommandDefinitionException($"Option '{base.Key}' has a '{MustAssignConstraint.ConstraintName}' constraint...'default' cannot be applied.");
+
+            base.Constraints.Add(new DefaultConstraint<T>(value));
         }
         #endregion
 
@@ -239,20 +248,22 @@ namespace HatTrick.CommandLine
             if (values is null)
                 throw new ArgumentNullException(nameof(values));
 
-            List<ArgumentConstraint<T>> constraints = this.Constraints;
-
-            if (constraints.Count > 0)
+            if (base.HasConstraints)
             {
-                var c = constraints.Find(c => c is AcceptedSetConstraint<T>);
-                if (c is not null)
-                    constraints.Remove(c);
+                List<ArgumentConstraint> constraints = base.Constraints;
+
+                if (constraints.Count > 0)
+                {
+                    var c = constraints.Find(c => c is AcceptedSetConstraint<T>);
+                    if (c is not null)
+                        constraints.Remove(c);
+                }
             }
 
             if (values.Length == 0)
                 return;
 
-            var constraint = new AcceptedSetConstraint<T>(values);
-            Constraints.Add(constraint);
+            base.Constraints.Add(new AcceptedSetConstraint<T>(values));
         }
         #endregion
 
@@ -268,7 +279,7 @@ namespace HatTrick.CommandLine
             if (description == string.Empty)
                 throw new ArgumentException("Argument must contain a value.", nameof(description));
 
-            this.Constraints.Add(new ArgumentConstraint<T>(constraint, name, description));
+            base.Constraints.Add(new ArgumentConstraint<T>(constraint, name, description));
         }
         #endregion
 
@@ -286,19 +297,6 @@ namespace HatTrick.CommandLine
                 var name = this.GetGenericType().Name;
                 var arg = option.Argument;
                 throw new CommandArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: {arg}"); ;
-            }
-        }
-        #endregion
-
-        #region ensure constraints
-        internal override void EnsureConstraints(CommandOption option)
-        {
-            if (_constraints is null || _constraints.Count == 0)
-                return;
-
-            foreach (var c in _constraints)
-            {
-                c.Ensure(option);
             }
         }
         #endregion

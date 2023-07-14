@@ -6,7 +6,7 @@ namespace HatTrick.CommandLine
     internal class AcceptedSetConstraint<T> : ArgumentConstraint<T>
     {
         #region const
-        public const string ConstraintName = "Accepted Set";
+        public const string ConstraintName = "Accepted values";
         #endregion
 
         #region internals

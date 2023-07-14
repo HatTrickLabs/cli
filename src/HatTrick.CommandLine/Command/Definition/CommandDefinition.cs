@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace HatTrick.CommandLine
 {
-    public class CommandDefinition : INamedDefinition
+    public class CommandDefinition
     {
         #region const
         public const int MaxNameLength = 40;
@@ -203,8 +203,10 @@ namespace HatTrick.CommandLine
             {
                 var opDef = this[optionKeys[i]];
 
-                if (opDef.MustAssign)
-                    throw new CommandDefinitionException($"Option '{opDef}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'Must Assign One of' constraint cannot be applied.");
+                bool mustAssign = opDef.HasConstraints && opDef.Constraints.Exists(c => c is MustAssignConstraint);
+
+                if (mustAssign)
+                    throw new CommandDefinitionException($"Option '{opDef.Key}' has a '{MustAssignConstraint.ConstraintName}' constraint...'{MustAssignOneOfConstraint.ConstraintName}' constraint cannot be applied.");
 
                 opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
             }
@@ -229,8 +231,10 @@ namespace HatTrick.CommandLine
             {
                 var opDef = this[optionKeys[i]];
 
-                if (opDef.MustAssign)
-                    throw new CommandDefinitionException($"Option '{opDef}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'Mutually Exclusive Set' constraint cannot be applied.");
+                bool mustAssign = opDef.HasConstraints && opDef.Constraints.Exists(c => c is MustAssignConstraint);
+
+                if (mustAssign)
+                    throw new CommandDefinitionException($"Option '{opDef.Key}' has a '{MustAssignConstraint.ConstraintName}' constraint...'{MutuallyExclusiveSetConstraint.ConstraintName}' constraint cannot be applied.");
 
                 opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
             }
@@ -266,14 +270,17 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure constraints
-        internal void EnsureConstraints(Command command)
+        internal void EnsureConstraints(Command command, ref List<string> feedback)
         {
             if (_constraints is null || _constraints.Count == 0)
                 return;
 
             foreach (var c in _constraints)
             {
-                c.Ensure(command);
+                if (!c.Ensure(command, out string fb))
+                {
+                    feedback.Add(fb);
+                }
             }
         }
         #endregion

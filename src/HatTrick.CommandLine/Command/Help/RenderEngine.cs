@@ -50,19 +50,6 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region resolve help block start position
-        private int ResolveHelpBlockStartPosition(INamedDefinition[] definitions)
-        {
-            if (definitions is null)
-                throw new ArgumentNullException(nameof(definitions));
-
-            if (definitions.Length == 0)
-                throw new ArgumentException("Argument must contain at least 1 element.", nameof(definitions));
-
-            int maxNameLen = definitions.Max(d => d.Name.Length);
-
-            return this.ResolveHelpBlockStartPosition(maxNameLen);
-        }
-
         private int ResolveHelpBlockStartPosition(int maxLeftContentLength)
         {
             //add the indent and the desired padding
@@ -116,6 +103,7 @@ namespace HatTrick.CommandLine
                     linePostion += word.Length;
                 }
             }
+
             return output.ToString();
         }
         #endregion
@@ -170,12 +158,11 @@ namespace HatTrick.CommandLine
             NamespaceDefinition[] namespaces = registry.GetChildNamespaceDefinitions(target, false);
             CommandDefinition[] commands = registry.GetChildCommandDefinitions(target, false);
 
-            var defs = new INamedDefinition[namespaces.Length + commands.Length + 1];
-            namespaces.CopyTo(defs, 0);
-            commands.CopyTo(defs, namespaces.Length);
-            defs[^1] = target;
+            int maxNSLen = namespaces.Length > 0 ? namespaces.Max(ns => ns.Name.Length) : 0;
+            int maxCmdLen = commands.Length > 0 ? commands.Max(cmd => cmd.Name.Length) : 0;
+            int maxLen = Math.Max(target.Name.Length, Math.Max(maxNSLen, maxCmdLen));
 
-            int blockStart = this.ResolveHelpBlockStartPosition(defs);
+            int blockStart = this.ResolveHelpBlockStartPosition(maxLen);
             string indent = new string(' ', RenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()
@@ -205,15 +192,14 @@ namespace HatTrick.CommandLine
             string template = TemplateAccessor.GetTemplate("namespace-wildcard-help");
             var registry = CommandDefinitionRegistry.GetInstance();
 
-            //EMPTY..on wildcard, only interested in descendent commands
-            NamespaceDefinition[] namespaces = Array.Empty<NamespaceDefinition>();
+            //namespaces EMPTY on wildcard, only interested in descendent commands
+            NamespaceDefinition[] namespaces = Array.Empty<NamespaceDefinition>();//0 length...
             CommandDefinition[] commands = registry.GetDescendentCommandDefinitions(target, false);
 
-            var defs = new INamedDefinition[commands.Length + 1];
-            commands.CopyTo(defs, 0);
-            defs[^1] = target;
+            int maxCmdLen = commands.Length > 0 ? commands.Max(cmd => cmd.Name.Length) : 0;
+            int maxLen = Math.Max(target.Name.Length, maxCmdLen);
 
-            int blockStart = this.ResolveHelpBlockStartPosition(defs);
+            int blockStart = this.ResolveHelpBlockStartPosition(maxLen);
             string indent = new string(' ', RenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()

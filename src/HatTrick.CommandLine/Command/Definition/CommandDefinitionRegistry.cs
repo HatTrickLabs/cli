@@ -245,7 +245,7 @@ namespace HatTrick.CommandLine
             this.EnsureCommandOptions(cmdDef, command, ref feedback);
 
             if (feedback.Count == 0)
-                cmdDef.EnsureConstraints(command);
+                cmdDef.EnsureConstraints(command, ref feedback);
 
             if (feedback.Count > 0)
                 throw new CommandInputException(feedback.ToArray());
@@ -270,16 +270,13 @@ namespace HatTrick.CommandLine
             {
                 var op = cmd.GetOption(opDef.Key);
 
-                if (!this.EnsureMustAssignOptionProvidedAndAssigned(opDef, op, ref feedback))
-                    continue;
+                if (!(op is EmptyCommandOption || op is DefaultCommandOption))
+                {
+                    //pass op to typed definition to convert the command line arg (string) into T and set the typed option value
+                    opDef.SetConvertedValue(op);
+                }
 
-                if (op is EmptyCommandOption || op is DefaultCommandOption)
-                    continue;
-
-                //pass op to typed definition to convert the command line arg (string) into T and set the typed option value
-                opDef.SetConvertedValue(op);
-
-                this.EnsureOptionConstraints(opDef, op, ref feedback);
+                opDef.EnsureConstraints(op, ref feedback);
             }
         }
         #endregion
@@ -294,7 +291,7 @@ namespace HatTrick.CommandLine
                 if (op is not null)//apply the definition key to the option
                     op.SetKey(opDef.Key);
 
-                else if (opDef.HasDefault)//apply the default option value
+                else if (opDef.HasDefault)//apply the default option
                     cmd.ApplyDefaultOption(opDef.DefaultInstance());
 
                 else//empty, just need an empty shell with correct key
@@ -345,41 +342,6 @@ namespace HatTrick.CommandLine
                     if (opDef.Flags.Contains(opDos.Flag))
                         feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opUno.Flag}' and '{opDos.Flag}'");
                 }
-            }
-        }
-        #endregion
-
-        #region ensure must assign options provided and assigned
-        private bool EnsureMustAssignOptionProvidedAndAssigned(CommandOptionDefinition opDef, CommandOption op, ref List<string> feedback)
-        {
-            if (opDef.MustAssign)
-            {
-                if (op is EmptyCommandOption)
-                {
-                    feedback.Add($"Expected option [{string.Join("|", opDef.Flags)}] not found...option is marked '{nameof(CommandOptionDefinition.MustAssign)}'");
-                    return false;
-                }
-                else if (string.IsNullOrEmpty(op.Argument))
-                {
-                    feedback.Add($"Option '{op.Flag}' requires an argument...no argument provided.");
-                    return false;
-                }
-            }
-            return true;
-        }
-        #endregion
-
-        #region ensure option constraints
-        private void EnsureOptionConstraints(CommandOptionDefinition opDef, CommandOption op, ref List<string> feedback)
-        {
-            try
-            {
-                //ensure passes custom contraints if defined...
-                opDef.EnsureConstraints(op);
-            }
-            catch (CommandArgumentException ex)
-            {
-                feedback.Add(ex.Message);
             }
         }
         #endregion

@@ -3,7 +3,7 @@ using System.Reflection.Metadata;
 
 namespace HatTrick.CommandLine.Namespace
 {
-    public class NamespaceDefinition : INamedDefinition
+    public class NamespaceDefinition
     {
         #region const
         public const int MaxNameLength = 31;//one less than max command name length...

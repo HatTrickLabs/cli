@@ -1,0 +1,16 @@
+Usage:
+myexe cb.products.candles.get --product-id String --granularity Int32 [--start DateTime] [--end DateTime]
+
+Options:
+  -p|--product-id......The product id.
+  -g|--granularity.....Timeslice granularity in seconds.
+     		       Must assign: true
+		       Accepted values: 60|300|900|3600|21600|86400
+  -s|--start...........Start timestamp for aggregation range. Ignored if no end timestamp provided.
+	    	       Min: Arg must >= 180 days ago.
+  -e|--end.............End timestamp for aggregation range. Ignored if no start timestamp provided.
+		       Max end: Arg must be <= today.
+
+Option constraints:
+  Must assign one of	--start|--end
+  Mutually exclusive	--start|--end
