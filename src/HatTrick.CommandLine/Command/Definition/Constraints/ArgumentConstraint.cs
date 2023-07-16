@@ -82,7 +82,7 @@ namespace HatTrick.CommandLine
             bool pass = _constraint(val);
 
             if (!pass)
-                feedback = $"Constraint Failed...Flag: {option.Flag}  Arg: {option.Argument}  {base.Name}: {base.Description}";
+                feedback = $"Constraint Failed...Flag: '{option.Flag}'  Arg: '{option.Argument}'  {base.Name}: {base.Description}";
 
             return pass;
         }

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using HatTrick.CommandLine.Namespace;
-using Microsoft.Win32;
 
 namespace HatTrick.CommandLine.TestHarness
 {
@@ -38,6 +36,31 @@ namespace HatTrick.CommandLine.TestHarness
             registry.Add(new NamespaceDefinition(name: "cb.profiles", help: "Namespace for all Coinbase profile related commands."));
             registry.Add(new NamespaceDefinition(name: "cb.products", help: "Namespace for all Coinbase product related commands."));
             registry.Add(new NamespaceDefinition(name: "cb.withdrawals", help: "Namespace for all Coinbase withdrawals related commands."));
+
+            cmd = new(name: "test");
+            cmd.Help = "Test command help.";
+            cmd.Handler = (command) =>
+            {
+                string fn = command["first_name"].Value;
+                var bd = command["birth_date"].Value;
+            };
+
+            //cmd.Handler = Mapper.MapCommand(cmd).To<Person>(
+            //        ("first_name", "FirstName"), 
+            //        ("last_name", "LastName"),
+            //        ("birth_date", "BirthDate")
+            //).Then(PersonService.Add);
+
+            //cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, Gender?, DateTime>>(
+            //    ("first_name", "firstName"),
+            //    ("last_name", "lastName"),
+            //    ("birth_date", "birthDate")
+            //    ).Then(PersonService.AddPerson);
+
+            cmd.AddOption(key: "first_name", mustAssign: false, help: "First name.", OpType.String, "-f", "--first-name");
+            cmd.AddOption(key: "last_name", mustAssign: false, help: "Last name.", OpType.String, "-l", "--last-name");
+            cmd.AddOption(key: "birth_date", mustAssign: false, help: "Birth date.", OpType.DateTime, "-b", "--birth-date");
+            registry.Add(cmd);
 
             /********** Register Vault Commands **********/
             cmd = new(name: "vault.set");
@@ -98,10 +121,8 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.Handler = (command) => { };
             cmd.AddOption(key: "product_id", mustAssign: true, help: "The product id.", type: OpType.String, "-p", "--product-id");
             cmd.AddOption(key: "granularity", mustAssign: true, help: "Timeslice granularity (60|300|900|3600|21600|86400) in seconds.", type: OpType.Int32, "-g", "--granularity");
-            cmd.AddOption(key: "start", mustAssign: false, help: "Start timestamp for aggregation range.  Ignored if no end timestamp provided.", type: OpType.DateTime, "-s", "--start");
-            cmd.AddOption(key: "end", mustAssign: false, help: "End timestamp for aggregation range.  Ignored if no start timestamp provided.", type: OpType.DateTime, "-e", "--end");
-            cmd.MustAssignOneOf("start", "end");
-            //cmd.MutaullyExclusiveSet("start", "end");
+            cmd.AddOption(key: "start", mustAssign: true, help: "Start timestamp for aggregation range.  Ignored if no end timestamp provided.", type: OpType.DateTime, "-s", "--start");
+            cmd.AddOption(key: "end", mustAssign: true, help: "End timestamp for aggregation range.  Ignored if no start timestamp provided.", type: OpType.DateTime, "-e", "--end");
             cmd["granularity"].SetAccepted(60, 300, 900, 3600, 21600, 86400);
             cmd["start"].ApplyConstraint<DateTime>(
                 constraint: (s) => s > DateTime.Now.AddDays(-180), 
@@ -132,7 +153,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption(key: "limit", mustAssign: false, help: "Limit on number of results to return.", type: OpType.Int32, "-l", "--limit");
             //TODO: add before and after filter options...
             cmd.AddOption(key: "max", mustAssign: false, help: "Max number of trades to request (limit * iteration count).", type: OpType.Int32, "-m", "--max");
-            cmd["limit"].SetDefault(200);
+            cmd["limit"].SetDefault(10);
             cmd["max"].SetDefault(200);
             registry.Add(cmd);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -70,9 +71,14 @@ namespace HatTrick.CommandLine
         public CommandOptionDefinition<T> Of<T>()
         {
             if (this is CommandOptionDefinition<T> cmdOpDefT)
+            {
                 return cmdOpDefT;
+            }
             else
-                throw new InvalidCastException($"Cannot cast {nameof(CommandOptionDefinition)} to {nameof(CommandOptionDefinition)}<{nameof(T)}>");
+            {
+                var name = nameof(CommandOptionDefinition);
+                throw new InvalidCastException($"Cannot cast {name}<{this.GenericType.Name}> to {name}<{typeof(T).Name}>");
+            }
         }
         #endregion
 
@@ -86,14 +92,32 @@ namespace HatTrick.CommandLine
         #region set default
         public void SetDefault<T>(T value)
         {
-            this.Of<T>().SetDefault(value);
+            try
+            {
+                this.Of<T>().SetDefault(value);
+            }
+            catch (InvalidCastException ice)
+            {
+                var name = nameof(CommandOptionDefinition);
+                string msg = $"Cannot set default value '{value}' of type {typeof(T).Name} for {name}<{this.GenericType.Name}>.";
+                throw new CommandDefinitionException(msg, ice);
+            }
         }
         #endregion
 
         #region set accepted
         public void SetAccepted<T>(params T[] values)
         {
-            this.Of<T>().SetAccepted(values);
+            try
+            {
+                this.Of<T>().SetAccepted(values);
+            }
+            catch (InvalidCastException ice)
+            {
+                var name = nameof(CommandOptionDefinition);
+                string msg = $"Cannot set accepted values '{string.Join("|", values)}' of type {typeof(T).Name} for {name}<{this.GenericType.Name}>.";
+                throw new CommandDefinitionException(msg, ice);
+            }
         }
         #endregion
 
@@ -296,7 +320,7 @@ namespace HatTrick.CommandLine
                 var flag = option.Flag;
                 var name = this.GetGenericType().Name;
                 var arg = option.Argument;
-                throw new CommandArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: {arg}"); ;
+                throw new CommandArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: '{arg}'"); ;
             }
         }
         #endregion

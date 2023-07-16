@@ -271,10 +271,7 @@ namespace HatTrick.CommandLine
                 var op = cmd.GetOption(opDef.Key);
 
                 if (!(op is EmptyCommandOption || op is DefaultCommandOption))
-                {
-                    //pass op to typed definition to convert the command line arg (string) into T and set the typed option value
                     opDef.SetConvertedValue(op);
-                }
 
                 opDef.EnsureConstraints(op, ref feedback);
             }

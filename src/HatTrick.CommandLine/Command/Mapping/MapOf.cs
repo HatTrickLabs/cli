@@ -29,7 +29,7 @@ namespace HatTrick.CommandLine
         {
             base.Validate();
 
-            IList<CommandOptionDefinition> options = base.CommandDefinition.Options;
+            List<CommandOptionDefinition> options = base.CommandDefinition.Options;
 
             Type t = typeof(T);
             PropertyInfo[] props = t.GetProperties();

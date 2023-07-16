@@ -49,7 +49,7 @@ namespace HatTrick.CommandLine
             set => _asyncHandler = value;
         }
 
-        public IList<CommandOptionDefinition> Options
+        public List<CommandOptionDefinition> Options
         { get => _options is null ? _options = new List<CommandOptionDefinition>() : _options; }
 
         public CommandOptionDefinition this[string key]
