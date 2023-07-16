@@ -21,7 +21,7 @@ x Ensure no name collisions between namespaces and commands.
 x Refactor BooleanConverter.  Just janky
 x Default option value???
 x Registered valid option values (Enums???)
-- Implement the ability to hide entire commands and/or command options from help output.
+x Implement the ability to hide entire commands and/or command options from help output.
 x one of a set of options (i.e. one of profile_id or product_id is required).
   x or is it a better practice to simply register 2 commands supporting the differing options ???
 x Rules: MustAssignOneOfRule, DefaultValueRule, ValidArgumentSetRule
@@ -39,12 +39,12 @@ x Consider a max command name length of 32 chars...namespace 31...flag 32
 x Add help property to all constraints (allow implementor to provide the help content)....used 'name' and 'description' instead
 x Render usage with most verbose flags [mustAssign] options wrapped in square brackets.
 x Render usage option args as a short/terse data type.... ie:  --granualrity int [--start DateTime] [--end DateTime]
-- Render help for constraints in the blocked help content area (new line per constraint)
+x Render help for constraints in the blocked help content area (new line per constraint)
 - Impl support for DateOnly as a baked in argument type (add it to the OpType enum).
 x On setting a default constraint...need to ensure there is no 'must assign' constraint.
 x Nix must EnsureMustAssignOptionProvidedAndAssigned...must assign has been implemented as a first class constraint
 xxx MustAssignOneOf and MustAssign should be mutually exclusive (not important...not trying to save devs from themselves).
-- Should cmd ops with must assign = false but the op type would be a non-nullable value type get a default constraint added (NOT EXPLICIT
+- Should cmd ops with must assign = false but the op type would be a non-nullable value type get a default constraint added (NOT EXPLICIT)
 - The above would still be an issue if the -f --flag was provided but no argument...
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository

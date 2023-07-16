@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HatTrick.CommandLine
 {
-    internal class AcceptedSetConstraint<T> : ArgumentConstraint<T>
+    public class AcceptedSetConstraint<T> : ArgumentConstraint<T>
     {
         #region const
         public const string ConstraintName = "Accepted values";

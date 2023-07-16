@@ -5,11 +5,11 @@ using System.Net.Sockets;
 
 namespace HatTrick.CommandLine
 {
-    internal interface IDefaultConstraint
+    public interface IDefaultConstraint
     {
     }
 
-    internal class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
+    public class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
     {
         #region const
         public const string ConstraintName = "Default value";

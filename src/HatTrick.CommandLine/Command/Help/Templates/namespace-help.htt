@@ -1,22 +1,18 @@
-{?var:indent = $.Indent}
-{?var:blockAt = $.HelpStartPos}
-{?var:startingAt = $.Target.Name.Length}
+{?var:blockAt = $.BlockStart}
 
-{$.Target.Name}{($.Target.Help, :blockAt, :startingAt) => GetBlockedContent}
+{$.Target.Name}{($.Target.Help, :blockAt,  $.Target.Name.Length, '.') => GetBlockedContent}
 
 {#if $.Namespaces}
 Child namespaces:
 {#each $.Namespaces}
-{?:startingAt = (:indent.Length, $.Name.Length) => Add}
-{:indent}{$.Name}{($.Help, :blockAt, :startingAt) => GetBlockedContent}
+{($) => GetNamespaceHelp}
 {/each}
 {/if}
 
 {#if $.Commands}
 Child commands:
 {#each $.Commands}
-{?:startingAt = (:indent.Length, $.Name.Length) => Add}
-{:indent}{$.Name}{($.Help, :blockAt, :startingAt) => GetBlockedContent}
+{($) => GetCommandHelp}
 {/each}
 {/if}
 

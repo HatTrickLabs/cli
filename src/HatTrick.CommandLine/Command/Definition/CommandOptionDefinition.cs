@@ -40,13 +40,13 @@ namespace HatTrick.CommandLine
 
         public string LeastVerboseFlag => _flags.MinBy((f) => f.Length);
 
-        internal List<ArgumentConstraint> Constraints
+        public List<ArgumentConstraint> Constraints
         {
             get => _constraints is null ? _constraints = new List<ArgumentConstraint>() : _constraints;
             set => _constraints = value;
         }
 
-        internal bool HasConstraints => _constraints is not null;
+        public bool HasConstraints => _constraints is not null;
 
         //TODO: cache or set when defined
         public bool HasDefault => this.HasConstraints && _constraints.Exists(c => c is IDefaultConstraint);

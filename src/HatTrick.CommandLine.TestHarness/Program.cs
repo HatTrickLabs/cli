@@ -60,6 +60,8 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption(key: "first_name", mustAssign: false, help: "First name.", OpType.String, "-f", "--first-name");
             cmd.AddOption(key: "last_name", mustAssign: false, help: "Last name.", OpType.String, "-l", "--last-name");
             cmd.AddOption(key: "birth_date", mustAssign: false, help: "Birth date.", OpType.DateTime, "-b", "--birth-date");
+            cmd.MustAssignOneOf("first_name", "last_name");
+            cmd.MutaullyExclusiveSet("first_name", "last_name");
             registry.Add(cmd);
 
             /********** Register Vault Commands **********/

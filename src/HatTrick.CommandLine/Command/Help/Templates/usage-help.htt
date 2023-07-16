@@ -4,5 +4,5 @@ Usage: {() => GetExecutableName} command [command_options]
 
 Default Options:
 {#each $.Options-}
-  {('|', $.Flags) => Join}		{$.Help}
+{($) => GetOpDefHelp}
 {/each+}

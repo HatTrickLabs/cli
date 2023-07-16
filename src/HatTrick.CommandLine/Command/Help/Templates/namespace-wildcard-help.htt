@@ -1,20 +1,14 @@
-{?var:indent = $.Indent}
-{?var:blockAt = $.HelpStartPos}
-{?var:startingAt = $.Target.Name.Length}
+{?var:blockAt = $.BlockStart}
 
-{$.Target.Name}{($.Target.Help, :blockAt, :startingAt) => GetBlockedContent}
+{$.Target.Name}{($.Target.Help, :blockAt, $.Target.Name.Length, '.') => GetBlockedContent}
 
 {#if $.Commands}
 Descendent commands:
 {#each $.Commands}
-{?:startingAt = (:indent.Length, $.Name.Length) => Add}
-{:indent}{$.Name}{($.Help, :blockAt, :startingAt) => GetBlockedContent}
+{($) => GetCommandHelp}
 {/each}
 {/if}
 
-{#if $.Namespaces}
-Run {() => GetExecutableName} -? [namespace] to see help content for the above listed namespaces.
-{/if}
 {#if $.Commands}
 Run {() => GetExecutableName} -? [command] to see help content for the above listed commands.
 {/if+}

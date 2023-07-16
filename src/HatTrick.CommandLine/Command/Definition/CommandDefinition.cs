@@ -65,11 +65,13 @@ namespace HatTrick.CommandLine
             }
         }
 
-        private List<CommandConstraint> Constraints
+        public List<CommandConstraint> Constraints
         {
             get => _constraints is null ? _constraints = new List<CommandConstraint>() : _constraints;
             set => _constraints = value;
         }
+
+        public bool HasConstraints => _constraints is not null;
 
         public static string DefaultCommandName => "usage-help";
         #endregion

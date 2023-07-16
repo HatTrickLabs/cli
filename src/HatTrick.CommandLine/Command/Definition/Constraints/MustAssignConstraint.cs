@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace HatTrick.CommandLine
 {
-    internal class MustAssignConstraint : ArgumentConstraint
+    public class MustAssignConstraint : ArgumentConstraint
     {
         #region const
         public const string ConstraintName = "Must assign";

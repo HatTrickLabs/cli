@@ -49,8 +49,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region resolve help block start position
-        private int ResolveHelpBlockStartPosition(int maxLeftContentLength)
+        #region resolve block start position
+        private int ResolveBlockStartPosition(int maxLeftContentLength)
         {
             //add the indent and the desired padding
             int blockStart = maxLeftContentLength + RenderEngine.Indent + RenderEngine.HelpBlockLeftPad;
@@ -60,7 +60,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get blocked content
-        private string GetBlockedContent(string content, int blockAt, int startingAt)
+        private string GetBlockedContent(string content, int blockAt, int startingAt, char padChar = '.')
         {
             if (content is null || content == string.Empty)
                 return content;
@@ -74,7 +74,7 @@ namespace HatTrick.CommandLine
 
             int linePostion = startingAt;
 
-            string pad = new string('.', (blockAt - startingAt));
+            string pad = new string(padChar, (blockAt - startingAt));
 
             output.Append(pad);
             linePostion += pad.Length;
@@ -111,15 +111,25 @@ namespace HatTrick.CommandLine
         #region render usage help
         internal void RenderUsageHelp()
         {
-            var cmdDef = CommandDefinitionRegistry.GetInstance().GetCommandDefinition(CommandDefinition.DefaultCommandName);
+            var target = CommandDefinitionRegistry.GetInstance().GetCommandDefinition(CommandDefinition.DefaultCommandName);
             string template = TemplateAccessor.GetTemplate("usage-help");
+
+            int blockStart = this.ResolveBlockStartPosition(target.Options.Max(o => string.Join('|', o.Flags).Length));
+            string indent = new string(' ', RenderEngine.Indent);
+
+            Func<CommandOptionDefinition, string> GetOpDefHelp = (op) =>
+            {
+                string flags = string.Join('|', op.Flags);
+                int startAt = indent.Length + flags.Length;
+                return $"{indent}{flags}{this.GetBlockedContent(op.Help, blockStart, startAt)}";
+            };
 
             var ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
-            ngin.LambdaRepo.Register(nameof(string.Join), (Func<char, object[], string>)string.Join);
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
+            ngin.LambdaRepo.Register(nameof(GetOpDefHelp), GetOpDefHelp);
 
-            string output = ngin.Merge(cmdDef);
+            string output = ngin.Merge(target);
 
             Console.Write(output);
         }
@@ -134,14 +144,35 @@ namespace HatTrick.CommandLine
             var namespaces = registry.GetNamespaceDefinitions((nsd) => !nsd.Hidden && nsd.Depth == 0);
             var commands = registry.GetCommandDefinitions((cmd) => !cmd.Hidden && cmd.Depth == 0);
 
+            int maxNSLen = namespaces.Length > 0 ? namespaces.Max(ns => ns.Name.Length) : 0;
+            int maxCmdLen = commands.Length > 0 ? commands.Max(cmd => cmd.Name.Length) : 0;
+            int maxLen = Math.Max(maxNSLen, maxCmdLen);
+
+            int blockStart = this.ResolveBlockStartPosition(maxLen);
+            string indent = new string(' ', RenderEngine.Indent);
+
             var bindTo = new Dictionary<string, object>()
             {
                 { "Namespaces", namespaces  },
                 { "Commands",   commands    }
             };
 
+            Func<NamespaceDefinition, string> GetNamespaceHelp = (ns) =>
+            {
+                int startAt = indent.Length + ns.Name.Length;
+                return $"{indent}{ns.Name}{this.GetBlockedContent(ns.Help, blockStart, startAt)}";
+            };
+
+            Func<CommandDefinition, string> GetCommandHelp = (cmd) =>
+            {
+                int startAt = indent.Length + cmd.Name.Length;
+                return $"{indent}{cmd.Name}{this.GetBlockedContent(cmd.Help, blockStart, startAt)}";
+            };
+
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
+            ngin.LambdaRepo.Register(nameof(GetNamespaceHelp), GetNamespaceHelp);
+            ngin.LambdaRepo.Register(nameof(GetCommandHelp), GetCommandHelp);
 
             string output = ngin.Merge(bindTo);
 
@@ -162,23 +193,36 @@ namespace HatTrick.CommandLine
             int maxCmdLen = commands.Length > 0 ? commands.Max(cmd => cmd.Name.Length) : 0;
             int maxLen = Math.Max(target.Name.Length, Math.Max(maxNSLen, maxCmdLen));
 
-            int blockStart = this.ResolveHelpBlockStartPosition(maxLen);
+            int blockStart = this.ResolveBlockStartPosition(maxLen);
             string indent = new string(' ', RenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()
             {
                 { "Target",         target      },
                 { "Indent",         indent      },
-                { "HelpStartPos",   blockStart  },
+                { "BlockStart",     blockStart  },
                 { "Namespaces",     namespaces  },
                 { "Commands",       commands    }
+            };
+
+            Func<NamespaceDefinition, string> GetNamespaceHelp = (ns) =>
+            {
+                int startAt = indent.Length + ns.Name.Length;
+                return $"{indent}{ns.Name}{this.GetBlockedContent(ns.Help, blockStart, startAt)}";
+            };
+
+            Func<CommandDefinition, string> GetCommandHelp = (cmd) =>
+            {
+                int startAt = indent.Length + cmd.Name.Length;
+                return $"{indent}{cmd.Name}{this.GetBlockedContent(cmd.Help, blockStart, startAt)}";
             };
 
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
             ngin.LambdaRepo.Register(nameof(this.GetBlockedContent), this.GetBlockedContent);
-            ngin.LambdaRepo.Register("Add", (int a, int b) => a + b);
+            ngin.LambdaRepo.Register(nameof(GetNamespaceHelp), GetNamespaceHelp);
+            ngin.LambdaRepo.Register(nameof(GetCommandHelp), GetCommandHelp);
 
             string output = ngin.Merge(bindTo);
 
@@ -199,23 +243,29 @@ namespace HatTrick.CommandLine
             int maxCmdLen = commands.Length > 0 ? commands.Max(cmd => cmd.Name.Length) : 0;
             int maxLen = Math.Max(target.Name.Length, maxCmdLen);
 
-            int blockStart = this.ResolveHelpBlockStartPosition(maxLen);
+            int blockStart = this.ResolveBlockStartPosition(maxLen);
             string indent = new string(' ', RenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()
             {
                 { "Target",         target      },
-                { "Indent",         indent      },
-                { "HelpStartPos",   blockStart  },
+                { "BlockStart",     blockStart  },
                 { "Namespaces",     namespaces  },
                 { "Commands",       commands    }
+            };
+
+            Func<CommandDefinition, string> GetCommandHelp = (cmd) =>
+            {
+                int startAt = indent.Length + cmd.Name.Length;
+                return $"{indent}{cmd.Name}{this.GetBlockedContent(cmd.Help, blockStart, startAt)}";
             };
 
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
             ngin.LambdaRepo.Register(nameof(this.GetBlockedContent), this.GetBlockedContent);
-            ngin.LambdaRepo.Register("Add", (int a, int b) => a + b);
+            
+            ngin.LambdaRepo.Register(nameof(GetCommandHelp), GetCommandHelp);
 
             string output = ngin.Merge(bindTo);
 
@@ -228,25 +278,38 @@ namespace HatTrick.CommandLine
         {
             string template = TemplateAccessor.GetTemplate("command-help");
 
-            //TODO: refactor this... doing this string join here AND within the template...
-            int blockStart = this.ResolveHelpBlockStartPosition(target.Options.Max(o => string.Join('|', o.Flags).Length));
+            int opBlockStart = this.ResolveBlockStartPosition(target.Options.Max(o => string.Join('|', o.Flags).Length));
+            int cmdConstBlockStart = this.ResolveBlockStartPosition(target.HasConstraints ? target.Constraints.Max(c => c.Name.Length) : 0);
             string indent = new string(' ', RenderEngine.Indent);
 
-            var bindTo = new Dictionary<string, object>()
+            Func<CommandOptionDefinition, string> GetOpDefHelp = (op) =>
             {
-                { "Target",         target      },
-                { "Indent",         indent      },
-                { "HelpStartPos",   blockStart  },
+                string flags = string.Join('|', op.Flags);
+                int startAt = indent.Length + flags.Length;
+                return $"{indent}{flags}{this.GetBlockedContent(op.Help, opBlockStart, startAt)}";
+            };
+
+            Func<ArgumentConstraint, string> GetOpDefArgConstraintHelp = (opConst) =>
+            {
+                int blockAt = opBlockStart;
+                int startAt = 0;
+                string content = $"{opConst.Name}:  {opConst.Description}";
+                return this.GetBlockedContent(content, blockAt, startAt, ' ');
+            };
+
+            Func<CommandConstraint, string> GetCommandConstraintHelp = (c) =>
+            {
+                int startAt = indent.Length + c.Name.Length;
+                return $"{indent}{c.Name}{this.GetBlockedContent(c.Description, cmdConstBlockStart, startAt, ' ')}";
             };
 
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
-            ngin.LambdaRepo.Register(nameof(this.GetBlockedContent), this.GetBlockedContent);
-            ngin.LambdaRepo.Register("Add", (int a, int b) => a + b);
-            ngin.LambdaRepo.Register(nameof(string.Join), (Func<char, object[], string>)string.Join);
-
-            string output = ngin.Merge(bindTo);
+            ngin.LambdaRepo.Register(nameof(GetOpDefHelp), GetOpDefHelp);
+            ngin.LambdaRepo.Register(nameof(GetOpDefArgConstraintHelp), GetOpDefArgConstraintHelp);
+            ngin.LambdaRepo.Register(nameof(GetCommandConstraintHelp), GetCommandConstraintHelp);
+            string output = ngin.Merge(target);
 
             Console.Write(output);
         }

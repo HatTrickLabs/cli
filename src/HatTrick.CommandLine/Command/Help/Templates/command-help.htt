@@ -1,16 +1,21 @@
-{?var:indent = $.Indent}
-{?var:blockAt = $.HelpStartPos}
-{?var:startingAt}
 
 Usage:
-{() => GetExecutableName} {Target.Name} {+#each Target.Options+}{#if !$.MustAssign}[{/if}{$.MostVerboseFlag} {$.GenericType.Name}{#if !$.MustAssign}]{/if+} {+/each+}
+{() => GetExecutableName} {$.Name} {+#each $.Options+}{#if !$.MustAssign}[{/if}{$.MostVerboseFlag} {$.GenericType.Name}{#if !$.MustAssign}]{/if+} {+/each+}
 
-{#if Target.Options}
+{#if $.Options}
 Options:
-{#each Target.Options}
-{?var:startingAt = ('|', $.Flags) => Join}
-{?var:startingAt = :startingAt.Length}
-{?var:startingAt = (:startingAt, :indent.Length) => Add}
-{:indent}{('|', $.Flags) => Join}{($.Help, :blockAt, :startingAt) => GetBlockedContent}
+{#each $.Options}
+{($) => GetOpDefHelp}
+{#if $.HasConstraints}
+{#each $.Constraints}
+{($) => GetOpDefArgConstraintHelp}
+{/each}
+{/if}
 {/each}
 {/if+}
+{#if $.HasConstraints}
+Command constraints:
+{#each $.Constraints}
+{($) => GetCommandConstraintHelp}
+{/each+}
+{/if}

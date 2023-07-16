@@ -54,8 +54,4 @@
     <PackageReference Include="HatTrick.Text.Templating" Version="2.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Command\Help\Templates\invalid-input-help.htt" />
-  </ItemGroup>
-
 </Project>

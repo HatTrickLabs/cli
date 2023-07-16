@@ -2,16 +2,17 @@
 {#if Namespaces-}
 Namespaces:
 {#each Namespaces-}
-  {$.Name}			{$.Help}
+{($) => GetNamespaceHelp}
 {/each-}
 {/if-}
 
 {#if Commands-}  
 Commands:
 {#each Commands-}
-  {$.Name}			{$.Help}
+{($) => GetCommandHelp}
 {/each-}
 {/if-}
+
 {-#if Namespaces-}
 Run '{() => GetExecutableName} -? [namespace]' to view help content for the above listed namespaces.
 {/if}

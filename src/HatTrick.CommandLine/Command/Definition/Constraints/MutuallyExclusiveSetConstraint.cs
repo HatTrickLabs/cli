@@ -27,7 +27,7 @@ namespace HatTrick.CommandLine
 
             base.SetConstraint(this.ZeroOrOneAssigned);
 
-            base.SetDescription(string.Join(", ", Array.ConvertAll(optionDefinitionKeys, o => o.flag)));
+            base.SetDescription(string.Join("|", Array.ConvertAll(optionDefinitionKeys, o => o.flag)));
         }
         #endregion
 

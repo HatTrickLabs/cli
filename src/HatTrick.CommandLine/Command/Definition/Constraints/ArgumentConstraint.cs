@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
-    internal abstract class ArgumentConstraint
+    public abstract class ArgumentConstraint
     {
         #region internals
         private string _name;
@@ -46,7 +46,7 @@ namespace HatTrick.CommandLine
         #endregion
     }
 
-    internal class ArgumentConstraint<T> : ArgumentConstraint
+    public class ArgumentConstraint<T> : ArgumentConstraint
     {
         #region internals
         private Func<T, bool> _constraint;
