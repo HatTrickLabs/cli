@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using HatTrick.CommandLine.Namespace;
 
 namespace HatTrick.CommandLine.TestHarness
 {

@@ -2,10 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.VisualBasic.FileIO;
-using Microsoft.Win32;
-using HatTrick.CommandLine.Namespace;
-using System.Globalization;
 
 namespace HatTrick.CommandLine
 {

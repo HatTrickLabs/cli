@@ -1,9 +1,4 @@
-﻿using HatTrick.CommandLine.Namespace;
-using Microsoft.Win32.SafeHandles;
-using System;
-using System.Net.Http.Headers;
-
-namespace HatTrick.CommandLine
+﻿namespace HatTrick.CommandLine
 {
     internal class DefaultCommandDefinition : CommandDefinition
     {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HatTrick.CommandLine
+﻿namespace HatTrick.CommandLine
 {
     public class DefaultCommandOption : CommandOption
     {

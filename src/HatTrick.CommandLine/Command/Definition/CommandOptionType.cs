@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HatTrick.CommandLine
+﻿namespace HatTrick.CommandLine
 {
     #region option type [enum]
     public enum OpType

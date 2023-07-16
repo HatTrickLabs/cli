@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using HatTrick.CommandLine.Namespace;
+using System.Collections.Generic;
 using HatTrick.Text.Templating;
-using Microsoft.VisualBasic;
+using System.Text;
+using System.IO;
 
 namespace HatTrick.CommandLine
 {

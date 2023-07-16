@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Reflection.Metadata;
 
-namespace HatTrick.CommandLine.Namespace
+namespace HatTrick.CommandLine
 {
     public class NamespaceDefinition
     {
