@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace HatTrick.CommandLine
 {
-    public class CommandDefinitionRegistry
+    public class Registry
     {
         #region internals
-        private static CommandDefinitionRegistry _instance;
+        private static Registry _instance;
         private static object _lock = new();
         private Dictionary<string, NamespaceDefinition> _namespaceDefs;
         private Dictionary<string, CommandDefinition> _cmdDefs;
@@ -27,7 +27,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        private CommandDefinitionRegistry()
+        private Registry()
         {
             _cmdDefs = new Dictionary<string, CommandDefinition>();
             _namespaceDefs = new Dictionary<string, NamespaceDefinition>();
@@ -35,13 +35,13 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get instance
-        public static CommandDefinitionRegistry GetInstance()
+        public static Registry GetInstance()
         {
             lock (_lock)
             {
                 if (_instance is null)
                 {
-                    _instance = new CommandDefinitionRegistry();
+                    _instance = new Registry();
                     _instance.Add(new DefaultCommandDefinition());
                 }
             }

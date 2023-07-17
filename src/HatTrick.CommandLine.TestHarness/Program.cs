@@ -6,7 +6,7 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
-            RegisterCommands(out CommandDefinitionRegistry registry);
+            RegisterCommands(out Registry registry);
 
             registry.ExecuteCommand(CommandParser.Parse(args));
 
@@ -22,9 +22,9 @@ namespace HatTrick.CommandLine.TestHarness
             Console.WriteLine(input);
         }
 
-        static void RegisterCommands(out CommandDefinitionRegistry registry)
+        static void RegisterCommands(out Registry registry)
         {
-            registry = CommandDefinitionRegistry.GetInstance();
+            registry = Registry.GetInstance();
 
             CommandDefinition cmd = null;
 

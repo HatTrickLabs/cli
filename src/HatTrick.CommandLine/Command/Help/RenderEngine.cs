@@ -103,7 +103,7 @@ namespace HatTrick.CommandLine
         #region render usage help
         internal void RenderUsageHelp()
         {
-            var target = CommandDefinitionRegistry.GetInstance().GetCommandDefinition(CommandDefinition.DefaultCommandName);
+            var target = Registry.GetInstance().GetCommandDefinition(CommandDefinition.DefaultCommandName);
             string template = TemplateAccessor.GetTemplate("usage-help");
 
             int blockStart = this.ResolveBlockStartPosition(target.Options.Max(o => string.Join('|', o.Flags).Length));
@@ -131,7 +131,7 @@ namespace HatTrick.CommandLine
         internal void RenderRootHelp()
         {
             string template = TemplateAccessor.GetTemplate("root-help");
-            var registry = CommandDefinitionRegistry.GetInstance();
+            var registry = Registry.GetInstance();
 
             var namespaces = registry.GetNamespaceDefinitions((nsd) => !nsd.Hidden && nsd.Depth == 0);
             var commands = registry.GetCommandDefinitions((cmd) => !cmd.Hidden && cmd.Depth == 0);
@@ -176,7 +176,7 @@ namespace HatTrick.CommandLine
         internal void RenderNamespaceHelp(NamespaceDefinition target)
         {
             string template = TemplateAccessor.GetTemplate("namespace-help");
-            var registry = CommandDefinitionRegistry.GetInstance();
+            var registry = Registry.GetInstance();
 
             NamespaceDefinition[] namespaces = registry.GetChildNamespaceDefinitions(target, false);
             CommandDefinition[] commands = registry.GetChildCommandDefinitions(target, false);
@@ -226,7 +226,7 @@ namespace HatTrick.CommandLine
         internal void RenderNamespaceWildcardHelp(NamespaceDefinition target)
         {
             string template = TemplateAccessor.GetTemplate("namespace-wildcard-help");
-            var registry = CommandDefinitionRegistry.GetInstance();
+            var registry = Registry.GetInstance();
 
             //namespaces EMPTY on wildcard, only interested in descendent commands
             NamespaceDefinition[] namespaces = Array.Empty<NamespaceDefinition>();//0 length...

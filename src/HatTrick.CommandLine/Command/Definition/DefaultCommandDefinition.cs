@@ -76,7 +76,7 @@
         #region help
         private void InvokeHelp(Command cmd)
         {
-            var registry = CommandDefinitionRegistry.GetInstance();
+            var registry = Registry.GetInstance();
             var renderer = new RenderEngine();
 
             if (cmd["help"] is EmptyCommandOption) //no option flag provided at all...
