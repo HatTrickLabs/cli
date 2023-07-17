@@ -8,7 +8,7 @@ namespace HatTrick.CommandLine.TestHarness
         {
             RegisterCommands(out Registry registry);
 
-            registry.ExecuteCommand(CommandParser.Parse(args));
+            registry.ExecuteCommand(Parser.Parse(args));
 
             //TestMaskedInputReader();
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HatTrick.CommandLine
 {
-    public static class CommandParser
+    public static class Parser
     {
         #region parse
         public static Command Parse(string[] args)
@@ -19,7 +19,7 @@ namespace HatTrick.CommandLine
             int startAt = isDefault ? 0 : 1;
             var argSet = new ReadOnlySpan<string>(args, startAt, (args.Length - startAt));
 
-            List<CommandOption> options = CommandParser.ParseCommandOptions(argSet);
+            List<CommandOption> options = Parser.ParseCommandOptions(argSet);
 
             return new Command(isDefault ? CommandDefinition.DefaultCommandName : args[0], options);
         }
@@ -58,7 +58,7 @@ namespace HatTrick.CommandLine
                         ops.Add(new CommandOption(arg));
 
                     else //must be a compound terse option flag, unroll into individual flags
-                        CommandParser.UnrollCompoundFlag(arg, (f) => ops.Add(f));
+                        Parser.UnrollCompoundFlag(arg, (f) => ops.Add(f));
 
                 }
                 else //no '-' and prev not an explicit assign, must be an option argument
