@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace HatTrick.CommandLine
+namespace HatTrick.CommandLine.Mapping
 {
     public class SignatureMapOf<T> : Map where T : Delegate
     {
@@ -17,7 +17,7 @@ namespace HatTrick.CommandLine
 
         public SignatureMapOf(CommandDefinition commandDef, (string optionKey, string parameterName)[] correlations) : base(commandDef, correlations)
         {
-            this.RegisterValidator();
+            RegisterValidator();
         }
         #endregion
 
@@ -31,7 +31,7 @@ namespace HatTrick.CommandLine
         #region register validator
         protected override void RegisterValidator()
         {
-            base.CommandDefinition.RegisterMappedHandlerValidator(this.Validate);
+            CommandDefinition.RegisterMappedHandlerValidator(Validate);
         }
         #endregion
 
@@ -40,7 +40,7 @@ namespace HatTrick.CommandLine
         {
             base.Validate();
 
-            IList<CommandOptionDefinition> options = base.CommandDefinition.Options;
+            IList<CommandOptionDefinition> options = CommandDefinition.Options;
 
             ParameterInfo[] pInfos = _target.Method.GetParameters();
 
@@ -48,7 +48,7 @@ namespace HatTrick.CommandLine
             {
                 var op = options[i];
 
-                bool isCorrelated = base.CorrelationExistsForOptionKey(op.Key, out (string opKey, string parameterName) correlation);
+                bool isCorrelated = CorrelationExistsForOptionKey(op.Key, out (string opKey, string parameterName) correlation);
                 string paramName = isCorrelated ? correlation.parameterName : op.Key;
 
                 var parameter = Array.Find(pInfos, (p) => p.Name == paramName);
@@ -89,8 +89,8 @@ namespace HatTrick.CommandLine
             {
                 var parameter = pInfos[i];
 
-                bool isCorrelated = base.CorrelationExistsForMapTarget(parameter.Name, out (string opKey, string parameterName) correlation);
-                string opKey = isCorrelated ? correlation.opKey: parameter.Name;
+                bool isCorrelated = CorrelationExistsForMapTarget(parameter.Name, out (string opKey, string parameterName) correlation);
+                string opKey = isCorrelated ? correlation.opKey : parameter.Name;
 
                 parameters[i] = command[opKey].Value;
             }

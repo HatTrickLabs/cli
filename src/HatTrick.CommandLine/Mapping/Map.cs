@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HatTrick.CommandLine
+namespace HatTrick.CommandLine.Mapping
 {
     public abstract class Map
     {
@@ -34,15 +34,15 @@ namespace HatTrick.CommandLine
         #region validate
         public virtual void Validate()
         {
-            this.EnsureCorrelations();
+            EnsureCorrelations();
         }
         #endregion
 
         #region correlation exists for option key
         public bool CorrelationExistsForOptionKey(string optionKey, out (string optionKey, string to) correlation)
         {
-            correlation = (_correlations is null || _correlations.Length == 0)
-                ? default 
+            correlation = _correlations is null || _correlations.Length == 0
+                ? default
                 : Array.Find(_correlations, (c) => c.optionKey == optionKey);
 
             return correlation != default;
@@ -52,7 +52,7 @@ namespace HatTrick.CommandLine
         #region correlation exists for map target
         public bool CorrelationExistsForMapTarget(string to, out (string optionKey, string to) correlation)
         {
-            correlation = (_correlations is null || _correlations.Length == 0)
+            correlation = _correlations is null || _correlations.Length == 0
                 ? default
                 : Array.Find(_correlations, (c) => c.to == to);
 

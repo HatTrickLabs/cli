@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HatTrick.CommandLine
+namespace HatTrick.CommandLine.Parsing
 {
     public static class Parser
     {
@@ -17,9 +17,9 @@ namespace HatTrick.CommandLine
             bool isDefault = args[0][0] == '-';//no command, just jumps right into option flags
 
             int startAt = isDefault ? 0 : 1;
-            var argSet = new ReadOnlySpan<string>(args, startAt, (args.Length - startAt));
+            var argSet = new ReadOnlySpan<string>(args, startAt, args.Length - startAt);
 
-            List<CommandOption> options = Parser.ParseCommandOptions(argSet);
+            List<CommandOption> options = ParseCommandOptions(argSet);
 
             return new Command(isDefault ? CommandDefinition.DefaultCommandName : args[0], options);
         }
@@ -58,7 +58,7 @@ namespace HatTrick.CommandLine
                         ops.Add(new CommandOption(arg));
 
                     else //must be a compound terse option flag, unroll into individual flags
-                        Parser.UnrollCompoundFlag(arg, (f) => ops.Add(f));
+                        UnrollCompoundFlag(arg, (f) => ops.Add(f));
 
                 }
                 else //no '-' and prev not an explicit assign, must be an option argument

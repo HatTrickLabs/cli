@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HatTrick.CommandLine
+namespace HatTrick.CommandLine.Parsing
 {
     public class Tokenizer
     {
@@ -24,7 +24,7 @@ namespace HatTrick.CommandLine
         #region peek
         private char Peek()
         {
-            char c = (_srcLen > _idx) ? _src[_idx] : _etx;
+            char c = _srcLen > _idx ? _src[_idx] : _etx;
 
             return c;
         }
@@ -33,7 +33,7 @@ namespace HatTrick.CommandLine
         #region read
         private char Read()
         {
-            char c = (_srcLen > _idx) ? _src[_idx++] : _etx;
+            char c = _srcLen > _idx ? _src[_idx++] : _etx;
 
             return c;
         }
@@ -54,7 +54,7 @@ namespace HatTrick.CommandLine
             char escape = '\\';
             char previous = '\0';
 
-            Func<char, bool> isWhitespace = (char c) => (c == space || c == tab || c == nl || c == cr);
+            Func<char, bool> isWhitespace = (c) => c == space || c == tab || c == nl || c == cr;
 
             bool inDblQuote = false;
 
@@ -63,7 +63,7 @@ namespace HatTrick.CommandLine
 
             int at = 0;
             char c;
-            while ((c = this.Read()) != etx)
+            while ((c = Read()) != etx)
             {
                 if (c == dblQuote && previous != escape)
                 {
@@ -79,7 +79,7 @@ namespace HatTrick.CommandLine
                 }
                 else if (c == escape)
                 {
-                    if (this.Peek() != '"')
+                    if (Peek() != '"')
                     {
                         token[at++] = c;
                     }

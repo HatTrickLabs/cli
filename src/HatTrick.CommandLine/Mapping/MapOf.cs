@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace HatTrick.CommandLine
+namespace HatTrick.CommandLine.Mapping
 {
     public class MapOf<T> : Map where T : new()
     {
@@ -13,14 +13,14 @@ namespace HatTrick.CommandLine
 
         public MapOf(CommandDefinition commandDef, (string optionKey, string propertyName)[] correlations) : base(commandDef, correlations)
         {
-            this.RegisterValidator();
+            RegisterValidator();
         }
         #endregion
 
         #region register validator
         protected override void RegisterValidator()
         {
-            base.CommandDefinition.RegisterMappedHandlerValidator(this.Validate);
+            CommandDefinition.RegisterMappedHandlerValidator(Validate);
         }
         #endregion
 
@@ -29,14 +29,14 @@ namespace HatTrick.CommandLine
         {
             base.Validate();
 
-            List<CommandOptionDefinition> options = base.CommandDefinition.Options;
+            List<CommandOptionDefinition> options = CommandDefinition.Options;
 
             Type t = typeof(T);
             PropertyInfo[] props = t.GetProperties();
 
             foreach (var op in options)
             {
-                bool isCorrelated = base.CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
+                bool isCorrelated = CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
                 string propName = isCorrelated ? correlation.property : op.Key;
 
                 var prop = Array.Find(props, (p) => p.Name == propName);
@@ -74,7 +74,7 @@ namespace HatTrick.CommandLine
 
             foreach (var op in options)
             {
-                bool isCorrelated = base.CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
+                bool isCorrelated = CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
                 string propName = isCorrelated ? correlation.property : op.Key;
 
                 var prop = Array.Find(props, (p) => p.Name == propName);

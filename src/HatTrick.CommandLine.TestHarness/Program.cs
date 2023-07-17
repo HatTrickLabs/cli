@@ -1,4 +1,5 @@
 ﻿using System;
+using HatTrick.CommandLine.Parsing;
 
 namespace HatTrick.CommandLine.TestHarness
 {
