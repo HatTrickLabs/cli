@@ -21,22 +21,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Command\Help\Templates\command-help.htt" />
-    <None Remove="Command\Help\Templates\invalid-input-help.htt" />
-    <None Remove="Command\Help\Templates\namespace-help.htt" />
-    <None Remove="Command\Help\Templates\namespace-wildcard-help.htt" />
-    <None Remove="Command\Help\Templates\root-help.htt" />
-    <None Remove="Command\Help\Templates\usage-help.htt" />
+    <None Remove="Help\Templates\command-help.htt" />
+    <None Remove="Help\Templates\invalid-input-help.htt" />
+    <None Remove="Help\Templates\namespace-help.htt" />
+    <None Remove="Help\Templates\namespace-wildcard-help.htt" />
+    <None Remove="Help\Templates\root-help.htt" />
+    <None Remove="Help\Templates\usage-help.htt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Command\Help\Templates\command-help.htt" />
-    <EmbeddedResource Include="Command\Help\Templates\namespace-help.htt" />
-    <EmbeddedResource Include="Command\Help\Templates\namespace-wildcard-help.htt">
+    <EmbeddedResource Include="Help\Templates\command-help.htt" />
+    <EmbeddedResource Include="Help\Templates\namespace-help.htt" />
+    <EmbeddedResource Include="Help\Templates\namespace-wildcard-help.htt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Command\Help\Templates\root-help.htt" />
-    <EmbeddedResource Include="Command\Help\Templates\usage-help.htt" />
+    <EmbeddedResource Include="Help\Templates\root-help.htt" />
+    <EmbeddedResource Include="Help\Templates\usage-help.htt" />
   </ItemGroup>
 
   <ItemGroup>
