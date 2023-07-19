@@ -14,13 +14,13 @@
         UInt32,
         Int64,
         UInt64,
-        NInt,
-        NUInt,
+        //NInt,
+        //NUInt,
         Float,
         Double,
         Decimal,
         DateTime,
-        Guid
+        //Guid
     }
     #endregion
 }

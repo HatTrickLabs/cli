@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HatTrick.CommandLine.Mapping
+namespace HatTrick.CommandLine
 {
     public abstract class Map
     {

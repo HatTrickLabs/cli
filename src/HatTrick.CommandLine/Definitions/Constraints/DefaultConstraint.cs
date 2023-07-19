@@ -22,7 +22,7 @@
         public DefaultConstraint(T value) : base(DefaultConstraint<T>.ConstraintName)
         {
             _default = value;
-            base.SetDescription(value.ToString());
+            base.SetDescription(value is null ? "null" : value.ToString());
             base.SetConstraint((o) => true);//just pass it...nothing to guard against here...
         }
         #endregion

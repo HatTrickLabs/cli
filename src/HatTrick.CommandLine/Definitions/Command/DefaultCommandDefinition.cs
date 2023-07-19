@@ -1,4 +1,6 @@
-﻿namespace HatTrick.CommandLine
+﻿using System;
+
+namespace HatTrick.CommandLine
 {
     internal class DefaultCommandDefinition : CommandDefinition
     {
@@ -9,29 +11,30 @@
             base.Hide();
             base.Handler = this.DefaultCommandHandler;
 
-            base.AddOption(
-                key: "help", 
-                mustAssign: false, 
-                help: "Display help (accepts a command or namespace as argument).", 
-                type: OpType.String, 
+            var helpOp = new CommandOptionDefinition<string>(
+                key: "help",
+                defaultArg: null,
+                help: "Display help (accepts a command or namespace as argument).",
+                converter: (arg) => arg,
                 "-?", "-h", "--help"
             );
+            base.Options.Add(helpOp);
 
-            base.AddOption(
+            var verOp = new CommandOptionDefinition<bool>(
                 key: "version", 
-                mustAssign: false, 
-                help: "Display crypto version information.", 
-                type: OpType.Bool, 
-                "-v", "--version"
-            );
+                defaultArg: false, 
+                help: "", 
+                converter: BooleanConverter.ToBoolean, 
+                "-v", "--version");
+            base.Options.Add(verOp);
 
-            base.AddOption(
+            var runOp = new CommandOptionDefinition<bool>(
                 key: "run", 
-                mustAssign: false, 
+                defaultArg: false, 
                 help: "Run crypto in a non-exiting command loop.", 
-                type: OpType.Bool, 
-                "-r", "--run"
-            );
+                converter: BooleanConverter.ToBoolean, 
+                "-r", "--run");
+            base.Options.Add(runOp);
 
             base.MutaullyExclusiveSet("help", "version", "run");
         }

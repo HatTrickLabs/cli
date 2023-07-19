@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Text;
 
 namespace HatTrick.CommandLine
 {
@@ -88,95 +89,44 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region add option
-        public void AddOption(string key, OpType type, params string[] flags)
-        {
-            this.AddOption(key: key, null, type: type, flags);
-        }
-
-        public void AddOption(string key, string help, OpType type, params string[] flags)
-        {
-            this.AddOption(key, false, help, type, flags);
-        }
-
-        public void AddOption(string key, bool mustAssign, string help, OpType type, params string[] flags)
-        {
-            switch (type)
-            {
-                case OpType.String:
-                    this.AddOptionOf<string>(key, mustAssign, help, Convert.ToString, flags);
-                    break;
-                case OpType.Bool:
-                    this.AddOptionOf<bool>(key, mustAssign, help, BooleanConverter.ConvertToBoolean, flags);
-                    break;
-                case OpType.Char:
-                    this.AddOptionOf<char>(key, mustAssign, help, Convert.ToChar, flags);
-                    break;
-                case OpType.Byte:
-                    this.AddOptionOf<byte>(key, mustAssign, help, Convert.ToByte, flags);
-                    break;
-                case OpType.SByte:
-                    this.AddOptionOf<sbyte>(key, mustAssign, help, Convert.ToSByte, flags);
-                    break;
-                case OpType.Short:
-                    this.AddOptionOf<short>(key, mustAssign, help, Convert.ToInt16, flags);
-                    break;
-                case OpType.UShort:
-                    this.AddOptionOf<ushort>(key, mustAssign, help, Convert.ToUInt16, flags);
-                    break;
-                case OpType.Int32:
-                    this.AddOptionOf<int>(key, mustAssign, help, Convert.ToInt32, flags);
-                    break;
-                case OpType.UInt32:
-                    this.AddOptionOf<uint>(key, mustAssign, help, Convert.ToUInt32, flags);
-                    break;
-                case OpType.Int64:
-                    this.AddOptionOf<long>(key, mustAssign, help, Convert.ToInt64, flags);
-                    break;
-                case OpType.UInt64:
-                    this.AddOptionOf<ulong>(key, mustAssign, help, Convert.ToUInt64, flags);
-                    break;
-                case OpType.NInt:
-                    this.AddOptionOf<nint>(key, mustAssign, help, nint.Parse, flags);
-                    break;
-                case OpType.NUInt:
-                    this.AddOptionOf<nuint>(key, mustAssign, help, nuint.Parse, flags);
-                    break;
-                case OpType.Float:
-                    this.AddOptionOf<float>(key, mustAssign, help, Convert.ToSingle, flags);
-                    break;
-                case OpType.Double:
-                    this.AddOptionOf<double>(key, mustAssign, help, Convert.ToDouble, flags);
-                    break;
-                case OpType.Decimal:
-                    this.AddOptionOf<decimal>(key, mustAssign, help, Convert.ToDecimal, flags);
-                    break;
-                case OpType.DateTime:
-                    this.AddOptionOf<DateTime>(key, mustAssign, help, Convert.ToDateTime, flags);
-                    break;
-                case OpType.Guid:
-                    this.AddOptionOf<Guid>(key, mustAssign, help, Guid.Parse, flags);
-                    break;
-                default:
-                    throw new InvalidOperationException($"Encountered un-expected {nameof(OpType)}: {type}");
-            }
-        }
-        #endregion
-
         #region add option of T
-        public void AddOptionOf<T>(string key, Func<string, T> converter, params string[] flags)
+        //public void AddOption<T>(string key, string help, params string[] flags)
+        public void AddOption<T>(string key, string help, (string terse, string verbose) flags)
         {
-            this.AddOptionOf<T>(key: key, help: null, converter: converter, flags: flags);
+            //TODO: this is probably not going to work for everything ie: nint, nuint, guid, dateonly
+            Func<string, T> converter = (string arg) => (T)Convert.ChangeType(arg, typeof(T));
+            var op = new CommandOptionDefinition<T>(
+                key: key, 
+                help: help, 
+                converter: converter, 
+                flags: new string[] { flags.terse, flags.verbose }
+            );
+            this.Options.Add(op);
         }
 
-        public void AddOptionOf<T>(string key, string help, Func<string, T> converter, params string[] flags)
+        public void AddOption<T>(string key, T defaultArg, string help, (string terse, string verbose) flags)
         {
-            this.AddOptionOf<T>(key: key, mustAssign: false, help: help, converter: converter, flags: flags);
+            //TODO: this is probably not going to work for everything ie: nint, nuint, guid, dateonly
+            Func<string, T> converter = (string arg) => (T)Convert.ChangeType(arg, typeof(T));
+            var op = new CommandOptionDefinition<T>(
+                key: key, 
+                defaultArg: defaultArg, 
+                help: help, 
+                converter: converter, 
+                flags: new string[] { flags.terse, flags.verbose }
+            );
+            this.Options.Add(op);
         }
 
-        public void AddOptionOf<T>(string key, bool mustAssign, string help, Func<string, T> converter, params string[] flags)
+        public void AddOption<T>(string key, T defaultArg, string help, Func<string, T> converter, (string terse, string verbose) flags)
         {
-            var op = new CommandOptionDefinition<T>(key: key, converter: converter, mustAssign: mustAssign, help: help, flags: flags);
+            var op = new CommandOptionDefinition<T>(
+                key: key, 
+                defaultArg: defaultArg, 
+                help: help, 
+                converter: converter, 
+                flags: new string[] { flags.terse, flags.verbose }
+            );
             this.Options.Add(op);
         }
         #endregion

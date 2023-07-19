@@ -85,19 +85,20 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region set default
-        public void SetDefault<T>(T value)
-        {
-            try
-            {
-                this.Of<T>().SetDefault(value);
-            }
-            catch (InvalidCastException ice)
-            {
-                var name = nameof(CommandOptionDefinition);
-                string msg = $"Cannot set default value '{value}' of type {typeof(T).Name} for {name}<{this.GenericType.Name}>.";
-                throw new CommandDefinitionException(msg, ice);
-            }
-        }
+        //TODO: cleanup
+        //public void SetDefault<T>(T value)
+        //{
+        //    try
+        //    {
+        //        this.Of<T>().SetDefault(value);
+        //    }
+        //    catch (InvalidCastException ice)
+        //    {
+        //        var name = nameof(CommandOptionDefinition);
+        //        string msg = $"Cannot set default value '{value}' of type {typeof(T).Name} for {name}<{this.GenericType.Name}>.";
+        //        throw new CommandDefinitionException(msg, ice);
+        //    }
+        //}
         #endregion
 
         #region set accepted
@@ -214,17 +215,17 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal CommandOptionDefinition(string key, Func<string, T> converter, params string[] flags) : this(key, converter, null, flags)
+        internal CommandOptionDefinition(string key, string help, Func<string, T> converter, params string[] flags) 
+                                  : base(key: key, mustAssign: true, help: help, flags: flags)
         {
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
 
-        internal CommandOptionDefinition(string key, Func<string, T> converter, string help, params string[] flags) : this(key, converter, false, help, flags)
+        internal CommandOptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, params string[] flags) 
+                                  : base(key: key, mustAssign: false, help: help, flags: flags)
         {
-        }
-
-        internal CommandOptionDefinition(string key, Func<string, T> converter, bool mustAssign, string help, params string[] flags) : base(key, mustAssign, help, flags)
-        {
-            _converter = converter ?? throw new ArgumentNullException(nameof(key));
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+            base.Constraints.Add(new DefaultConstraint<T>(defaultArg));
         }
         #endregion
 
@@ -250,15 +251,16 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region set default
-        public void SetDefault(T value)
-        {
-            bool mustAssign = base.HasConstraints && base.Constraints.Exists(c => c is MustAssignConstraint);
+        //TODO: cleanup
+        //public void SetDefault(T value)
+        //{
+        //    bool mustAssign = base.HasConstraints && base.Constraints.Exists(c => c is MustAssignConstraint);
 
-            if (mustAssign)
-                throw new CommandDefinitionException($"Option '{base.Key}' has a '{MustAssignConstraint.ConstraintName}' constraint...'default' cannot be applied.");
+        //    if (mustAssign)
+        //        throw new CommandDefinitionException($"Option '{base.Key}' has a '{MustAssignConstraint.ConstraintName}' constraint...'default' cannot be applied.");
 
-            base.Constraints.Add(new DefaultConstraint<T>(value));
-        }
+        //    base.Constraints.Add(new DefaultConstraint<T>(value));
+        //}
         #endregion
 
         #region set accepted

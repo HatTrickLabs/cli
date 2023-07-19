@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace HatTrick.CommandLine.Mapping
+namespace HatTrick.CommandLine
 {
     public class Mapper
     {
