@@ -8,14 +8,16 @@ namespace HatTrick.CommandLine.Parsing
         #region internals
         private readonly char _etx = '\x3'; //end of text
         private string _src;
+        private bool _keepLitQuotes;
         private int _srcLen;
         private int _idx;
         #endregion
 
         #region constructors
-        public Tokenizer(string input)
+        public Tokenizer(string input, bool keepLiteralQuotes = false)
         {
             _src = input ?? throw new ArgumentNullException(nameof(input));
+            _keepLitQuotes = keepLiteralQuotes;
             _srcLen = _src.Length;
             _idx = 0;
         }
@@ -46,6 +48,7 @@ namespace HatTrick.CommandLine.Parsing
                 return new string[0];
 
             char etx = _etx;
+            bool keepLitQuotes = _keepLitQuotes;
             char dblQuote = '\"';
             char space = ' ';
             char tab = '\t';
@@ -68,6 +71,8 @@ namespace HatTrick.CommandLine.Parsing
                 if (c == dblQuote && previous != escape)
                 {
                     inDblQuote = !inDblQuote;
+                    if (keepLitQuotes)
+                        token[at++] = c;
                 }
                 else if (isWhitespace(c) && !inDblQuote)
                 {
