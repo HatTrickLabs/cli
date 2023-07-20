@@ -90,7 +90,6 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region add option of T
-        //public void AddOption<T>(string key, string help, params string[] flags)
         public void AddOption<T>(string key, string help, (string terse, string verbose) flags)
         {
             //TODO: this is probably not going to work for everything ie: nint, nuint, guid, dateonly
@@ -99,7 +98,7 @@ namespace HatTrick.CommandLine
                 key: key, 
                 help: help, 
                 converter: converter, 
-                flags: new string[] { flags.terse, flags.verbose }
+                flags.terse, flags.verbose
             );
             this.Options.Add(op);
         }
@@ -108,12 +107,16 @@ namespace HatTrick.CommandLine
         {
             //TODO: this is probably not going to work for everything ie: nint, nuint, guid, dateonly
             Func<string, T> converter = (string arg) => (T)Convert.ChangeType(arg, typeof(T));
+            this.AddOption<T>(key, defaultArg, help, converter, flags);
+        }
+
+        public void AddOption<T>(string key, string help, Func<string, T> converter, (string terse, string verbose) flags)
+        {
             var op = new CommandOptionDefinition<T>(
-                key: key, 
-                defaultArg: defaultArg, 
-                help: help, 
-                converter: converter, 
-                flags: new string[] { flags.terse, flags.verbose }
+                key: key,
+                help: help,
+                converter: converter,
+                flags.terse, flags.verbose
             );
             this.Options.Add(op);
         }
@@ -125,7 +128,7 @@ namespace HatTrick.CommandLine
                 defaultArg: defaultArg, 
                 help: help, 
                 converter: converter, 
-                flags: new string[] { flags.terse, flags.verbose }
+                flags.terse, flags.verbose
             );
             this.Options.Add(op);
         }

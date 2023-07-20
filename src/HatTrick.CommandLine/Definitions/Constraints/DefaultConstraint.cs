@@ -7,7 +7,7 @@
     public class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
     {
         #region const
-        public const string ConstraintName = "Default value";
+        public const string ConstraintName = "defaults to";
         #endregion
 
         #region internals

@@ -86,7 +86,7 @@ namespace HatTrick.CommandLine
 
         #region set default
         //TODO: cleanup
-        //public void SetDefault<T>(T value)
+        //public void SetDefault<T>(Action<T> defaultProvider)
         //{
         //    try
         //    {

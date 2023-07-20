@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using HatTrick.CommandLine.Parsing;
 
 namespace HatTrick.CommandLine.TestHarness
@@ -7,9 +8,8 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
-            RegisterCommands(out Registry registry);
-
-            registry.ExecuteCommand(Parser.Parse(args));
+            //RegisterCommands(out Registry registry);
+            //registry.ExecuteCommand(Parser.Parse(args));
 
             //TestMaskedInputReader();
 
@@ -41,18 +41,28 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.Handler = Mapper.MapCommand(cmd).To<Person>(
                     ("first_name", "FirstName"),
                     ("last_name", "LastName"),
-                    ("birth_date", "BirthDate")
+                    ("birth_date", "BirthDate"),
+                    ("uuid", "Code")
             ).Then(PersonService.Add);
 
-            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime>>(
-                ("first_name", "firstName"),
-                ("last_name", "lastName"),
-                ("birth_date", "birthDate")
-                ).Then(PersonService.AddPerson);
+            cmd.Handler += Mapper.MapCommand(cmd).To<Person>(
+                    ("first_name", "FirstName"),
+                    ("last_name", "LastName"),
+                    ("birth_date", "BirthDate"), 
+                    ("uuid", "Code")
+
+            ).Then((p) => Console.WriteLine(p.FirstName + " " + p.LastName));
+
+            //cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime>>(
+            //    ("first_name", "firstName"),
+            //    ("last_name", "lastName"),
+            //    ("birth_date", "birthDate")
+            //    ).Then(PersonService.AddPerson);
 
             cmd.AddOption<string>(key: "first_name", help: "First name.", flags: ("-f", "--first-name"));
             cmd.AddOption<string>(key: "last_name", help: "Last name.", flags: ("-l", "--last-name"));
-            cmd.AddOption<DateTime>(key: "birth_date", help: "Birth date.", flags: ("-b", "--birth-date"));
+            cmd.AddOption<DateTime?>(key: "birth_date", defaultArg: null, help: "Birth date.", flags: ("-b", "--birth-date"));
+            cmd.AddOption<Guid>(key: "uuid", help: "Some long cryptic code.", converter: Guid.Parse, flags: ("-u", "--uuid"));
             registry.Add(cmd);
 
             /********** Register Vault Commands **********/
@@ -121,8 +131,8 @@ namespace HatTrick.CommandLine.TestHarness
                 description: "Arg must be within the past 180 days.");
             cmd["end"].ApplyConstraint<DateTime>(
                 constraint: (e) => e <= DateTime.Now.Date,
-                name: "Restriction",
-                description: "Arg must be less than or equal today's date.");
+                name: "constraint",
+                description: "less than or equal today's date");
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.stats.get");
@@ -144,15 +154,25 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption<int>(key: "limit", defaultArg: 100, help: "Limit on number of results to return.", flags: ("-l", "--limit"));
             //TODO: add before and after filter options...
             cmd.AddOption<int>(key: "max", defaultArg: 200, help: "Max number of trades to request (limit * iteration count).", flags: ("-m", "--max"));
+            cmd["max"].ApplyConstraint<int>((m) => m <= 1000, "max value", "arg must be <= 1000");
+
+            cmd.ApplyConstraint(
+                constraint: (command) => command["limit"].Value <= command["max"].Value,
+                name: "constraint",
+                description: "limit must be <= max"
+                );
+
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.fills.get");
             cmd.Help = "Get Coinbase product fills.";
             cmd.Handler = (command) => { };
-            cmd.AddOption<string>(key: "product_id", help: "The product id.", flags: ("--prod-id", "--product-id"));
-            cmd.AddOption<Guid>(key: "profile_id", help: "The profile id.", flags: ("--prof-id", "--profile-id"));
-            cmd.AddOption<int>(key: "limit", help: "Limit on number of results to return.", flags: ("-l", "--limit"));
-            cmd.AddOption<int>(key: "max", help: "Max number of fills to request (limit * iteration count).", flags: ("-m", "--max"));
+            cmd.AddOption<string>(key: "product_id", defaultArg: null, help: "The product id.", flags: ("--prod-id", "--product-id"));
+            cmd.AddOption<Guid?>(key: "profile_id", defaultArg: null, help: "The profile id.", flags: ("--prof-id", "--profile-id"));
+            cmd.AddOption<int>(key: "limit", defaultArg: 100, help: "Limit on number of results to return.", flags: ("-l", "--limit"));
+            cmd.AddOption<int>(key: "max", defaultArg: 500, help: "Max number of fills to request (limit * iteration count).", flags: ("-m", "--max"));
+            cmd["max"].ApplyConstraint<int>((m) => m <= 1000, "max value", "arg must be <= 1000");
+            cmd.MustAssignOneOf("product_id", "profile_id");
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.orders.delete");

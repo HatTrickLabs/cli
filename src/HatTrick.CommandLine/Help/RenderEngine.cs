@@ -13,6 +13,42 @@ namespace HatTrick.CommandLine
         private const int Indent = 2;
         private const int HelpBlockLeftPad = 5;
         private const int MinHelpBlockStartPosition = 20;
+        private static readonly Dictionary<Type, string> TypeAliases = new()
+        {
+            { typeof(byte),             "byte"      },
+            { typeof(sbyte),            "sbyte"     },
+            { typeof(short),            "short"     },
+            { typeof(ushort),           "ushort"    },
+            { typeof(int),              "int"       },
+            { typeof(uint),             "uint"      },
+            { typeof(long),             "long"      },
+            { typeof(ulong),            "ulong"     },
+            { typeof(nint),             "nint"      },
+            { typeof(nuint),            "nuint"     },
+            { typeof(float),            "float"     },
+            { typeof(double),           "double"    },
+            { typeof(decimal),          "decimal"   },
+            { typeof(object),           "object"    },
+            { typeof(bool),             "bool"      },
+            { typeof(char),             "char"      },
+            { typeof(string),           "string"    },
+            { typeof(void),             "void"      },
+            { typeof(Nullable<byte>),   "byte?"     },
+            { typeof(Nullable<sbyte>),  "sbyte?"    },
+            { typeof(Nullable<short>),  "short?"    },
+            { typeof(Nullable<ushort>), "ushort?"   },
+            { typeof(Nullable<int>),    "int?"      },
+            { typeof(Nullable<uint>),   "uint?"     },
+            { typeof(Nullable<long>),   "long?"     },
+            { typeof(Nullable<ulong>),  "ulong?"    },
+            { typeof(Nullable<nint>),   "nint?"     },
+            { typeof(Nullable<nuint>),  "nuint?"    },
+            { typeof(Nullable<float>),  "float?"    },
+            { typeof(Nullable<double>), "double?"   },
+            { typeof(Nullable<decimal>),"decimal?"  },
+            { typeof(Nullable<bool>),   "bool?"     },
+            { typeof(Nullable<char>),   "char?"     }
+        };
         #endregion
 
         #region internals
@@ -45,7 +81,7 @@ namespace HatTrick.CommandLine
         private int ResolveBlockStartPosition(int maxLeftContentLength)
         {
             //add the indent and the desired padding
-            int blockStart = maxLeftContentLength + RenderEngine.Indent + RenderEngine.HelpBlockLeftPad;
+            int blockStart = RenderEngine.Indent + maxLeftContentLength + RenderEngine.HelpBlockLeftPad;
 
             return Math.Max(blockStart, RenderEngine.MinHelpBlockStartPosition);
         }
@@ -183,7 +219,8 @@ namespace HatTrick.CommandLine
 
             int maxNSLen = namespaces.Length > 0 ? namespaces.Max(ns => ns.Name.Length) : 0;
             int maxCmdLen = commands.Length > 0 ? commands.Max(cmd => cmd.Name.Length) : 0;
-            int maxLen = Math.Max(target.Name.Length, Math.Max(maxNSLen, maxCmdLen));
+            int maxDefLen = Math.Max(maxNSLen, maxCmdLen);
+            int maxLen = Math.Max(target.Name.Length, maxDefLen);
 
             int blockStart = this.ResolveBlockStartPosition(maxLen);
             string indent = new string(' ', RenderEngine.Indent);
@@ -274,6 +311,12 @@ namespace HatTrick.CommandLine
             int cmdConstBlockStart = this.ResolveBlockStartPosition(target.HasConstraints ? target.Constraints.Max(c => c.Name.Length) : 0);
             string indent = new string(' ', RenderEngine.Indent);
 
+            Func<Type, string> GetFriendlyTypeName = (t) =>
+            {
+                var aliases = RenderEngine.TypeAliases;
+                return aliases.TryGetValue(t, out string alias) ? alias : t.Name;
+            };
+
             Func<CommandOptionDefinition, string> GetOpDefHelp = (op) =>
             {
                 string flags = string.Join('|', op.Flags);
@@ -298,6 +341,7 @@ namespace HatTrick.CommandLine
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
+            ngin.LambdaRepo.Register(nameof(GetFriendlyTypeName), GetFriendlyTypeName);
             ngin.LambdaRepo.Register(nameof(GetOpDefHelp), GetOpDefHelp);
             ngin.LambdaRepo.Register(nameof(GetOpDefArgConstraintHelp), GetOpDefArgConstraintHelp);
             ngin.LambdaRepo.Register(nameof(GetCommandConstraintHelp), GetCommandConstraintHelp);

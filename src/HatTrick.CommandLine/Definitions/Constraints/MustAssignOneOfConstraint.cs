@@ -5,7 +5,7 @@ namespace HatTrick.CommandLine
     public class MustAssignOneOfConstraint : CommandConstraint
     {
         #region const
-        public const string ConstraintName = "Must assign one of";
+        public const string ConstraintName = "must assign one of";
         #endregion
 
         #region internals

@@ -47,6 +47,9 @@ xxx MustAssignOneOf and MustAssign should be mutually exclusive (not important..
 - Should cmd ops with must assign = false but the op type would be a non-nullable value type get a default constraint added (NOT EXPLICIT)
 - The above would still be an issue if the -f --flag was provided but no argument...
 - Ensure no flag collisions within a single command definition.
+- myexe cb.products.fills.get [--product-id String] [--profile-id Nullable`1] [--limit Int32] [--max Int32]
+  fix that Nullable`1 cr@p
+  fix that Nullable`1 cr@p everywhere... find all exceptions that render a type an push the aliases dict out of render engine into something more generically global.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

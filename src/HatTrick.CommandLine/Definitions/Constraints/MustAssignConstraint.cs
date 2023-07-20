@@ -3,7 +3,7 @@
     public class MustAssignConstraint : ArgumentConstraint
     {
         #region const
-        public const string ConstraintName = "Must assign";
+        public const string ConstraintName = "must assign";
         #endregion
 
         #region internals
@@ -14,7 +14,7 @@
         internal MustAssignConstraint(string[] optionFlags) : base(MustAssignConstraint.ConstraintName)
         {
             _optionFlags = optionFlags;
-            base.SetDescription("Option arg must be provided.");
+            base.SetDescription("true");
         }
         #endregion
 
