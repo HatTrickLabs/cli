@@ -1,10 +1,10 @@
 
 Usage:
-{() => GetExecutableName} {$.Name} {+#each $.Options+}{#if !$.MustAssign}[{/if}{$.MostVerboseFlag} {($.GenericType) => GetFriendlyTypeName}{#if !$.MustAssign}]{/if+} {+/each+}
+{() => GetExecutableName} {$.Name} {+#each () => GetOps+}{#if !$.MustAssign}[{/if}{$.MostVerboseFlag} {($.GenericType) => GetFriendlyTypeName}{#if !$.MustAssign}]{/if+} {+/each+}
 
 {#if $.Options}
 Options:
-{#each $.Options}
+{#each () => GetOps}
 {($) => GetOpDefHelp}
 {#if $.HasConstraints}
 {#each $.Constraints}

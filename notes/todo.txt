@@ -47,9 +47,11 @@ x Ensure no flag collisions within a single command definition.
 x myexe cb.products.fills.get [--product-id String] [--profile-id Nullable`1] [--limit Int32] [--max Int32]
   x fix that Nullable`1 cr@p
   x fix that Nullable`1 cr@p everywhere... find all exceptions that render a type...push the aliases dict out of render engine into something more generically global.
-- When mapping options to object, should we really require every op defined must map to a prop on the object
-  - When a correlation map is added, should we assume that the correlated items are the only items that need to be mapped ???
-  - Can I correlate to _ (discard) ??? I like this one...Correlate to ~ ie: ("middle_name", "~") would tell the mapper to NOT map the middle_name op to anything.
+x When mapping options to object, should we really require every op defined must map to a prop on the object
+  x Can I correlate to _ (discard) ??? I like this one...Correlate to ~ ie: ("middle_name", "~") would tell the mapper to NOT map the middle_name op to anything.
+- Make sure ops Hidden do not render any help.
+- Makre sure cmds Hidden do not render any help (what to do if user explicitly asks for help even if it is hidden?) 
+
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

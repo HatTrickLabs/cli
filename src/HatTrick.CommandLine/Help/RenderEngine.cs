@@ -275,11 +275,6 @@ namespace HatTrick.CommandLine
             int cmdConstBlockStart = this.ResolveBlockStartPosition(target.HasConstraints ? target.Constraints.Max(c => c.Name.Length) : 0);
             string indent = new string(' ', RenderEngine.Indent);
 
-            Func<Type, string> GetFriendlyTypeName = (t) =>
-            {
-                return TypeMap.GetAliasOrName(t);
-            };
-
             Func<CommandOptionDefinition, string> GetOpDefHelp = (op) =>
             {
                 string flags = string.Join('|', op.Flags);
@@ -304,7 +299,8 @@ namespace HatTrick.CommandLine
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
-            ngin.LambdaRepo.Register(nameof(GetFriendlyTypeName), GetFriendlyTypeName);
+            ngin.LambdaRepo.Register("GetOps", () => target.Options.FindAll(o => !o.Hidden));
+            ngin.LambdaRepo.Register("GetFriendlyTypeName", (Type t) => TypeMap.GetAliasOrName(t));
             ngin.LambdaRepo.Register(nameof(GetOpDefHelp), GetOpDefHelp);
             ngin.LambdaRepo.Register(nameof(GetOpDefArgConstraintHelp), GetOpDefArgConstraintHelp);
             ngin.LambdaRepo.Register(nameof(GetCommandConstraintHelp), GetCommandConstraintHelp);
