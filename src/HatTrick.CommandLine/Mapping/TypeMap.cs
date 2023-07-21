@@ -75,11 +75,11 @@ namespace HatTrick.CommandLine
                 return null;
             }
 
+            //at this point, we know the value is NOT null
             Type underlying = Nullable.GetUnderlyingType(changeTo);
             if (underlying is null)
                 underlying = changeTo;
 
-            //at this point, we know the value is NOT null
             if (typeof(IConvertible).IsAssignableFrom(underlying))
                 return Convert.ChangeType(value, changeTo);
 

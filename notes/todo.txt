@@ -43,12 +43,13 @@ x Render help for constraints in the blocked help content area (new line per con
 x Impl support for DateOnly as a baked in argument type.
 x Nix must EnsureMustAssignOptionProvidedAndAssigned...must assign has been implemented as a first class constraint
 xxx MustAssignOneOf and MustAssign should be mutually exclusive (not important...not trying to save devs from themselves).
-- Ensure no flag collisions within a single command definition.
+x Ensure no flag collisions within a single command definition.
 x myexe cb.products.fills.get [--product-id String] [--profile-id Nullable`1] [--limit Int32] [--max Int32]
   x fix that Nullable`1 cr@p
-  x fix that Nullable`1 cr@p everywhere... find all exceptions that render a type an push the aliases dict out of render engine into something more generically global.
+  x fix that Nullable`1 cr@p everywhere... find all exceptions that render a type...push the aliases dict out of render engine into something more generically global.
 - When mapping options to object, should we really require every op defined must map to a prop on the object
   - When a correlation map is added, should we assume that the correlated items are the only items that need to be mapped ???
+  - Can I correlate to _ (discard) ??? I like this one...Correlate to ~ ie: ("middle_name", "~") would tell the mapper to NOT map the middle_name op to anything.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

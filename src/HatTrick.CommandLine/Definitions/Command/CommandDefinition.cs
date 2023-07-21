@@ -93,15 +93,10 @@ namespace HatTrick.CommandLine
         #region add option of T
         public void AddOption<T>(string key, string help, (string terse, string verbose) flags)
         {
-            //TODO: this is probably not going to work for everything ie: nint, nuint, guid, dateonly
-            Func<string, T> converter = typeof(T) is IConvertible
-                ? (string arg) => (T)Convert.ChangeType(arg, typeof(T))
-                : (string arg) => (T)TypeMap.ChangeType(arg, typeof(T));
-
             var op = new CommandOptionDefinition<T>(
                 key: key, 
                 help: help, 
-                converter: converter, 
+                converter: (string arg) => (T)TypeMap.ChangeType(arg, typeof(T)), 
                 flags.terse, flags.verbose
             );
             this.Options.Add(op);
@@ -109,12 +104,13 @@ namespace HatTrick.CommandLine
 
         public void AddOption<T>(string key, T defaultArg, string help, (string terse, string verbose) flags)
         {
-            //TODO: this is probably not going to work for everything ie: nint, nuint, guid, dateonly
-            Func<string, T> converter = typeof(T) is IConvertible
-                ? (string arg) => (T)Convert.ChangeType(arg, typeof(T))
-                : (string arg) => (T)TypeMap.ChangeType(arg, typeof(T));
-
-            this.AddOption<T>(key, defaultArg, help, converter, flags);
+            this.AddOption<T>(
+                key: key, 
+                defaultArg: defaultArg, 
+                help: help, 
+                converter: (string arg) => (T)TypeMap.ChangeType(arg, typeof(T)), 
+                flags: flags
+            );
         }
 
         public void AddOption<T>(string key, string help, Func<string, T> converter, (string terse, string verbose) flags)
@@ -292,26 +288,34 @@ namespace HatTrick.CommandLine
             int opCount = _options?.Count ?? 0;
             if (opCount > 0)
             {
+                string key = null;
+                string flag = null;
                 var flagsMap = new string[opCount, 2];
                 for (int i = 0; i < opCount; i++)
                 {
                     var op = _options[i];
                     op.Validate();
+                    key = op.Key;
 
                     for (int j = 0; j < i; j++)
                     {
-                        if (flagsMap[j, 0] == op.Flags[0] || flagsMap[j, 1] == op.Flags[0])
-                            throw new CommandDefinitionException($"Flag collision");//TODO: proper ex message
+                        if (op.Key == _options[j].Key)
+                            throw new CommandDefinitionException($"Command option key collision command key '{op.Key}'.");
 
-                        if (flagsMap[j, 0] == op.Flags[1] || flagsMap[j, 1] == op.Flags[1])
-                                throw new CommandDefinitionException($"Flag collision");//TODO: proper ex message
+                        flag = op.Flags[0];
+                        if (flagsMap[j, 0] == flag || flagsMap[j, 1] == flag)
+                            throw new CommandDefinitionException($"Option flag collision in command options '{op.Key}' and '{_options[j].Key}' for flag '{op.Flags[0]}'.");
+
+                        flag = op.Flags[1];
+                        if (flagsMap[j, 0] == flag || flagsMap[j, 1] == flag)
+                            throw new CommandDefinitionException($"Option flag collision in command options '{op.Key}' and '{_options[j].Key}' for flag '{op.Flags[1]}'.");
                     }
 
                     //Note: technically do not need x markers as op.Validate() ensures
                     //neither of the flags is null or empty...leave this logic just in case 
                     //I make the decision to allow only one valid flag and the other null/empty
                     //Note: x is not a valid flag and we wouldn't make it past op.Validate() if it 
-                    //was attempted as a flag...the right side of the above conditions (ops.Flags[.])
+                    //was attempted as a flag...the right side of the above conditions (ops.Flags[?])
                     //can never be x
                     flagsMap[i, 0] = string.IsNullOrEmpty(op.Flags[0]) ? "x" : op.Flags[0];
                     flagsMap[i, 1] = string.IsNullOrEmpty(op.Flags[1]) ? "x" : op.Flags[1];

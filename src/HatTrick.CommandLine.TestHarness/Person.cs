@@ -10,6 +10,7 @@ namespace HatTrick.CommandLine.TestHarness
         public string LastName { get; set; }
         public DateOnly? BirthDate { get; set; }
         public Guid? Code { get; set; }
+        public int Score { get; set; }
     }
     #endregion
 
