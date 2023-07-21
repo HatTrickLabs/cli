@@ -8,8 +8,8 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
-            //RegisterCommands(out Registry registry);
-            //registry.ExecuteCommand(Parser.Parse(args));
+            RegisterCommands(out Registry registry);
+            registry.ExecuteCommand(Parser.Parse(args));
 
             //TestMaskedInputReader();
 
@@ -50,19 +50,19 @@ namespace HatTrick.CommandLine.TestHarness
                     ("last_name", "LastName"),
                     ("birth_date", "BirthDate"), 
                     ("uuid", "Code")
+            ).Then((p) => Console.WriteLine(p.FirstName + " " + p.LastName + " " + p.Code));
 
-            ).Then((p) => Console.WriteLine(p.FirstName + " " + p.LastName));
-
-            //cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateTime>>(
-            //    ("first_name", "firstName"),
-            //    ("last_name", "lastName"),
-            //    ("birth_date", "birthDate")
-            //    ).Then(PersonService.AddPerson);
+            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateOnly?, Guid?>>(
+                ("first_name", "firstName"),
+                ("last_name", "lastName"),
+                ("birth_date", "birthDate"),
+                ("uuid", "code")
+                ).Then(PersonService.AddPerson);
 
             cmd.AddOption<string>(key: "first_name", help: "First name.", flags: ("-f", "--first-name"));
             cmd.AddOption<string>(key: "last_name", help: "Last name.", flags: ("-l", "--last-name"));
-            cmd.AddOption<DateTime?>(key: "birth_date", defaultArg: null, help: "Birth date.", flags: ("-b", "--birth-date"));
-            cmd.AddOption<Guid>(key: "uuid", help: "Some long cryptic code.", converter: Guid.Parse, flags: ("-u", "--uuid"));
+            cmd.AddOption<DateOnly?>(key: "birth_date", defaultArg: null, help: "Birth date.", flags: ("-b", "--birth-date"));
+            cmd.AddOption<Guid?>(key: "uuid", defaultArg: null, help: "Some long cryptic code.", flags: ("-u", "--uuid"));
             registry.Add(cmd);
 
             /********** Register Vault Commands **********/

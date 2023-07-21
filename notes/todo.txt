@@ -8,7 +8,7 @@ x On commmand REGISTER, ensure the command does not start with a -
 x Implement ability to pass -x or --xyz as an option argument somehow.  I should be able to run myapp.exe -k --hello-- and hello be treated as the arg to the -k option.
 x Move ConvertToBool and _validBools out of CommandShell class...find a new place for that logic to live.
 x Refactor CommandDefinitionRegistry.EnsureCommandOptions...need to allow for all defined options being added to the command even if not provided by end user...eliminate returning null from Command[indexer]
-? Allow duplicate option flags for a single ShellCommand parse.  The duplicates are for building argument arrays.
+x DO NOT ALLOW::Allow duplicate option flags for a single ShellCommand parse.  The duplicates are for building argument arrays.
   ? May be best to leave this to package consumers...developer could simply register an option as a string then split value by whatever delimiter into whatever array necessary.
   ? If we do not allow duplicate options, mod CommandDefinition to hold ops in dictionary or at least ensure no duplicates provided.
 x Implement root command concept..Root command is command run when NO command provided...Root command is run for keeping similarity to old school stuff...crypto.exe --version | crypto.exe -?  | crypto.exe --list
@@ -26,30 +26,29 @@ x one of a set of options (i.e. one of profile_id or product_id is required).
   x or is it a better practice to simply register 2 commands supporting the differing options ???
 x Rules: MustAssignOneOfRule, DefaultValueRule, ValidArgumentSetRule
 - Imple keyword that will generate a new GUID on command execution for 'generated' arg... i.e. a nonce for an api request.
-- On signature mapping, what if the signature has a = null...Accounts(Guid id = null).  See GetAccounts
+x IT DOES NOT MATTER::On signature mapping, what if the signature has a = null...Accounts(Guid id = null).  See GetAccounts
 x Make sure SetAccepted works with d@MN enums....
 x Environment.ProcessPath
 x Environment.ProcessPath
 x Expose a 'DefaultCommand' on command registery to handle any built in command func I want to expose...ie: help, version, run
-- Move tokenizer to a 'Command\Input' folder...Rename CommandParser to just parser.
-- F'n MS FUBARed the command line args...Framework maintained quoted tokens...Core+ strips them...Will it stay or will it go.. may need 2 versions of Tokenizer for exitless cmd loop.
-  - write another version of the tokenizer that matches the NEW .net output and make the version used configurable
+x Move tokenizer to a 'Command\Input' folder...Rename CommandParser to just parser.
+x F'n MS FUBARed the command line args...Framework maintained quoted tokens...Core+ strips them...Will it stay or will it go.. may need 2 versions of Tokenizer for exitless cmd loop.
+  x write another version of the tokenizer that matches the NEW .net output and make the version used configurable
 - I think the early returns on ReadMaskedInput need re-org.  Remask AFTER escape ????'
 x Consider a max command name length of 32 chars...namespace 31...flag 32
 x Add help property to all constraints (allow implementor to provide the help content)....used 'name' and 'description' instead
 x Render usage with most verbose flags [mustAssign] options wrapped in square brackets.
 x Render usage option args as a short/terse data type.... ie:  --granualrity int [--start DateTime] [--end DateTime]
 x Render help for constraints in the blocked help content area (new line per constraint)
-- Impl support for DateOnly as a baked in argument type (add it to the OpType enum).
-x On setting a default constraint...need to ensure there is no 'must assign' constraint.
+x Impl support for DateOnly as a baked in argument type.
 x Nix must EnsureMustAssignOptionProvidedAndAssigned...must assign has been implemented as a first class constraint
 xxx MustAssignOneOf and MustAssign should be mutually exclusive (not important...not trying to save devs from themselves).
-- Should cmd ops with must assign = false but the op type would be a non-nullable value type get a default constraint added (NOT EXPLICIT)
-- The above would still be an issue if the -f --flag was provided but no argument...
 - Ensure no flag collisions within a single command definition.
-- myexe cb.products.fills.get [--product-id String] [--profile-id Nullable`1] [--limit Int32] [--max Int32]
-  fix that Nullable`1 cr@p
-  fix that Nullable`1 cr@p everywhere... find all exceptions that render a type an push the aliases dict out of render engine into something more generically global.
+x myexe cb.products.fills.get [--product-id String] [--profile-id Nullable`1] [--limit Int32] [--max Int32]
+  x fix that Nullable`1 cr@p
+  x fix that Nullable`1 cr@p everywhere... find all exceptions that render a type an push the aliases dict out of render engine into something more generically global.
+- When mapping options to object, should we really require every op defined must map to a prop on the object
+  - When a correlation map is added, should we assume that the correlated items are the only items that need to be mapped ???
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

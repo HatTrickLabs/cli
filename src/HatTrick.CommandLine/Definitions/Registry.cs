@@ -95,7 +95,8 @@ namespace HatTrick.CommandLine
 
         public void Add(CommandDefinition commandDef)
         {
-            commandDef.Validate();
+            if (commandDef is not DefaultCommandDefinition)
+                commandDef.Validate();
 
             //ensure no namespace name collisions
             if (_namespaceDefs.ContainsKey(commandDef.Name))

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace HatTrick.CommandLine
 {
@@ -93,7 +94,10 @@ namespace HatTrick.CommandLine
         public void AddOption<T>(string key, string help, (string terse, string verbose) flags)
         {
             //TODO: this is probably not going to work for everything ie: nint, nuint, guid, dateonly
-            Func<string, T> converter = (string arg) => (T)Convert.ChangeType(arg, typeof(T));
+            Func<string, T> converter = typeof(T) is IConvertible
+                ? (string arg) => (T)Convert.ChangeType(arg, typeof(T))
+                : (string arg) => (T)TypeMap.ChangeType(arg, typeof(T));
+
             var op = new CommandOptionDefinition<T>(
                 key: key, 
                 help: help, 
@@ -106,7 +110,10 @@ namespace HatTrick.CommandLine
         public void AddOption<T>(string key, T defaultArg, string help, (string terse, string verbose) flags)
         {
             //TODO: this is probably not going to work for everything ie: nint, nuint, guid, dateonly
-            Func<string, T> converter = (string arg) => (T)Convert.ChangeType(arg, typeof(T));
+            Func<string, T> converter = typeof(T) is IConvertible
+                ? (string arg) => (T)Convert.ChangeType(arg, typeof(T))
+                : (string arg) => (T)TypeMap.ChangeType(arg, typeof(T));
+
             this.AddOption<T>(key, defaultArg, help, converter, flags);
         }
 
@@ -273,15 +280,43 @@ namespace HatTrick.CommandLine
 
             _depth = depth;
 
-            if (_options is not null && _options.Count > 0)
-            {
-                foreach (var op in _options)
-                {
-                    op.Validate();
-                }
-            }
+            this.ValidateOptions();
 
             _mappedHanderValidators?.Invoke();
+        }
+        #endregion
+
+        #region validate options
+        private void ValidateOptions()
+        {
+            int opCount = _options?.Count ?? 0;
+            if (opCount > 0)
+            {
+                var flagsMap = new string[opCount, 2];
+                for (int i = 0; i < opCount; i++)
+                {
+                    var op = _options[i];
+                    op.Validate();
+
+                    for (int j = 0; j < i; j++)
+                    {
+                        if (flagsMap[j, 0] == op.Flags[0] || flagsMap[j, 1] == op.Flags[0])
+                            throw new CommandDefinitionException($"Flag collision");//TODO: proper ex message
+
+                        if (flagsMap[j, 0] == op.Flags[1] || flagsMap[j, 1] == op.Flags[1])
+                                throw new CommandDefinitionException($"Flag collision");//TODO: proper ex message
+                    }
+
+                    //Note: technically do not need x markers as op.Validate() ensures
+                    //neither of the flags is null or empty...leave this logic just in case 
+                    //I make the decision to allow only one valid flag and the other null/empty
+                    //Note: x is not a valid flag and we wouldn't make it past op.Validate() if it 
+                    //was attempted as a flag...the right side of the above conditions (ops.Flags[.])
+                    //can never be x
+                    flagsMap[i, 0] = string.IsNullOrEmpty(op.Flags[0]) ? "x" : op.Flags[0];
+                    flagsMap[i, 1] = string.IsNullOrEmpty(op.Flags[1]) ? "x" : op.Flags[1];
+                }
+            }
         }
         #endregion
     }

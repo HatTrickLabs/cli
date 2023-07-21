@@ -72,7 +72,10 @@ namespace HatTrick.CommandLine
             else
             {
                 var name = nameof(CommandOptionDefinition);
-                throw new InvalidCastException($"Cannot cast {name}<{this.GenericType.Name}> to {name}<{typeof(T).Name}>");
+                var classGenericName = TypeMap.GetAliasOrName(this.GenericType);
+                var localGenericName = TypeMap.GetAliasOrName(typeof(T));
+                var msg = $"Cannot cast {name}<{classGenericName}> to {name}<{localGenericName}>";
+                throw new InvalidCastException(msg);
             }
         }
         #endregion
@@ -84,23 +87,6 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region set default
-        //TODO: cleanup
-        //public void SetDefault<T>(Action<T> defaultProvider)
-        //{
-        //    try
-        //    {
-        //        this.Of<T>().SetDefault(value);
-        //    }
-        //    catch (InvalidCastException ice)
-        //    {
-        //        var name = nameof(CommandOptionDefinition);
-        //        string msg = $"Cannot set default value '{value}' of type {typeof(T).Name} for {name}<{this.GenericType.Name}>.";
-        //        throw new CommandDefinitionException(msg, ice);
-        //    }
-        //}
-        #endregion
-
         #region set accepted
         public void SetAccepted<T>(params T[] values)
         {
@@ -110,8 +96,11 @@ namespace HatTrick.CommandLine
             }
             catch (InvalidCastException ice)
             {
+                var vals = string.Join("|", values);
                 var name = nameof(CommandOptionDefinition);
-                string msg = $"Cannot set accepted values '{string.Join("|", values)}' of type {typeof(T).Name} for {name}<{this.GenericType.Name}>.";
+                var classGenericName = TypeMap.GetAliasOrName(this.GenericType);
+                var localGenericName = TypeMap.GetAliasOrName(typeof(T));
+                var msg = $"Cannot set accepted values '{vals}' of type {localGenericName} for {name}<{classGenericName}>.";
                 throw new CommandDefinitionException(msg, ice);
             }
         }
@@ -129,7 +118,18 @@ namespace HatTrick.CommandLine
             if (description == string.Empty)
                 throw new ArgumentException("Argument must contain a value.", nameof(description));
 
-            this.Of<T>().ApplyConstraint(constraint, name, description);
+            try
+            {
+                this.Of<T>().ApplyConstraint(constraint, name, description);
+            }
+            catch (InvalidCastException ice)
+            {
+                var className = nameof(CommandOptionDefinition);
+                var classGenericName = TypeMap.GetAliasOrName(this.GenericType);
+                var localGenericName = TypeMap.GetAliasOrName(typeof(T));
+                string msg = $"Cannot apply constraint of type {localGenericName} to {className}<{classGenericName}>. ";
+                throw new CommandDefinitionException(msg, ice);
+            }
         }
         #endregion
 
