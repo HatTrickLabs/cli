@@ -6,6 +6,10 @@ namespace HatTrick.CommandLine
 {
     public class MapOf<T> : Map where T : new()
     {
+        #region const
+        public const string IgnoreMapToken = "~";
+        #endregion
+
         #region constructors
         public MapOf(CommandDefinition commandDef) : this(commandDef, null)
         {
@@ -38,6 +42,10 @@ namespace HatTrick.CommandLine
             {
                 bool isCorrelated = CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
                 string propName = isCorrelated ? correlation.property : op.Key;
+
+                //if correlation map specifies the 'ignore map' token for the property, it means DO NOT attempt to map.
+                if (propName == MapOf<T>.IgnoreMapToken)
+                    continue;
 
                 var prop = Array.Find(props, (p) => p.Name == propName);
 
@@ -78,6 +86,10 @@ namespace HatTrick.CommandLine
             {
                 bool isCorrelated = CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
                 string propName = isCorrelated ? correlation.property : op.Key;
+
+                //if correlation map specifies the 'ignore map' token for the property, it means DO NOT attempt to map.
+                if (propName == MapOf<T>.IgnoreMapToken)
+                    continue;
 
                 var prop = Array.Find(props, (p) => p.Name == propName);
 

@@ -38,33 +38,35 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmd = new(name: "test");
             cmd.Help = "Test command help.";
-            //cmd.Handler = Mapper.MapCommand(cmd).To<Person>(
-            //        ("first_name", "FirstName"),
-            //        ("last_name", "LastName"),
-            //        ("birth_date", "BirthDate"),
-            //        ("uuid", "Code")
-            //).Then(PersonService.Add);
+            cmd.Handler = Mapper.MapCommand(cmd).To<Person>(
+                ("first_name", "FirstName"),
+                ("last_name", "LastName"),
+                ("birth_date", "BirthDate"),
+                ("uuid", "Code"),
+                ("score", "~")
+                ).Then(PersonService.Add);
 
             cmd.Handler += Mapper.MapCommand(cmd).To<Person>(
-                    ("first_name", "FirstName"),
-                    ("last_name", "LastName"),
-                    ("birth_date", "BirthDate"), 
-                    ("uuid", "Code"),
-                    ("score", "~")
-            ).Then((p) => Console.WriteLine(p.FirstName + " " + p.LastName + " " + p.Code + " " + p.Score));
+                ("first_name", "FirstName"),
+                ("last_name", "LastName"),
+                ("birth_date", "BirthDate"), 
+                ("uuid", "Code"),
+                ("score", "~")
+                ).Then((p) => Console.WriteLine(p.FirstName + " " + p.LastName + " " + p.Code + " " + p.Score));
 
-            //cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateOnly?, Guid?>>(
-            //    ("first_name", "firstName"),
-            //    ("last_name", "lastName"),
-            //    ("birth_date", "birthDate"),
-            //    ("uuid", "code")
-            //    ).Then(PersonService.AddPerson);
+            cmd.Handler += Mapper.MapCommand(cmd).ToSignature<Action<string, string, DateOnly?, Guid?>>(
+                ("first_name", "firstName"),
+                ("last_name", "lastName"),
+                ("birth_date", "birthDate"),
+                ("uuid", "code"),
+                ("score", "~")
+                ).Then(PersonService.AddPerson);
 
             cmd.AddOption<string>(key: "first_name", help: "First name.", flags: ("-f", "--first-name"));
             cmd.AddOption<string>(key: "last_name", help: "Last name.", flags: ("-l", "--last-name"));
             cmd.AddOption<DateOnly?>(key: "birth_date", defaultArg: null, help: "Birth date.", flags: ("-b", "--birth-date"));
             cmd.AddOption<Guid?>(key: "uuid", defaultArg: null, help: "Some long cryptic code.", flags: ("-u", "--uuid"));
-            cmd.AddOption<int>(key: "score", defaultArg: 0, help: "score", flags: ("-s", "--score"));
+            cmd.AddOption<int>(key: "score", defaultArg: 9, help: "score", flags: ("-s", "--score"));
             registry.Add(cmd);
 
             /********** Register Vault Commands **********/
