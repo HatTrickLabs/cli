@@ -177,6 +177,7 @@ namespace HatTrick.CommandLine
 
             foreach (string flag in _flags)
             {
+                //TODO: may rethink this...quick prototypes may not want to provide more than 1 flag per op.
                 if (string.IsNullOrWhiteSpace(flag))
                     throw new CommandDefinitionException($"Options[{_key}] contains a flag that is null or empty.");
 
@@ -186,7 +187,7 @@ namespace HatTrick.CommandLine
                 if (flag[1] == '-') //verbose definition
                 {
                     if (flag.Length < 4)
-                        throw new CommandDefinitionException($"Verbose option flags begin with '--' and must be longer than 1 char...'{flag}' is not valid.");
+                        throw new CommandDefinitionException($"Verbose option flags begin with '--' and must be longer than 1 additional char...'{flag}' is not valid.");
 
                     if (flag.Length > CommandOptionDefinition.MaxFlagLength)
                         throw new CommandDefinitionException($"Verbose option flags cannot be > {CommandOptionDefinition.MaxFlagLength} chars in length.");

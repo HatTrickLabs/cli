@@ -29,13 +29,13 @@ namespace HatTrick.CommandLine
         internal RenderEngine()
         {
             _bufferLen = Console.BufferWidth - 1;
-
         }
         #endregion
 
         #region get executable name
         private string GetExecutableName()
         {
+            //TODO: need to expand this to prod 2 or 3 diff options before giving up with the N/A.
             string path = Environment.ProcessPath;
             return path is null ? "N/A" : Path.GetFileNameWithoutExtension(path);
         }
@@ -58,7 +58,7 @@ namespace HatTrick.CommandLine
                 return content;
 
             int maxLen = _bufferLen;
-            StringBuilder output = new StringBuilder((int)(content.Length * 1.1));//add 10%
+            StringBuilder output = new StringBuilder((int)(content.Length * 1.1 ));//add 10%
 
             char[] delims = new char[] { ' ', '\n', '\r', '\t' };
 

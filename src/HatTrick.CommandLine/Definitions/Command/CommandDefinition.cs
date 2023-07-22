@@ -304,11 +304,11 @@ namespace HatTrick.CommandLine
 
                         flag = op.Flags[0];
                         if (flagsMap[j, 0] == flag || flagsMap[j, 1] == flag)
-                            throw new CommandDefinitionException($"Option flag collision in command options '{op.Key}' and '{_options[j].Key}' for flag '{op.Flags[0]}'.");
+                            throw new CommandDefinitionException($"Option flag collision in command options '{op.Key}' and '{_options[j].Key}' for flag '{flag}'.");
 
                         flag = op.Flags[1];
                         if (flagsMap[j, 0] == flag || flagsMap[j, 1] == flag)
-                            throw new CommandDefinitionException($"Option flag collision in command options '{op.Key}' and '{_options[j].Key}' for flag '{op.Flags[1]}'.");
+                            throw new CommandDefinitionException($"Option flag collision in command options '{op.Key}' and '{_options[j].Key}' for flag '{flag}'.");
                     }
 
                     //Note: technically do not need x markers as op.Validate() ensures
