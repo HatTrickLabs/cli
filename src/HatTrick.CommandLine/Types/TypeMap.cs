@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HatTrick.CommandLine
 {
-    internal static class TypeMap
+    public static class TypeMap
     {
         #region internals
         private static readonly Dictionary<Type, string> TypeAliases = new()

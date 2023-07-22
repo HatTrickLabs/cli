@@ -123,7 +123,7 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region run command loop
+        #region run
         private void InvokeRun(Command cmd)
         {
         }
