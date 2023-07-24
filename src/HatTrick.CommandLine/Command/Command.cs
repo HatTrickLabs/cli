@@ -44,15 +44,15 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region apply empty option
-        internal void ApplyEmptyOption(EmptyCommandOption option)
+        #region apply default option
+        internal void ApplyDefaultOption(DefaultCommandOption option)
         {
             _ops.Add(option);
         }
         #endregion
 
-        #region apply default option
-        internal void ApplyDefaultOption(DefaultCommandOption option)
+        #region apply empty option
+        internal void ApplyEmptyOption(EmptyCommandOption option)
         {
             _ops.Add(option);
         }

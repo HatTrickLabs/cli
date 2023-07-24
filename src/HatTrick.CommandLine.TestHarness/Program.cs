@@ -67,6 +67,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption<DateOnly?>(key: "birth_date", defaultArg: null, help: "Birth date.", flags: ("-b", "--birth-date"));
             cmd.AddOption<Guid?>(key: "uuid", defaultArg: null, help: "Some long cryptic code.", flags: ("-u", "--uuid"));
             cmd.AddOption<int>(key: "score", defaultArg: 9, help: "score", flags: ("-s", "--score"));
+            cmd["score"].AcceptedValues(1, 2, 3, 4, 5, 6, 7, 8);
             registry.Add(cmd);
 
             /********** Register Vault Commands **********/
@@ -118,7 +119,7 @@ namespace HatTrick.CommandLine.TestHarness
                 key: "level",
                 help: "The aggregation level (1|2|3). 1: Best bid ask and auction info. 2: Full order book (aggregated) and auction info. 3: Full order book (not aggregated) and auction info.",
                 flags: ("-l", "--level"));
-            cmd["level"].SetAccepted(1, 2, 3);
+            cmd["level"].AcceptedValues(1, 2, 3);
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.candles.get");
@@ -128,10 +129,10 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption<int>(key: "granularity", help: "Timeslice granularity (60|300|900|3600|21600|86400) in seconds.", flags: ("-g", "--granularity"));
             cmd.AddOption<DateTime>(key: "start", help: "Start timestamp for aggregation range.  Ignored if no end timestamp provided.", flags: ("-s", "--start"));
             cmd.AddOption<DateTime>(key: "end", help: "End timestamp for aggregation range.  Ignored if no start timestamp provided.", flags: ("-e", "--end"));
-            cmd["granularity"].SetAccepted(60, 300, 900, 3600, 21600, 86400);
+            cmd["granularity"].AcceptedValues(60, 300, 900, 3600, 21600, 86400);
             cmd["start"].ApplyConstraint<DateTime>(
                 constraint: (s) => s > DateTime.Now.AddDays(-180), 
-                name: "Restriction",
+                name: "constraint",
                 description: "Arg must be within the past 180 days.");
             cmd["end"].ApplyConstraint<DateTime>(
                 constraint: (e) => e <= DateTime.Now.Date,

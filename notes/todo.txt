@@ -51,6 +51,8 @@ x When mapping options to object, should we really require every op defined must
   x Can I correlate to _ (discard) ??? I like this one...Correlate to ~ ie: ("middle_name", "~") would tell the mapper to NOT map the middle_name op to anything.
 x Make sure ops Hidden do not render any help.
 x Make sure cmds Hidden do not render any help (what to do if user explicitly asks for help even if it is hidden?) 
+- When providing a defaultArg and AcceptedValues ensure the default is contained within the accepted values set.
+- Rename AcceptedSetConstraint.cs to AcceptedValuesConstraint.cs
 
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository

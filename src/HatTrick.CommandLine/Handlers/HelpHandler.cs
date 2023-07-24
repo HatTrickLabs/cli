@@ -33,7 +33,7 @@ namespace HatTrick.CommandLine
             var registry = Registry.GetInstance();
             var renderer = new RenderEngine();
 
-            if (cmd["help"] is EmptyCommandOption) //no option flag provided at all...
+            if (cmd["help"] is DefaultCommandOption) //no option flag provided at all...
             {
                 renderer.RenderUsageHelp();
                 return;
@@ -58,12 +58,12 @@ namespace HatTrick.CommandLine
             else if (registry.TryGetCommandDefinition(input, out CommandDefinition cmdDef))
             {
                 if (hasWildcard)
-                    throw new CommandInputException("Provided argument is a command...Command help does not support wildcards");
+                    throw new CommandInputException("Provided argument is a command...Command help does not support wildcards.");
 
                 renderer.RenderCommandHelp(cmdDef);
             }
             else
-                throw new CommandInputException($"Provided argument is not a command or namespace: {input}");
+                throw new CommandInputException($"Provided argument is not a command or namespace: {input}.");
         }
         #endregion
     }

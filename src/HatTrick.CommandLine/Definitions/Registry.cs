@@ -253,7 +253,9 @@ namespace HatTrick.CommandLine
         private void EnsureCommandOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
         {
             //ensure options fully hydrated
-            this.EnsureCommandOptionsFullyHydrated(cmdDef, cmd);
+            this.EnsureCommandOptionsFullyHydrated(cmdDef, cmd, ref feedback);
+            if (feedback.Count > 0)
+                return;
 
             this.EnsureAllInputCommandOptionsDefined(cmdDef, cmd, ref feedback);
             if (feedback.Count > 0)
@@ -267,16 +269,16 @@ namespace HatTrick.CommandLine
             {
                 var op = cmd.GetOption(opDef.Key);
 
-                if (!(op is EmptyCommandOption || op is DefaultCommandOption))
+                if (op is not EmptyCommandOption)
                     opDef.SetConvertedValue(op);
 
-                opDef.EnsureConstraints(op, ref feedback);
+                opDef.EnsureConstraints(ref op, ref feedback);
             }
         }
         #endregion
 
         #region ensure options fully hydrated
-        private void EnsureCommandOptionsFullyHydrated(CommandDefinition cmdDef, Command cmd)
+        private void EnsureCommandOptionsFullyHydrated(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
         {
             foreach (var opDef in cmdDef.Options)
             {
@@ -285,11 +287,11 @@ namespace HatTrick.CommandLine
                 if (op is not null)//apply the definition key to the option
                     op.SetKey(opDef.Key);
 
-                else if (opDef.HasDefault)//apply the default option
-                    cmd.ApplyDefaultOption(opDef.DefaultInstance());
-
                 else//empty, just need an empty shell with correct key
                     cmd.ApplyEmptyOption(opDef.EmptyInstance());
+
+                //else//empty, but MUST be provided because no defaultArg defined.
+                //    feedback.Add($"Expected option [{string.Join("|", opDef.Flags)}] not found...option is maked '{nameof(CommandOptionDefinition.MustAssign)}' because no defaultArg defined.");
             }
         }
         #endregion
@@ -305,12 +307,8 @@ namespace HatTrick.CommandLine
             {
                 var op = cmd.Options[i];
 
-                //empty ops are added to simply fully hydrate all op keys, they will always be 'valid'
+                //empty ops can always be assumed to be valid...because they were injected not provided
                 if (op is EmptyCommandOption)
-                    continue;
-
-                //default ops can always be assumed to be valid...
-                if (op is DefaultCommandOption)
                     continue;
 
                 if (!cmdDef.Options.Any(o => o.Flags.Contains(op.Flag)))

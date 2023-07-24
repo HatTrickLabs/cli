@@ -159,10 +159,8 @@ namespace HatTrick.CommandLine
             {
                 var opDef = this[optionKeys[i]];
 
-                bool mustAssign = opDef.HasConstraints && opDef.Constraints.Exists(c => c is MustAssignConstraint);
-
-                if (mustAssign)
-                    throw new CommandDefinitionException($"Option '{opDef.Key}' has a '{MustAssignConstraint.ConstraintName}' constraint...'{MustAssignOneOfConstraint.ConstraintName}' constraint cannot be applied.");
+                if (opDef.MustAssign)
+                    throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'{MustAssignOneOfConstraint.ConstraintName}' constraint cannot be applied.");
 
                 opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
             }
@@ -187,10 +185,8 @@ namespace HatTrick.CommandLine
             {
                 var opDef = this[optionKeys[i]];
 
-                bool mustAssign = opDef.HasConstraints && opDef.Constraints.Exists(c => c is MustAssignConstraint);
-
-                if (mustAssign)
-                    throw new CommandDefinitionException($"Option '{opDef.Key}' has a '{MustAssignConstraint.ConstraintName}' constraint...'{MutuallyExclusiveSetConstraint.ConstraintName}' constraint cannot be applied.");
+                if (opDef.MustAssign)
+                    throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'{MutuallyExclusiveSetConstraint.ConstraintName}' constraint cannot be applied.");
 
                 opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
             }

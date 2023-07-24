@@ -21,7 +21,8 @@ namespace HatTrick.CommandLine.Parsing
 
             List<CommandOption> options = ParseCommandOptions(argSet);
 
-            return new Command(isDefault ? CommandDefinition.DefaultCommandName : args[0], options);
+            string name = isDefault ? CommandDefinition.DefaultCommandName : args[0];
+            return new Command(name, options);
         }
         #endregion
 

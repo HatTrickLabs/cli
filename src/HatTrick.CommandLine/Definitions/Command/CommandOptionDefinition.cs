@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
+using System.Reflection;
 
 namespace HatTrick.CommandLine
 {
@@ -43,22 +45,17 @@ namespace HatTrick.CommandLine
 
         public bool HasConstraints => _constraints is not null;
 
-        //TODO: cache or set when defined
         public bool HasDefault => this.HasConstraints && _constraints.Exists(c => c is IDefaultConstraint);
 
-        //TODO: cache or set when defined
-        public bool MustAssign => this.HasConstraints && _constraints.Exists(c => c is MustAssignConstraint);
+        public bool MustAssign => this.HasConstraints && _constraints.Exists(c => c is IMustAssignConstraint);
         #endregion
 
         #region constructors
-        protected CommandOptionDefinition(string key, bool mustAssign, string help, params string[] flags)
+        protected CommandOptionDefinition(string key, string help, params string[] flags)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));
             _help = help;
             _flags = flags ?? throw new ArgumentNullException(nameof(flags));
-
-            if (mustAssign)
-                this.Constraints.Add(new MustAssignConstraint(this.Flags));
         }
         #endregion
 
@@ -87,12 +84,12 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region set accepted
-        public void SetAccepted<T>(params T[] values)
+        #region accepted values
+        public void AcceptedValues<T>(params T[] values)
         {
             try
             {
-                this.Of<T>().SetAccepted(values);
+                this.Of<T>().AcceptedValues(values);
             }
             catch (InvalidCastException ice)
             {
@@ -138,14 +135,14 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure custom constraints
-        internal void EnsureConstraints(CommandOption option, ref List<string> feedback)
+        internal void EnsureConstraints(ref CommandOption option, ref List<string> feedback)
         {
             if (!this.HasConstraints)
                 return;
 
             foreach (var c in this.Constraints)
             {
-                if (!c.Ensure(option, out string fb))
+                if (!c.Ensure(ref option, out string fb))
                     feedback.Add(fb);
             }
         }
@@ -157,10 +154,6 @@ namespace HatTrick.CommandLine
             var op = new EmptyCommandOption(_key, this.MostVerboseFlag);
             return op;
         }
-        #endregion
-
-        #region default instance
-        internal abstract DefaultCommandOption DefaultInstance();
         #endregion
 
         #region validate
@@ -217,16 +210,17 @@ namespace HatTrick.CommandLine
 
         #region constructors
         internal CommandOptionDefinition(string key, string help, Func<string, T> converter, params string[] flags) 
-                                  : base(key: key, mustAssign: true, help: help, flags: flags)
+                                  : base(key: key, help: help, flags: flags)
         {
             _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+            this.Constraints.Add(new MustAssignConstraint<T>(this.Flags));
         }
 
         internal CommandOptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, params string[] flags) 
-                                  : base(key: key, mustAssign: false, help: help, flags: flags)
+                                  : base(key: key, help: help, flags: flags)
         {
             _converter = converter ?? throw new ArgumentNullException(nameof(converter));
-            base.Constraints.Add(new DefaultConstraint<T>(defaultArg));
+            base.Constraints.Add(new DefaultConstraint<T>(key, base.MostVerboseFlag, defaultArg));
         }
         #endregion
 
@@ -241,31 +235,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region default instance
-        internal override DefaultCommandOption DefaultInstance()
-        {
-            var def = (DefaultConstraint<T>)base.Constraints.Find(c => c is DefaultConstraint<T>);
-            var op = new DefaultCommandOption(base.Key, base.MostVerboseFlag);
-            op.SetValue(def.DefaultValue);
-            return op;
-        }
-        #endregion
-
-        #region set default
-        //TODO: cleanup
-        //public void SetDefault(T value)
-        //{
-        //    bool mustAssign = base.HasConstraints && base.Constraints.Exists(c => c is MustAssignConstraint);
-
-        //    if (mustAssign)
-        //        throw new CommandDefinitionException($"Option '{base.Key}' has a '{MustAssignConstraint.ConstraintName}' constraint...'default' cannot be applied.");
-
-        //    base.Constraints.Add(new DefaultConstraint<T>(value));
-        //}
-        #endregion
-
-        #region set accepted
-        public void SetAccepted(T[] values)
+        #region accepted values
+        public void AcceptedValues(T[] values)
         {
             if (values is null)
                 throw new ArgumentNullException(nameof(values));
@@ -276,16 +247,24 @@ namespace HatTrick.CommandLine
 
                 if (constraints.Count > 0)
                 {
-                    var c = constraints.Find(c => c is AcceptedSetConstraint<T>);
-                    if (c is not null)
-                        constraints.Remove(c);
+                    DefaultConstraint<T> dc = constraints.Find(c => c is IDefaultConstraint) as DefaultConstraint<T>;
+                    EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+                    if (dc is not null && !Array.Exists<T>(values, (v) => comparer.Equals(v, dc.DefaultValue)))
+                    {
+                        var msg = $"Option '{this.Key}' is defined with a default value of '{dc.DefaultValue}' which is not defined in the provided value set '{string.Join("|", values)}'. ";
+                        throw new ArgumentException(msg);
+                    }
+
+                    var avc = constraints.Find(c => c is AcceptedValuesConstraint<T>);
+                    if (avc is not null)
+                        constraints.Remove(avc);
                 }
             }
 
             if (values.Length == 0)
                 return;
 
-            base.Constraints.Add(new AcceptedSetConstraint<T>(values));
+            base.Constraints.Add(new AcceptedValuesConstraint<T>(values));
         }
         #endregion
 

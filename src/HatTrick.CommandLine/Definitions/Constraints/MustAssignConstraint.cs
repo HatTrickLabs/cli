@@ -1,6 +1,10 @@
 ﻿namespace HatTrick.CommandLine
 {
-    public class MustAssignConstraint : ArgumentConstraint
+    public interface IMustAssignConstraint
+    {
+    }
+
+    public class MustAssignConstraint<T> : ArgumentConstraint<T>, IMustAssignConstraint
     {
         #region const
         public const string ConstraintName = "must assign";
@@ -11,23 +15,20 @@
         #endregion
 
         #region constructors
-        internal MustAssignConstraint(string[] optionFlags) : base(MustAssignConstraint.ConstraintName)
+        internal MustAssignConstraint(string[] optionFlags) : base(MustAssignConstraint<T>.ConstraintName)
         {
             _optionFlags = optionFlags;
-            base.SetDescription("true");
+            base.SetDescription("yes");
         }
         #endregion
 
         #region ensure
-        internal override bool Ensure(CommandOption option, out string feedback)
+        internal override bool Ensure(ref CommandOption option, out string feedback)
         {
             feedback = null;
 
             if (option is EmptyCommandOption)
-                feedback = $"Expected option [{string.Join("|", _optionFlags)}] not found...option has a '{MustAssignConstraint.ConstraintName}' constraint.";
-
-            else if (string.IsNullOrEmpty(option.Argument))
-                feedback = $"No arg provided for '{option.Flag}'...option has a '{MustAssignConstraint.ConstraintName} constraint...{base.Description}";
+                feedback = $"Expected option [{string.Join("|", _optionFlags)}] not found...option has a '{MustAssignConstraint<T>.ConstraintName}' constraint.";
 
             return feedback is null;
         }

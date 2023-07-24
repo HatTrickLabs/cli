@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HatTrick.CommandLine
 {
-    public class AcceptedSetConstraint<T> : ArgumentConstraint<T>
+    public class AcceptedValuesConstraint<T> : ArgumentConstraint<T>
     {
         #region const
         public const string ConstraintName = "accepts";
@@ -14,7 +14,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal AcceptedSetConstraint(T[] values) : base(AcceptedSetConstraint<T>.ConstraintName)
+        internal AcceptedValuesConstraint(T[] values) : base(AcceptedValuesConstraint<T>.ConstraintName)
         {
             _accepted = values ?? throw new ArgumentNullException(nameof(values));
 

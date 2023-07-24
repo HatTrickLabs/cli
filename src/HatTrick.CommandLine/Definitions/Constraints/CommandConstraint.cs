@@ -57,7 +57,7 @@ namespace HatTrick.CommandLine
         {
             bool[] results = new bool[optionDefinitionKeys.Length];
 
-            Func<CommandOption, bool> wasAssigned = (op) => !(op is EmptyCommandOption || op is DefaultCommandOption);
+            Func<CommandOption, bool> wasAssigned = (op) => !(op is DefaultCommandOption || op is EmptyCommandOption);
 
             for (int i = 0; i < optionDefinitionKeys.Length; i++)
             {
