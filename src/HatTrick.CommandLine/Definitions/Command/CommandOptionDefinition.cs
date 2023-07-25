@@ -251,7 +251,7 @@ namespace HatTrick.CommandLine
                     EqualityComparer<T> comparer = EqualityComparer<T>.Default;
                     if (dc is not null && !Array.Exists<T>(values, (v) => comparer.Equals(v, dc.DefaultValue)))
                     {
-                        var msg = $"Option '{this.Key}' is defined with a default value of '{dc.DefaultValue}' which is not defined in the provided value set '{string.Join("|", values)}'. ";
+                        var msg = $"Option '{this.Key}' is defined with a default value of '{dc.DefaultValue}' which is not defined in the accepted values set '{string.Join("|", values)}'. ";
                         throw new ArgumentException(msg);
                     }
 

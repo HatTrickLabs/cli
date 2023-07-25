@@ -53,6 +53,7 @@ x Make sure ops Hidden do not render any help.
 x Make sure cmds Hidden do not render any help (what to do if user explicitly asks for help even if it is hidden?) 
 - When providing a defaultArg and AcceptedValues ensure the default is contained within the accepted values set.
 - Rename AcceptedSetConstraint.cs to AcceptedValuesConstraint.cs
+- Can we generically type a command argument ???
 
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
