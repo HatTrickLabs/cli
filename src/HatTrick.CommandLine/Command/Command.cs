@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 
 namespace HatTrick.CommandLine
 {
@@ -47,7 +48,12 @@ namespace HatTrick.CommandLine
         #region apply default option
         internal void ApplyDefaultOption(DefaultCommandOption option)
         {
-            _ops.Add(option);
+            //we swap in default for empty when default constraint exists.
+            int idx = _ops.FindIndex((o) => o.Key == option.Key);
+            if (idx > -1)
+                _ops[idx] = option;
+            else
+                _ops.Add(option);
         }
         #endregion
 

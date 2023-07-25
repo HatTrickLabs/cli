@@ -273,6 +273,11 @@ namespace HatTrick.CommandLine
                     opDef.SetConvertedValue(op);
 
                 opDef.EnsureConstraints(ref op, ref feedback);
+
+                //If empty option and a default constraint exists, empty op will be swapped for a default
+                //we need to push the default back into the empty placeholder
+                if (op is DefaultCommandOption def)
+                    cmd.ApplyDefaultOption(def);
             }
         }
         #endregion
