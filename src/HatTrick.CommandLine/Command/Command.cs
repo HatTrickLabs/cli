@@ -9,13 +9,13 @@ namespace HatTrick.CommandLine
     {
         #region internals
         private string _key;
-        private List<CommandOption> _ops;
+        private CommandOptionSet _ops;
         #endregion
 
         #region interface
         public string Key => _key;
 
-        internal IList<CommandOption> Options => _ops;
+        internal CommandOptionSet Options => _ops;
 
         public CommandOption this[string key]
         {
@@ -32,7 +32,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal Command(string key, List<CommandOption> options = null)
+        internal Command(string key, CommandOptionSet options = null)
         {
             if (key is null)
                 throw new ArgumentNullException(nameof(key));
@@ -41,7 +41,7 @@ namespace HatTrick.CommandLine
                 throw new ArgumentException($"{nameof(key)} argument must contain a value.");
 
             _key = key;
-            _ops = options ?? new List<CommandOption>();
+            _ops = options ?? new();
         }
         #endregion
 
@@ -65,9 +65,9 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get options
-        public IList<CommandOption> GetOptions(Predicate<CommandOption> where = null)
+        public CommandOption[] GetOptions(Predicate<CommandOption> where = null)
         {
-            List<CommandOption> ops = _ops.FindAll(where == null ? (o) => true : where);
+            CommandOption[] ops = _ops.FindAll(where == null ? (o) => true : where);
             return ops;
         }
         #endregion

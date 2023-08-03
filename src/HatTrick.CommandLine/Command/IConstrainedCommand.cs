@@ -11,6 +11,6 @@ namespace HatTrick.CommandLine
 
         public CommandOption GetOption(string optionKey);
 
-        public IList<CommandOption> GetOptions(Predicate<CommandOption> where = null);
+        public CommandOption[] GetOptions(Predicate<CommandOption> where = null);
     }
 }

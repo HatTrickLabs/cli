@@ -19,7 +19,7 @@ namespace HatTrick.CommandLine.Parsing
             int startAt = isDefault ? 0 : 1;
             var argSet = new ReadOnlySpan<string>(args, startAt, args.Length - startAt);
 
-            List<CommandOption> options = ParseCommandOptions(argSet);
+            CommandOptionSet options = ParseCommandOptions(argSet);
 
             string name = isDefault ? CommandDefinition.DefaultCommandName : args[0];
             return new Command(name, options);
@@ -27,9 +27,9 @@ namespace HatTrick.CommandLine.Parsing
         #endregion
 
         #region parse command options
-        public static List<CommandOption> ParseCommandOptions(ReadOnlySpan<string> arguments)
+        public static CommandOptionSet ParseCommandOptions(ReadOnlySpan<string> arguments)
         {
-            var ops = new List<CommandOption>();
+            var ops = new CommandOptionSet();
 
             Func<string, bool> isExplicitAssign = (a) => a == "=" || a == ":";
 
