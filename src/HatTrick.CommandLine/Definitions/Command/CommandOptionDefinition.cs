@@ -60,7 +60,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region of T
-        public CommandOptionDefinition<T> Of<T>()
+        private CommandOptionDefinition<T> Of<T>()
         {
             if (this is CommandOptionDefinition<T> cmdOpDefT)
             {
