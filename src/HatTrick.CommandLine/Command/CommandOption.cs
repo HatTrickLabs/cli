@@ -41,15 +41,15 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region set key
-        internal void SetKey(string key)
+        #region apply key
+        internal void ApplyKey(string key)
         {
             _key = key;
         }
         #endregion
 
-        #region set arg
-        internal void SetArgument(string argument)
+        #region apply arg
+        internal void ApplyArgument(string argument)
         {
             _arg = argument;
         }

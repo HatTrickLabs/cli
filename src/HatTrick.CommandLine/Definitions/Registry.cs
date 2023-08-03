@@ -290,7 +290,7 @@ namespace HatTrick.CommandLine
                 var op = cmd.GetOptionByFlag(opDef.Flags);
 
                 if (op is not null)//apply the definition key to the option
-                    op.SetKey(opDef.Key);
+                    op.ApplyKey(opDef.Key);
 
                 else//empty, just need an empty shell with correct key
                     cmd.ApplyEmptyOption(opDef.EmptyInstance());

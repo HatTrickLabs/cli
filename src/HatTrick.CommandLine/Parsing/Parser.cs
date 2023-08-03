@@ -64,7 +64,7 @@ namespace HatTrick.CommandLine.Parsing
                 }
                 else //no '-' and prev not an explicit assign, must be an option argument
                 {
-                    ops[^1].SetArgument(arg);//set the last option in the list with the current arg
+                    ops[^1].ApplyArgument(arg);//apply current arg to the last op in the set
                 }
 
                 prev = arg;
