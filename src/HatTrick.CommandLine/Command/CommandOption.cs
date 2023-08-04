@@ -32,13 +32,6 @@ namespace HatTrick.CommandLine
             _key = key ?? throw new ArgumentNullException(nameof(key));
             _flag = flag ?? throw new ArgumentNullException(nameof(flag));
         }
-
-        internal CommandOption(string key, string flag, string argument)
-        {
-            _key = key ?? throw new ArgumentNullException(nameof(key));
-            _flag = flag ?? throw new ArgumentNullException(nameof(flag));
-            _arg = argument ?? throw new ArgumentNullException(nameof(flag));
-        }
         #endregion
 
         #region apply key

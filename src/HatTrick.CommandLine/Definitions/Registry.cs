@@ -269,6 +269,8 @@ namespace HatTrick.CommandLine
             {
                 var op = cmd.GetOption(opDef.Key);
 
+                //TODO: EnsureValue()!!!! op should have got its converter from op def to convert it's own arg to a Value
+                //OR::: opDef.EnsureValue(op);
                 if (op is not EmptyCommandOption)
                     opDef.SetConvertedValue(op);
 

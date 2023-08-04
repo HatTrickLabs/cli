@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HatTrick.CommandLine
 {
@@ -32,6 +27,9 @@ namespace HatTrick.CommandLine
         #region add
         public void Add(CommandOption option)
         {
+            if (option is null)
+                throw new ArgumentNullException(nameof(option));
+
             if (_ops is null)
             {
                 _ops = new CommandOption[1];
