@@ -125,7 +125,7 @@ namespace HatTrick.CommandLine
                 bool isCorrelated = CorrelationExistsForMapTarget(parameter.Name, out (string opKey, string parameterName) correlation);
                 string opKey = isCorrelated ? correlation.opKey : parameter.Name;
 
-                parameters[i] = command[opKey].Value;
+                parameters[i] = command[opKey].GetValue<object>();
             }
         }
         #endregion

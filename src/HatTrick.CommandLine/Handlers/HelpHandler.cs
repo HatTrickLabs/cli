@@ -39,7 +39,7 @@ namespace HatTrick.CommandLine
                 return;
             }
 
-            string argument = cmd["help"].Value;
+            string argument = cmd["help"].GetValue<string>();
             if (argument is null)//no argument provided for the help option
             {
                 renderer.RenderRootHelp();

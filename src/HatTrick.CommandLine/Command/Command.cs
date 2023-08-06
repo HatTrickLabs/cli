@@ -9,13 +9,13 @@ namespace HatTrick.CommandLine
     {
         #region internals
         private string _key;
-        private CommandOptionSet _ops;
+        private SetOf<CommandOption> _ops;
         #endregion
 
         #region interface
         public string Key => _key;
 
-        internal CommandOptionSet Options => _ops;
+        internal SetOf<CommandOption> Options => _ops;
 
         public CommandOption this[string key]
         {
@@ -32,7 +32,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal Command(string key, CommandOptionSet options = null)
+        internal Command(string key, SetOf<CommandOption> options = null)
         {
             if (key is null)
                 throw new ArgumentNullException(nameof(key));

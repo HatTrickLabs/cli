@@ -2,7 +2,7 @@
   "profiles": {
     "HatTrick.CommandLine.TestHarness": {
       "commandName": "Project",
-      "commandLineArgs": "test -f Jerrod -l Eiman -b 2020-01-01"
+      "commandLineArgs": "test -f Jerrod -l Eiman"
     }
   }
 }

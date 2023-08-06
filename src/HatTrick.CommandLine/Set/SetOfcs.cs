@@ -2,17 +2,17 @@
 
 namespace HatTrick.CommandLine
 {
-    public sealed class CommandOptionSet
+    public class SetOf<T>
     {
         #region internals
-        private CommandOption[] _ops;
+        private T[] _ops;
         private int _cnt;
         #endregion
 
         #region interface
         public int Count => _cnt;
 
-        public CommandOption this[int i]
+        public T this[int i]
         {
             get => _ops[i];
             set => _ops[i] = value;
@@ -20,23 +20,23 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        public CommandOptionSet()
+        public SetOf()
         { }
         #endregion
 
         #region add
-        public void Add(CommandOption option)
+        public void Add(T option)
         {
             if (option is null)
                 throw new ArgumentNullException(nameof(option));
 
             if (_ops is null)
             {
-                _ops = new CommandOption[1];
+                _ops = new T[1];
             }
             else
             {
-                var newOps = new CommandOption[_cnt + 1];
+                var newOps = new T[_cnt + 1];
                 Array.Copy(_ops, newOps, _cnt);
                 _ops = newOps;
             }
@@ -46,7 +46,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region exists
-        public bool Exists(Predicate<CommandOption> where)
+        public bool Exists(Predicate<T> where)
         {
             if (_ops is null)
                 return false;
@@ -56,7 +56,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region find index
-        public int FindIndex(Predicate<CommandOption> where)
+        public int FindIndex(Predicate<T> where)
         {
             if (_ops is null)
                 return -1;
@@ -66,7 +66,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region find
-        public CommandOption Find(Predicate<CommandOption> where)
+        public T Find(Predicate<T> where)
         {
             if (_ops is null)
                 return default;
@@ -76,10 +76,10 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region find all
-        public CommandOption[] FindAll(Predicate<CommandOption> where)
+        public T[] FindAll(Predicate<T> where)
         {
             if (_ops is null)
-                return new CommandOption[0];
+                return new T[0];
 
             return Array.FindAll(_ops, where);
         }

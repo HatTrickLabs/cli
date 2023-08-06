@@ -93,7 +93,7 @@ namespace HatTrick.CommandLine
 
                 var prop = Array.Find(props, (p) => p.Name == propName);
 
-                var val = op.Value;
+                var val = op.GetValue<object>();
 
                 if (val is not null)
                     prop.SetValue(to, val);
