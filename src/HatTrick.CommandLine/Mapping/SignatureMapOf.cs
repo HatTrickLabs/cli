@@ -47,8 +47,8 @@ namespace HatTrick.CommandLine
         {
             base.Validate();
 
-            List<CommandOptionDefinition> options = base.CommandDefinition.Options;
-            bool[] utilized = new bool[options.Count];
+            SetOf<CommandOptionDefinition> options = base.CommandDefinition.Options;
+            bool[] utilized = new bool[options.Length];
 
             ParameterInfo[] pInfos = _target.Method.GetParameters();
 
@@ -109,7 +109,7 @@ namespace HatTrick.CommandLine
         #region map
         public void Map(Command command, out object[] parameters)
         {
-            IList<CommandOption> options = command.GetOptions();
+            CommandOption[] options = command.GetOptions();
 
             ParameterInfo[] pInfos = _target.Method.GetParameters();
 

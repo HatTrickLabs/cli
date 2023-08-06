@@ -20,8 +20,8 @@ namespace HatTrick.CommandLine
         private Action _mappedHanderValidators;
         private Action<Command> _handler;
         private Func<Command, Task> _asyncHandler;
-        private List<CommandOptionDefinition> _options;
-        private List<CommandConstraint> _constraints;
+        private SetOf<CommandOptionDefinition> _options;
+        private SetOf<CommandConstraint> _constraints;
         #endregion
 
         #region interface
@@ -49,8 +49,7 @@ namespace HatTrick.CommandLine
             set => _asyncHandler = value;
         }
 
-        public List<CommandOptionDefinition> Options
-        { get => _options is null ? _options = new List<CommandOptionDefinition>() : _options; }
+        public SetOf<CommandOptionDefinition> Options => _options;
 
         public CommandOptionDefinition this[string key]
         {
@@ -65,13 +64,13 @@ namespace HatTrick.CommandLine
             }
         }
 
-        public List<CommandConstraint> Constraints
+        public SetOf<CommandConstraint> Constraints
         {
-            get => _constraints is null ? _constraints = new List<CommandConstraint>() : _constraints;
+            get => _constraints;
             set => _constraints = value;
         }
 
-        public bool HasConstraints => _constraints is not null;
+        public bool HasConstraints => _constraints.Length > 0;
 
         public static string DefaultCommandName => "usage-help";
         #endregion
@@ -80,6 +79,8 @@ namespace HatTrick.CommandLine
         public CommandDefinition(string name)
         {
             _name = name;
+            _options = new SetOf<CommandOptionDefinition>();
+            _constraints = new SetOf<CommandConstraint>();
         }
         #endregion
 
@@ -222,13 +223,14 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure constraints
-        internal void EnsureConstraints(Command command, ref List<string> feedback)
+        internal void EnsureConstraints(Command command, ref SetOf<string> feedback)
         {
-            if (_constraints is null || _constraints.Count == 0)
+            if (_constraints is null || _constraints.Length == 0)
                 return;
 
-            foreach (var c in _constraints)
+            for(int i = 0; i < _constraints.Length; i++)
             {
+                var c = _constraints[i];
                 if (!c.Ensure(command, out string fb))
                 {
                     feedback.Add(fb);
@@ -281,13 +283,13 @@ namespace HatTrick.CommandLine
         #region validate options
         private void ValidateOptions()
         {
-            int opCount = _options?.Count ?? 0;
-            if (opCount > 0)
+            int opLen = _options?.Length ?? 0;
+            if (opLen > 0)
             {
                 string key = null;
                 string flag = null;
-                var flagsMap = new string[opCount, 2];
-                for (int i = 0; i < opCount; i++)
+                var flagsMap = new string[opLen, 2];
+                for (int i = 0; i < opLen; i++)
                 {
                     var op = _options[i];
                     op.Validate();

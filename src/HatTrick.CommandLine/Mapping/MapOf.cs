@@ -33,13 +33,14 @@ namespace HatTrick.CommandLine
         {
             base.Validate();
 
-            List<CommandOptionDefinition> options = CommandDefinition.Options;
+            SetOf<CommandOptionDefinition> options = CommandDefinition.Options;
 
             Type t = typeof(T);
             PropertyInfo[] props = t.GetProperties();
 
-            foreach (var op in options)
+            for (int i = 0; i < options.Length; i++)
             {
+                var op = options[i];
                 bool isCorrelated = CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
                 string propName = isCorrelated ? correlation.property : op.Key;
 
@@ -77,7 +78,7 @@ namespace HatTrick.CommandLine
         {
             to = new();
 
-            IList<CommandOption> options = command.GetOptions();
+            CommandOption[] options = command.GetOptions();
 
             Type t = typeof(T);
             PropertyInfo[] props = t.GetProperties();

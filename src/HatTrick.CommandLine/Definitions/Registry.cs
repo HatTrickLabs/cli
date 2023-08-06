@@ -237,36 +237,37 @@ namespace HatTrick.CommandLine
         #region ensure command
         private void EnsureCommand(Command command, CommandDefinition cmdDef)
         {
-            List<string> feedback = new List<string>();
+            var feedback = new SetOf<string>();
 
             this.EnsureCommandOptions(cmdDef, command, ref feedback);
 
-            if (feedback.Count == 0)
+            if (feedback.Length == 0)
                 cmdDef.EnsureConstraints(command, ref feedback);
 
-            if (feedback.Count > 0)
+            if (feedback.Length > 0)
                 throw new CommandInputException(feedback.ToArray());
         }
         #endregion
 
         #region ensure command options
-        private void EnsureCommandOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        private void EnsureCommandOptions(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
         {
             //ensure options fully hydrated
             this.EnsureCommandOptionsFullyHydrated(cmdDef, cmd, ref feedback);
-            if (feedback.Count > 0)
+            if (feedback.Length > 0)
                 return;
 
             this.EnsureAllInputCommandOptionsDefined(cmdDef, cmd, ref feedback);
-            if (feedback.Count > 0)
+            if (feedback.Length > 0)
                 return;
 
             this.EnsureNoDuplicateOptions(cmdDef, cmd, ref feedback);
-            if (feedback.Count > 0)
+            if (feedback.Length > 0)
                 return;
 
-            foreach(var opDef in cmdDef.Options)
+            for (int i = 0; i < cmdDef.Options.Length; i++)
             {
+                var opDef = cmdDef.Options[i];
                 var op = cmd.GetOption(opDef.Key);
 
                 //TODO: EnsureValue()!!!! op should have got its converter from op def to convert it's own arg to a Value
@@ -285,10 +286,11 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure options fully hydrated
-        private void EnsureCommandOptionsFullyHydrated(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        private void EnsureCommandOptionsFullyHydrated(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
         {
-            foreach (var opDef in cmdDef.Options)
+            for(int i = 0; i < cmdDef.Options.Length; i++)
             {
+                var opDef = cmdDef.Options[i];
                 var op = cmd.GetOptionByFlag(opDef.Flags);
 
                 if (op is not null)//apply the definition key to the option
@@ -304,13 +306,13 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure all input command options defined
-        private void EnsureAllInputCommandOptionsDefined(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        private void EnsureAllInputCommandOptionsDefined(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
         {
-            if ((cmdDef.Options is null || cmdDef.Options.Count == 0) && cmd.Options.Count > 0)
+            if ((cmdDef.Options is null || cmdDef.Options.Length == 0) && cmd.Options.Length > 0)
                 feedback.Add($"The '{cmdDef.Name}' command does not accept any options...provided options are invalid.");
 
             //if any options are defined for the command, confirm each option provided is valid
-            for (int i = 0; i < cmd.Options.Count; i++)
+            for (int i = 0; i < cmd.Options.Length; i++)
             {
                 var op = cmd.Options[i];
 
@@ -318,20 +320,20 @@ namespace HatTrick.CommandLine
                 if (op is EmptyCommandOption)
                     continue;
 
-                if (!cmdDef.Options.Any(o => o.Flags.Contains(op.Flag)))
+                if (!cmdDef.Options.Exists(o => o.Flags.Contains(op.Flag)))
                     feedback.Add($"Undefined option at position: {i + 1} ... option: {op.Flag}");
             }
         }
         #endregion
 
         #region ensure no duplicate options
-        private void EnsureNoDuplicateOptions(CommandDefinition cmdDef, Command cmd, ref List<string> feedback)
+        private void EnsureNoDuplicateOptions(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
         {
-            for (int i = 0; i < cmdDef.Options.Count; i++)
+            for (int i = 0; i < cmdDef.Options.Length; i++)
             {
                 CommandOptionDefinition opDef = cmdDef.Options[i];
                 var opUno = cmd.GetOptionByFlag(opDef.Flags);
-                for (int j = 0; j < cmd.Options.Count; j++)
+                for (int j = 0; j < cmd.Options.Length; j++)
                 {
                     CommandOption opDos = cmd.Options[j];
 

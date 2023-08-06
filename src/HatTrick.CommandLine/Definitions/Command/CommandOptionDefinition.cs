@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 
 namespace HatTrick.CommandLine
 {
@@ -19,7 +20,7 @@ namespace HatTrick.CommandLine
         private readonly string _help;
         private bool _hidden;
         private readonly string[] _flags;
-        private List<ArgumentConstraint> _constraints;
+        private SetOf<ArgumentConstraint> _constraints;
         #endregion
 
         #region interface
@@ -37,13 +38,13 @@ namespace HatTrick.CommandLine
 
         public string LeastVerboseFlag => _flags.MinBy((f) => f.Length);
 
-        public List<ArgumentConstraint> Constraints
+        public SetOf<ArgumentConstraint> Constraints
         {
-            get => _constraints is null ? _constraints = new List<ArgumentConstraint>() : _constraints;
+            get => _constraints;
             set => _constraints = value;
         }
 
-        public bool HasConstraints => _constraints is not null;
+        public bool HasConstraints => _constraints.Length > 0;
 
         public bool HasDefault => this.HasConstraints && _constraints.Exists(c => c is IDefaultConstraint);
 
@@ -56,6 +57,7 @@ namespace HatTrick.CommandLine
             _key = key ?? throw new ArgumentNullException(nameof(key));
             _help = help;
             _flags = flags ?? throw new ArgumentNullException(nameof(flags));
+            _constraints = new();
         }
         #endregion
 
@@ -135,7 +137,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure custom constraints
-        internal void EnsureConstraints(ref CommandOption option, ref List<string> feedback)
+        internal void EnsureConstraints(ref CommandOption option, ref SetOf<string> feedback)
         {
             if (!this.HasConstraints)
                 return;
@@ -241,28 +243,30 @@ namespace HatTrick.CommandLine
             if (values is null)
                 throw new ArgumentNullException(nameof(values));
 
+            if (values.Length == 0)
+                throw new ArgumentNullException(nameof(values), "Argument must contain at least one value.");
+
             if (base.HasConstraints)
             {
-                List<ArgumentConstraint> constraints = base.Constraints;
+                SetOf<ArgumentConstraint> constraints = base.Constraints;
 
-                if (constraints.Count > 0)
+                if (constraints.Length > 0)
                 {
+                    //if op def already contains an accepted values constraint, throw ex
+                    var avc = constraints.Find(c => c is AcceptedValuesConstraint<T>);
+                    if (avc is not null)
+                        throw new CommandDefinitionException($"Option '{this.Key}' already contains an {nameof(this.AcceptedValues)} constraint.");
+
+                    //if op def contains a default constraint, ensure the default is included in the accepted values set
                     DefaultConstraint<T> dc = constraints.Find(c => c is IDefaultConstraint) as DefaultConstraint<T>;
                     EqualityComparer<T> comparer = EqualityComparer<T>.Default;
                     if (dc is not null && !Array.Exists<T>(values, (v) => comparer.Equals(v, dc.DefaultValue)))
                     {
                         var msg = $"Option '{this.Key}' is defined with a default value of '{dc.DefaultValue}' which is not defined in the accepted values set '{string.Join("|", values)}'. ";
-                        throw new ArgumentException(msg);
+                        throw new CommandDefinitionException(msg);
                     }
-
-                    var avc = constraints.Find(c => c is AcceptedValuesConstraint<T>);
-                    if (avc is not null)
-                        constraints.Remove(avc);
                 }
             }
-
-            if (values.Length == 0)
-                return;
 
             base.Constraints.Add(new AcceptedValuesConstraint<T>(values));
         }

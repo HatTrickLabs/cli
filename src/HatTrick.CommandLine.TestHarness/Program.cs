@@ -69,6 +69,11 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption<Guid?>(key: "uuid", defaultArg: null, help: "Some long cryptic code.", flags: ("-u", "--uuid"));
             cmd.AddOption<int>(key: "score", defaultArg: 8, help: "score", flags: ("-s", "--score"));
             cmd["score"].AcceptedValues(1, 2, 3, 4, 5, 6, 7, 8);
+            cmd.ApplyConstraint(
+                constraint: (c) => c["first_name"].Value != c["last_name"].Value,
+                name: "Unique Names",
+                description: "First and Last name must be unique."
+            );
             registry.Add(cmd);
 
             /********** Register Vault Commands **********/

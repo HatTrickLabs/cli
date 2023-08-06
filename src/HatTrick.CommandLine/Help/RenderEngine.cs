@@ -41,6 +41,18 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
+        #region compute option flags descriptor lengths
+        private int[] ComputeFlagsDescriptorLengths(SetOf<CommandOptionDefinition> optionSet)
+        {
+            int[] lengths = new int[optionSet.Length];
+            for (int i = 0; i < optionSet.Length; i++)
+            {
+                lengths[i] = string.Join('|', optionSet[i].Flags).Length;
+            }
+            return lengths;
+        }
+        #endregion
+
         #region resolve block start position
         private int ResolveBlockStartPosition(int maxLeftContentLength)
         {
@@ -106,7 +118,7 @@ namespace HatTrick.CommandLine
             var target = Registry.GetInstance().GetCommandDefinition(CommandDefinition.DefaultCommandName);
             string template = TemplateAccessor.GetTemplate("usage-help");
 
-            int blockStart = this.ResolveBlockStartPosition(target.Options.Max(o => string.Join('|', o.Flags).Length));
+            int blockStart = this.ResolveBlockStartPosition(this.ComputeFlagsDescriptorLengths(target.Options).Max());
             string indent = new string(' ', RenderEngine.Indent);
 
             Func<CommandOptionDefinition, string> GetOpDefHelp = (op) =>
@@ -271,7 +283,7 @@ namespace HatTrick.CommandLine
         {
             string template = TemplateAccessor.GetTemplate("command-help");
 
-            int opBlockStart = this.ResolveBlockStartPosition(target.Options.Max(o => string.Join('|', o.Flags).Length));
+            int opBlockStart = this.ResolveBlockStartPosition(this.ComputeFlagsDescriptorLengths(target.Options).Max());
             int cmdConstBlockStart = this.ResolveBlockStartPosition(target.HasConstraints ? target.Constraints.Max(c => c.Name.Length) : 0);
             string indent = new string(' ', RenderEngine.Indent);
 
