@@ -78,7 +78,8 @@ namespace HatTrick.CommandLine
         internal override bool Ensure(ref CommandOption option, out string feedback)
         {
             feedback = null;
-            T val = option.GetValue<T>();
+            //TODO: Can I really just assume default here...If not provided, value is null...but T may not be nullable.
+            T val = option.HasValue() ? option.GetValue<T>() : default(T);
             bool pass = _constraint(val);
 
             if (!pass)

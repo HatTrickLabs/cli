@@ -96,11 +96,13 @@ namespace HatTrick.CommandLine
         public void Add(CommandDefinition commandDef)
         {
             if (commandDef is not DefaultCommandDefinition)
+            {
                 commandDef.Validate();
 
-            //ensure no namespace name collisions
-            if (_namespaceDefs.ContainsKey(commandDef.Name))
-                throw new NamespaceDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
+                //ensure no namespace name collisions
+                if (_namespaceDefs.ContainsKey(commandDef.Name))
+                    throw new NamespaceDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
+            }
 
             _cmdDefs.Add(commandDef.Name, commandDef);
         }

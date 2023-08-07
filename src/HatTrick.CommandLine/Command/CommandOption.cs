@@ -55,6 +55,13 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
+        #region has value
+        public bool HasValue()
+        {
+            return _value is not null;
+        }
+        #endregion
+
         #region get value
         internal T GetValue<T>()
         {

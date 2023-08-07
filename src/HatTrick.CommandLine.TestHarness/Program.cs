@@ -11,6 +11,7 @@ namespace HatTrick.CommandLine.TestHarness
             RegisterCommands(out Registry registry);
             registry.ExecuteCommand(Parser.Parse(args));
 
+
             //TestMaskedInputReader();
 
             Console.WriteLine("Press [Enter] to exit.");
@@ -74,6 +75,12 @@ namespace HatTrick.CommandLine.TestHarness
                 name: "Unique Names",
                 description: "First and Last name must be unique."
             );
+            registry.Add(cmd);
+
+            /********** Register Clear Console Command **********/
+            cmd = new(name: "cls");
+            cmd.Help = "Clears the console screen.";
+            cmd.Handler = (command) => { Console.Clear(); };
             registry.Add(cmd);
 
             /********** Register Vault Commands **********/

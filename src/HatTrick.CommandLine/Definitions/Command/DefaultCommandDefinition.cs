@@ -31,7 +31,7 @@ namespace HatTrick.CommandLine
             var runOp = new CommandOptionDefinition<bool>(
                 key: "run", 
                 defaultArg: false, 
-                help: "Run in a non-exiting command loop.", 
+                help: "Run a non-exiting command loop.", 
                 converter: BooleanConverter.ToBoolean, 
                 "-r", "--run");
             base.Options.Add(runOp);
@@ -76,7 +76,7 @@ namespace HatTrick.CommandLine
         #region run
         private void InvokeRun(Command cmd)
         {
-            new CommandLoopHandler().Go(cmd);
+            CommandLoopHandler.GetInstance().Go(cmd);
         }
         #endregion
     }

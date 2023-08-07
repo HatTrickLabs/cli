@@ -63,7 +63,7 @@ namespace HatTrick.CommandLine
                 renderer.RenderCommandHelp(cmdDef);
             }
             else
-                throw new CommandInputException($"Provided argument is not a command or namespace: {input}.");
+                throw new CommandInputException($"Provided argument '{input}' is not a command or namespace.");
         }
         #endregion
     }

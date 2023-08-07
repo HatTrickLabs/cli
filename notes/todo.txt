@@ -13,8 +13,7 @@ x DO NOT ALLOW::Allow duplicate option flags for a single ShellCommand parse.  T
   ? If we do not allow duplicate options, mod CommandDefinition to hold ops in dictionary or at least ensure no duplicates provided.
 x Implement root command concept..Root command is command run when NO command provided...Root command is run for keeping similarity to old school stuff...crypto.exe --version | crypto.exe -?  | crypto.exe --list
 x Implement command namespaces to alleviate pains in rendering help content.
-- Implement interactive mode...inner process command loop...will enable tab based command help in the future.
-  - experiment with a 'using' expression that scopes my command loop to a specific namespace
+x Implement interactive mode...inner process command loop...will enable tab based command help in the future.
 x Vault.cs  public set value method adds passed char[] value (a ref) directly into the Dictionary<string, char[]>...that ref char[] could EASILY be corrupted
 - Implement ability to pass in a prefix/prompt value into the masked input line reader ex: password:********** or password>****** or secret key:>
 x Ensure no name collisions between namespaces and commands.
@@ -51,9 +50,11 @@ x When mapping options to object, should we really require every op defined must
   x Can I correlate to _ (discard) ??? I like this one...Correlate to ~ ie: ("middle_name", "~") would tell the mapper to NOT map the middle_name op to anything.
 x Make sure ops Hidden do not render any help.
 x Make sure cmds Hidden do not render any help (what to do if user explicitly asks for help even if it is hidden?) 
-- When providing a defaultArg and AcceptedValues ensure the default is contained within the accepted values set.
-- Rename AcceptedSetConstraint.cs to AcceptedValuesConstraint.cs
-- Can we generically type a command argument ???
+x When providing a defaultArg and AcceptedValues ensure the default is contained within the accepted values set.
+x Rename AcceptedSetConstraint.cs to AcceptedValuesConstraint.cs
+x NO!!!! Can we generically type a command argument ???  It adds NO value and creates tons of pointless complexity.
+- experiment with a 'using' expression that scopes my command loop to a specific namespace
+- experiment with tab based command completion when running in non-exiting loop..
 
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
