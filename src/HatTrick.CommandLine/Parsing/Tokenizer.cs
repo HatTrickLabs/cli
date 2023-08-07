@@ -8,6 +8,7 @@ namespace HatTrick.CommandLine.Parsing
         #region tokenize
         public static string[] Tokenize(string input, bool keepLiteralQuotes = false)
         {
+            //no sense in holding a tokenizer for multi-generations of GC...just use and release.
             var instance = new Instance(input, keepLiteralQuotes);
             return instance.Tokenize();
         }

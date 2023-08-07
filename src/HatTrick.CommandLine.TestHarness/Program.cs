@@ -77,7 +77,7 @@ namespace HatTrick.CommandLine.TestHarness
             );
             registry.Add(cmd);
 
-            /********** Register Clear Console Command **********/
+            /********** Register Clear Screen Command **********/
             cmd = new(name: "cls");
             cmd.Help = "Clears the console screen.";
             cmd.Handler = (command) => { Console.Clear(); };
