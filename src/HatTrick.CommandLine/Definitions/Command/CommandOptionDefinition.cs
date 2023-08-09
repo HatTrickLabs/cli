@@ -145,7 +145,10 @@ namespace HatTrick.CommandLine
             foreach (var c in this.Constraints)
             {
                 if (!c.Ensure(ref option, out string fb))
+                {
                     feedback.Add(fb);
+                    break;//break of first fail
+                }
             }
         }
         #endregion

@@ -232,9 +232,7 @@ namespace HatTrick.CommandLine
             {
                 var c = _constraints[i];
                 if (!c.Ensure(command, out string fb))
-                {
                     feedback.Add(fb);
-                }
             }
         }
         #endregion

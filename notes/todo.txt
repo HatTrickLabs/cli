@@ -55,6 +55,8 @@ x Rename AcceptedSetConstraint.cs to AcceptedValuesConstraint.cs
 x NO!!!! Can we generically type a command argument ???  It adds NO value and creates tons of pointless complexity.
 - experiment with a 'using' expression that scopes my command loop to a specific namespace
 - experiment with tab based command completion when running in non-exiting loop..
+- Impl some type of globally accessible data point that will tell me if i'm running within the non-exiting command loop, windows service or one time command run.
+- Revisit GetValue<T>() on CommandOption...What about Non null value types... It pukes.
 
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
