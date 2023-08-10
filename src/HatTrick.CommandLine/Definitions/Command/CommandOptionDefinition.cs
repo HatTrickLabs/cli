@@ -218,13 +218,18 @@ namespace HatTrick.CommandLine
                                   : base(key: key, help: help, flags: flags)
         {
             _converter = converter ?? throw new ArgumentNullException(nameof(converter));
-            this.Constraints.Add(new MustAssignConstraint<T>(this.Flags));
+
+            if (typeof(T) == typeof(bool))//bool should never require assignment...should simply default to false
+                base.Constraints.Add(new DefaultConstraint<bool>(key, base.MostVerboseFlag, false));
+            else
+                this.Constraints.Add(new MustAssignConstraint<T>(this.Flags));
         }
 
         internal CommandOptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, params string[] flags) 
                                   : base(key: key, help: help, flags: flags)
         {
             _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+
             base.Constraints.Add(new DefaultConstraint<T>(key, base.MostVerboseFlag, defaultArg));
         }
         #endregion
