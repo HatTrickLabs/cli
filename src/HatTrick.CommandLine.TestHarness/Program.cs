@@ -113,7 +113,9 @@ namespace HatTrick.CommandLine.TestHarness
             /********** Register REST commands **********/
             cmd = new(name: "cb.profiles.get");
             cmd.Help = "Get Coinbase profiles.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => {
+                int i = 3;
+            };
             cmd.AddOption<bool>(key: "active", help: "Active profiles only.", flags: ("-a", "--active"));
             registry.Add(cmd);
 

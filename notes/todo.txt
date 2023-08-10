@@ -56,9 +56,9 @@ x NO!!!! Can we generically type a command argument ???  It adds NO value and cr
 - experiment with a 'using' expression that scopes my command loop to a specific namespace
 - experiment with tab based command completion when running in non-exiting loop..
 - Impl some type of globally accessible data point that will tell me if i'm running within the non-exiting command loop, windows service or one time command run.
-- Revisit GetValue<T>() on CommandOption...What about Non null value types... It pukes.
-- Getting 'must assign: yes' for boolean option that do not have a defaultArg.   bool is the exception, edge case...
-- TypeMap currently not using the custom boolean converter.
+x ...NAI, we don't call get value for 'Empty' commmand options...Revisit GetValue<T>() on CommandOption...What about Non null value types... It pukes.
+x  Added default constraint of 'false' for empty bool command options...Getting 'must assign: yes' for boolean option that do not have a defaultArg.   bool is the exception, edge case...
+x TypeMap currently not using the custom boolean converter.
 - (related to previous 2 items).  Review Registery.EnsureCommandOptions lines 270 - 287.   Just doesn't seem right.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
