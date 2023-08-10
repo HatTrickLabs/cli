@@ -28,7 +28,7 @@
             feedback = null;
 
             if (option is EmptyCommandOption)
-                feedback = $"Expected option [{string.Join("|", _optionFlags)}] not found...option has a '{MustAssignConstraint<T>.ConstraintName}' constraint.";
+                feedback = $"An expected option [{string.Join("|", _optionFlags)}] not found...option has a '{MustAssignConstraint<T>.ConstraintName}' constraint.";
 
             return feedback is null;
         }

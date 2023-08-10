@@ -127,10 +127,9 @@ namespace HatTrick.CommandLine
             {
                 get
                 {
-                    if (_index == 0 || _index == _items.Length)
-                    {
+                    if (_index == 0 || _index >= _items.Length)
                         throw new InvalidOperationException("Current object never materialized.");
-                    }
+
                     return Current;
                 }
             }

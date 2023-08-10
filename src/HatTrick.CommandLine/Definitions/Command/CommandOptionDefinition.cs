@@ -147,7 +147,7 @@ namespace HatTrick.CommandLine
                 if (!c.Ensure(ref option, out string fb))
                 {
                     feedback.Add(fb);
-                    break;//break of first fail
+                    break;//break on first fail
                 }
             }
         }

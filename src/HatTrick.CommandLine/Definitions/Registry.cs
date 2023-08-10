@@ -300,9 +300,6 @@ namespace HatTrick.CommandLine
 
                 else//empty, just need an empty shell with correct key
                     cmd.ApplyEmptyOption(opDef.EmptyInstance());
-
-                //else//empty, but MUST be provided because no defaultArg defined.
-                //    feedback.Add($"Expected option [{string.Join("|", opDef.Flags)}] not found...option is maked '{nameof(CommandOptionDefinition.MustAssign)}' because no defaultArg defined.");
             }
         }
         #endregion

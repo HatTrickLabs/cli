@@ -8,14 +8,27 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
-            RegisterCommands(out Registry registry);
-            registry.ExecuteCommand(Parser.Parse(args));
-
+            try
+            {
+                RegisterCommands(out Registry registry);
+                registry.ExecuteCommand(Parser.Parse(args));
+            }
+            catch (Exception ex)
+            {
+                string name = ex.GetType().Name;
+                string nl = Environment.NewLine;
+                string msg = $"{name}:{nl}{ex.Message}{nl}";
+#if DEBUG
+                    msg += $"{nl}Stack Trace:{nl}{ex.StackTrace}{nl}";
+#endif
+                Console.Error.WriteLine(msg);
+            }
 
             //TestMaskedInputReader();
-
+#if DEBUG
             Console.WriteLine("Press [Enter] to exit.");
             Console.ReadLine();
+#endif
         }
 
         static void TestMaskedInputReader()
@@ -101,7 +114,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmd = new(name: "cb.profiles.get");
             cmd.Help = "Get Coinbase profiles.";
             cmd.Handler = (command) => { };
-            cmd.AddOption<string>(key: "active", help: "Active profiles only.", flags: ("-a", "--active"));
+            cmd.AddOption<bool>(key: "active", help: "Active profiles only.", flags: ("-a", "--active"));
             registry.Add(cmd);
 
             cmd = new(name: "cb.profiles.rename.put");
