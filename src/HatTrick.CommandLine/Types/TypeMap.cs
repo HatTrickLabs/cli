@@ -80,6 +80,9 @@ namespace HatTrick.CommandLine
             if (underlying is null)
                 underlying = changeTo;
 
+            if (underlying == typeof(bool))
+                return BooleanConverter.ToBoolean(value);
+
             if (typeof(IConvertible).IsAssignableFrom(underlying))
                 return Convert.ChangeType(value, changeTo);
 
