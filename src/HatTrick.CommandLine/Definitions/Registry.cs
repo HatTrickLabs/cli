@@ -15,12 +15,6 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region interface
-        //public CommandDefinition this[string key]
-        //{
-        //    get { lock (_lock) { return _definitions[key]; } }
-        //    set { lock (_lock) { _definitions[key] = value; } }
-        //}
-
         public int CommandDefinitionCount => _cmdDefs.Count;
 
         public int NamespaceDefinitionCount => _namespaceDefs.Count;
@@ -274,6 +268,7 @@ namespace HatTrick.CommandLine
 
                 //TODO: EnsureValue()!!!! op should have got its converter from op def to convert it's own arg to a Value
                 //OR::: opDef.EnsureValue(op);
+                //...Do set value and apply key at the same time ...here ???
                 if (op is not EmptyCommandOption)
                     opDef.SetConvertedValue(op);
 
