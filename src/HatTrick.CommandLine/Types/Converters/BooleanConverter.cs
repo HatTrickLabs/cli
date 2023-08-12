@@ -20,9 +20,8 @@ namespace HatTrick.CommandLine
         #region convert to boolean
         public static bool ToBoolean(string value)
         {
-            //boolean is the only option that defaults to true (flag does not require an arg)
             if (value == null || value == string.Empty)
-                return true;
+                return false;//just default to false...
 
             if (BooleanConverter.IsValidBool(value, out bool boolean))
                 return boolean;

@@ -263,22 +263,11 @@ namespace HatTrick.CommandLine
 
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
-                var opDef = cmdDef.Options[i];
-                var op = cmd.GetOption(opDef.Key);
+                CommandOptionDefinition opDef = cmdDef.Options[i];
+                ref CommandOption op = ref cmd.GetOptionByRef(opDef.Key);
 
-                //TODO: EnsureValue()!!!! op should have got its converter from op def to convert it's own arg to a Value
-                //OR::: opDef.EnsureValue(op);
-                //...Do set value and apply key at the same time ...here ???
-                if (op is not EmptyCommandOption)
-                    opDef.SetConvertedValue(op);
-
-                //If empty option and a default constraint exists, empty op will be swapped for a default
+                //If empty op and a default constraint exists, empty op will be swapped for a default...hence the ref param
                 opDef.EnsureConstraints(ref op, ref feedback);
-
-                //if empty op was swapped for 'Default',
-                //we need to push the default op back into the empty op placeholder
-                if (op is DefaultCommandOption def)
-                    cmd.ApplyDefaultOption(def);
             }
         }
         #endregion
@@ -291,11 +280,22 @@ namespace HatTrick.CommandLine
                 var opDef = cmdDef.Options[i];
                 var op = cmd.GetOptionByFlag(opDef.Flags);
 
-                if (op is not null)//apply the definition key to the option
+                if (op is null)
+                {
+                    //empty, just need an empty shell with correct key
+                    op = opDef.EmptyInstance();
+                    cmd.ApplyEmptyOption(op as EmptyCommandOption);
+                }
+                else
+                {
+                    //apply the definition key to the option
                     op.ApplyKey(opDef.Key);
 
-                else//empty, just need an empty shell with correct key
-                    cmd.ApplyEmptyOption(opDef.EmptyInstance());
+                    //pass op to opDef to set the value (passing in because only the def knows what T is).
+                    opDef.ApplyConvertedValueTo(op, out string error);
+                    if (error is not null)
+                        feedback.Add(error);
+                }
             }
         }
         #endregion
@@ -303,8 +303,11 @@ namespace HatTrick.CommandLine
         #region ensure all input command options defined
         private void EnsureAllInputCommandOptionsDefined(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
         {
-            if ((cmdDef.Options is null || cmdDef.Options.Length == 0) && cmd.Options.Length > 0)
+            if (cmd.Options.Length > 0 && !cmdDef.HasOptions)
+            {
                 feedback.Add($"The '{cmdDef.Name}' command does not accept any options...provided options are invalid.");
+                return;
+            }
 
             //if any options are defined for the command, confirm each option provided is valid
             for (int i = 0; i < cmd.Options.Length; i++)
@@ -326,11 +329,11 @@ namespace HatTrick.CommandLine
         {
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
-                CommandOptionDefinition opDef = cmdDef.Options[i];
+                var opDef = cmdDef.Options[i];
                 var opUno = cmd.GetOptionByFlag(opDef.Flags);
                 for (int j = 0; j < cmd.Options.Length; j++)
                 {
-                    CommandOption opDos = cmd.Options[j];
+                    var opDos = cmd.Options[j];
 
                     if (opDos == opUno)
                         continue;

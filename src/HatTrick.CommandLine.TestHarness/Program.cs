@@ -114,34 +114,34 @@ namespace HatTrick.CommandLine.TestHarness
             cmd = new(name: "cb.profiles.get");
             cmd.Help = "Get Coinbase profiles.";
             cmd.Handler = (command) => {
-                int i = 3;
+                EnumerateCommandOptions(command);
             };
             cmd.AddOption<bool>(key: "active", help: "Active profiles only.", flags: ("-a", "--active"));
             registry.Add(cmd);
 
             cmd = new(name: "cb.profiles.rename.put");
             cmd.Help = "Rename a Coinbase profile.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => { EnumerateCommandOptions(command); };
             cmd.AddOption<string>(key: "profile_id", help: "The profile id.", flags: ("-p", "--profile-id"));
             cmd.AddOption<string>(key: "name", help: "The new profile name.", flags: ("-n", "--name"));
             registry.Add(cmd);
 
             cmd = new(name: "cb.profiles.deactivate.put");
             cmd.Help = "Deactivate a Coinbase profile.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => { EnumerateCommandOptions(command); };
             cmd.AddOption<Guid>(key: "profile_id", help: "The profile id.", flags: ("-p", "--profile-id"));
             cmd.AddOption<Guid>(key: "to", help: "Profile id all existing funds will be moved to.", flags: ("-t", "--to"));
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.get");
             cmd.Help = "Get Coinbase trading products or 'currency pairs'.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => { EnumerateCommandOptions(command); };
             cmd.AddOption<string>(key: "id", help: "Filter to specific product id.", flags: ("-i", "--id"));
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.book.get");
             cmd.Help = "Get a list of open orders for a product order book.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => { EnumerateCommandOptions(command); };
             cmd.AddOption<string>(key: "product_id", help: "The product id.", flags: ("-p", "--product-id"));
             cmd.AddOption<int>(
                 key: "level",
@@ -152,7 +152,7 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmd = new(name: "cb.products.candles.get");
             cmd.Help = "Get historical product rates in grouped buckets or 'Candles'.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => { EnumerateCommandOptions(command); };
             cmd.AddOption<string>(key: "product_id", help: "The product id.", flags: ("-p", "--product-id"));
             cmd.AddOption<int>(key: "granularity", help: "Timeslice granularity (60|300|900|3600|21600|86400) in seconds.", flags: ("-g", "--granularity"));
             cmd.AddOption<DateTime>(key: "start", help: "Start timestamp for aggregation range.  Ignored if no end timestamp provided.", flags: ("-s", "--start"));
@@ -170,7 +170,7 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmd = new(name: "cb.products.stats.get");
             cmd.Help = "Gets 30 day and 24 hour stats for a product.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => { EnumerateCommandOptions(command); };
             cmd.AddOption<string>(key: "product_id", help: "The product id.", flags: ("-p", "--product-id"));
             registry.Add(cmd);
 
@@ -182,7 +182,7 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmd = new(name: "cb.products.trades.get");
             cmd.Help = "Gets a list the latest trades for a product.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => { EnumerateCommandOptions(command); };
             cmd.AddOption<string>(key: "product_id", help: "The product id.", flags: ("-p", "--product-id"));
             cmd.AddOption<int>(key: "limit", defaultArg: 100, help: "Limit on number of results to return.", flags: ("-l", "--limit"));
             //TODO: add before and after filter options...
@@ -199,7 +199,7 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmd = new(name: "cb.products.fills.get");
             cmd.Help = "Get Coinbase product fills.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => { EnumerateCommandOptions(command); };
             cmd.AddOption<string>(key: "product_id", defaultArg: null, help: "The product id.", flags: ("--prod-id", "--product-id"));
             cmd.AddOption<Guid?>(key: "profile_id", defaultArg: null, help: "The profile id.", flags: ("--prof-id", "--profile-id"));
             cmd.AddOption<int>(key: "limit", defaultArg: 100, help: "Limit on number of results to return.", flags: ("-l", "--limit"));
@@ -213,6 +213,16 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.Handler = (command) => { };
             cmd.AddOption<string>(key: "product_id", help: "Cancel all open orders for a specific product id.", flags:  ("-p", "--product-id"));
             registry.Add(cmd);
+        }
+
+        static void EnumerateCommandOptions(Command cmd)
+        {
+            Console.WriteLine(cmd.Key);
+            Console.WriteLine(new string('-', cmd.Key.Length));
+            foreach (var op in cmd.GetOptions(o => true))
+            {
+                Console.WriteLine(op.Key + "\t\t" + op.Value);
+            }
         }
     }
 }

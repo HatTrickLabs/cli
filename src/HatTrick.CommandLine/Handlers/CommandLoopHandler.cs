@@ -31,6 +31,59 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
+        #region go
+        internal void Go(Command cmd)
+        {
+            if (!this.TryAquireInstanceLock())
+                return;
+
+            try
+            {
+                this.RunCommandLoop();
+            }
+            finally
+            {
+                this.ReleaseInstanceLock();
+            }
+        }
+        #endregion
+
+        #region run command loop
+        private void RunCommandLoop()
+        {
+            var registry = Registry.GetInstance();
+            string prompt = this.ResolvePrompt();
+
+            while (true)
+            {
+                try
+                {
+                    this.EnsureCarriageReturn();
+
+                    Console.Write(prompt);
+                    string line = Console.ReadLine();
+
+                    if (this.IsExitCommand(line))
+                        break;
+
+                    registry.ExecuteCommand(Parser.Parse(Tokenizer.Tokenize(line)));
+                    Console.WriteLine(string.Empty);
+                }
+                catch (Exception ex)
+                {
+                    string name = ex.GetType().Name;
+                    string nl = Environment.NewLine;
+                    string msg = $"{name}:{nl}{ex.Message}{nl}";
+#if DEBUG
+                    msg += $"{nl}Stack Trace:{nl}{ex.StackTrace}{nl}";
+#endif
+                    Console.Error.WriteLine(msg);
+                }
+            }
+
+        }
+        #endregion
+
         #region aquire instance lock
         private bool TryAquireInstanceLock()
         {
@@ -78,59 +131,6 @@ namespace HatTrick.CommandLine
             string cmd = command;
             Func<string, string, bool, int> comp = string.Compare;
             return comp(cmd, "exit", true) == 0 || comp(cmd, "bye", true) == 0;
-        }
-        #endregion
-
-        #region go
-        internal void Go(Command cmd)
-        {
-            if (!this.TryAquireInstanceLock())
-                return;
-
-            try
-            {
-                this.RunCommandLoop();
-            }
-            finally
-            {
-                this.ReleaseInstanceLock();
-            }            
-        }
-        #endregion
-
-        #region run command loop
-        private void RunCommandLoop()
-        {
-            var registry = Registry.GetInstance();
-            string prompt = this.ResolvePrompt();
-
-            while (true)
-            {
-                try
-                {
-                    this.EnsureCarriageReturn();
-
-                    Console.Write(prompt);
-                    string line = Console.ReadLine();
-
-                    if (this.IsExitCommand(line))
-                        break;
-
-                    registry.ExecuteCommand(Parser.Parse(Tokenizer.Tokenize(line)));
-                    Console.WriteLine(string.Empty);
-                }
-                catch (Exception ex)
-                {
-                    string name = ex.GetType().Name;
-                    string nl = Environment.NewLine;
-                    string msg = $"{name}:{nl}{ex.Message}{nl}";
-#if DEBUG
-                    msg += $"{nl}Stack Trace:{nl}{ex.StackTrace}{nl}";
-#endif
-                    Console.Error.WriteLine(msg);
-                }
-            }
-
         }
         #endregion
     }

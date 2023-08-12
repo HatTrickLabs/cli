@@ -73,10 +73,22 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get option
-        public CommandOption GetOption(string optionKey)
+        //public CommandOption GetOption(string optionKey)
+        //{
+        //    CommandOption op = _ops.Find(o => o.Key == optionKey);
+        //    return op;
+        //}
+        #endregion
+
+        #region get option by ref
+        internal ref CommandOption GetOptionByRef(string optionKey)
         {
-            CommandOption op = _ops.Find(o => o.Key == optionKey);
-            return op;
+            int i = _ops.FindIndex(o => o.Key == optionKey);
+            
+            if (i < 0)
+                throw new KeyNotFoundException($"Provided option key: {optionKey} not found.");
+
+            return ref _ops.GetPointerTo(i);
         }
         #endregion
 

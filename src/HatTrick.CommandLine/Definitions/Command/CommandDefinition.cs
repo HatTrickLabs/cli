@@ -49,6 +49,8 @@ namespace HatTrick.CommandLine
             set => _asyncHandler = value;
         }
 
+        public bool HasOptions => _options is not null && _options.Length > 0;
+
         public SetOf<CommandOptionDefinition> Options => _options;
 
         public CommandOptionDefinition this[string key]
@@ -97,7 +99,7 @@ namespace HatTrick.CommandLine
             var op = new CommandOptionDefinition<T>(
                 key: key, 
                 help: help, 
-                converter: (string arg) => (T)TypeMap.ChangeType(arg, typeof(T)), 
+                converter: (string arg) => (T)TypeMap.ChangeOptionArgumentType(arg, typeof(T)), 
                 flags.terse, flags.verbose
             );
             this.Options.Add(op);
@@ -109,7 +111,7 @@ namespace HatTrick.CommandLine
                 key: key, 
                 defaultArg: defaultArg, 
                 help: help, 
-                converter: (string arg) => (T)TypeMap.ChangeType(arg, typeof(T)), 
+                converter: (string arg) => (T)TypeMap.ChangeOptionArgumentType(arg, typeof(T)), 
                 flags: flags
             );
         }

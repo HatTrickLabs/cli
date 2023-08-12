@@ -59,7 +59,7 @@ x NO!!!! Can we generically type a command argument ???  It adds NO value and cr
 x ...NAI, we don't call get value for 'Empty' commmand options...Revisit GetValue<T>() on CommandOption...What about Non null value types... It pukes.
 x  Added default constraint of 'false' for empty bool command options...Getting 'must assign: yes' for boolean option that do not have a defaultArg.   bool is the exception, edge case...
 x TypeMap currently not using the custom boolean converter.
-- (related to previous 2 items).  Review Registery.EnsureCommandOptions lines 270 - 287.   Just doesn't seem right.
+- (related to previous 2 items).  Review Registery.EnsureCommandOptions lines 270 - 287.   Just doesn't seem right...like to squash the 4 op loops into max 2.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

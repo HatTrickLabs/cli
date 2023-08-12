@@ -9,8 +9,6 @@ namespace HatTrick.CommandLine
 
         public CommandOption this[string key] { get; }
 
-        public CommandOption GetOption(string optionKey);
-
         public CommandOption[] GetOptions(Predicate<CommandOption> where = null);
     }
 }

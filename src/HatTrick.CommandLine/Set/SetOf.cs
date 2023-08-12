@@ -27,11 +27,18 @@ namespace HatTrick.CommandLine
         { }
         #endregion
 
-        #region add
-        public void Add(T option)
+        #region get pointer to
+        internal ref T GetPointerTo(int index)
         {
-            if (option is null)
-                throw new ArgumentNullException(nameof(option));
+            return ref _items[index];
+        }
+        #endregion
+
+        #region add
+        public void Add(T item)
+        {
+            if (item is null)
+                throw new ArgumentNullException(nameof(item));
 
             if (_items is null)
             {
@@ -44,7 +51,7 @@ namespace HatTrick.CommandLine
                 _items = newItems;
             }
 
-            _items[_length++] = option;
+            _items[_length++] = item;
         }
         #endregion
 
@@ -168,8 +175,7 @@ namespace HatTrick.CommandLine
 
             #region dispose
             public void Dispose()
-            {
-            }
+            { }
             #endregion
         }
         #endregion

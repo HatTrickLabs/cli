@@ -62,13 +62,17 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region change type
-        public static object ChangeType(string value, Type changeTo)
+        public static object ChangeOptionArgumentType(string value, Type changeTo)
         {
             if (changeTo == typeof(string))
                 return value;
 
             if (value is null)
             {
+                //if a bool op is provided, no argument should be required...the flag alone results in true.
+                if (changeTo == typeof(bool))
+                    return true;
+
                 if (changeTo.IsValueType)
                     throw new InvalidCastException($"Cannot parse null into value type of {TypeMap.GetAliasOrName(changeTo)}");
 
@@ -81,7 +85,13 @@ namespace HatTrick.CommandLine
                 underlying = changeTo;
 
             if (underlying == typeof(bool))
-                return BooleanConverter.ToBoolean(value);
+            {
+                //if a bool op is provided, no argument should be required...the flag alone results in true.
+                if (value == string.Empty)
+                    return true;
+                else//at this point we've accounted for null and empty string, run it through the bool converter.
+                    return BooleanConverter.ToBoolean(value);
+            }
 
             if (typeof(IConvertible).IsAssignableFrom(underlying))
                 return Convert.ChangeType(value, changeTo);

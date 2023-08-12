@@ -2,7 +2,7 @@
   "profiles": {
     "HatTrick.CommandLine.TestHarness": {
       "commandName": "Project",
-      "commandLineArgs": "cb.profiles.get -a Y"
+      "commandLineArgs": "cb.profiles.get -a n"
     }
   }
 }
