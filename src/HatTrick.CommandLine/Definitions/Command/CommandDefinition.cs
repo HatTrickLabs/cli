@@ -74,7 +74,7 @@ namespace HatTrick.CommandLine
 
         public bool HasConstraints => _constraints.Length > 0;
 
-        public static string DefaultCommandName => "usage-help";
+        public static string DefaultCommandName => "DEFAULT";
         #endregion
 
         #region constructors
