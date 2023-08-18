@@ -63,6 +63,12 @@ namespace HatTrick.CommandLine
                     Console.Write(prompt);
                     string line = Console.ReadLine();
 
+                    if (IsClearScreenCommand(line))
+                    {
+                        Console.Clear();
+                        continue;
+                    }
+
                     if (this.IsExitCommand(line))
                         break;
 
@@ -128,9 +134,22 @@ namespace HatTrick.CommandLine
         #region is exit command
         private bool IsExitCommand(string command)
         {
+            if (command == null)
+                return false;
+
             string cmd = command;
             Func<string, string, bool, int> comp = string.Compare;
             return comp(cmd, "exit", true) == 0 || comp(cmd, "bye", true) == 0;
+        }
+        #endregion
+
+        #region is clear screen command
+        private bool IsClearScreenCommand(string command)
+        {
+            if (command == null)
+                return false;
+
+            return string.Compare(command, "cls", true) == 0;
         }
         #endregion
     }

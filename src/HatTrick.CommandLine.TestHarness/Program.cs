@@ -90,12 +90,6 @@ namespace HatTrick.CommandLine.TestHarness
             );
             registry.Add(cmd);
 
-            /********** Register Clear Screen Command **********/
-            cmd = new(name: "cls");
-            cmd.Help = "Clears the console screen.";
-            cmd.Handler = (command) => { Console.Clear(); };
-            registry.Add(cmd);
-
             /********** Register Vault Commands **********/
             cmd = new(name: "vault.set");
             cmd.Help = "Encrypts data into a vault json file.";
@@ -206,6 +200,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.AddOption<int>(key: "max", defaultArg: 500, help: "Max number of fills to request (limit * iteration count).", flags: ("-m", "--max"));
             cmd["max"].ApplyConstraint<int>((m) => m <= 1000, "max value", "arg must be <= 1000");
             cmd.MustAssignOneOf("product_id", "profile_id");
+            cmd.MutaullyExclusiveSet("product_id", "profile_id");
             registry.Add(cmd);
 
             cmd = new(name: "cb.products.orders.delete");

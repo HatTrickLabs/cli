@@ -53,13 +53,16 @@ x Make sure cmds Hidden do not render any help (what to do if user explicitly as
 x When providing a defaultArg and AcceptedValues ensure the default is contained within the accepted values set.
 x Rename AcceptedSetConstraint.cs to AcceptedValuesConstraint.cs
 x NO!!!! Can we generically type a command argument ???  It adds NO value and creates tons of pointless complexity.
-- experiment with a 'using' expression that scopes my command loop to a specific namespace
+- experiment with a 'using' expression that scopes my command loop to a specific namespace (OMG.... i may need middleware concept after all).
 - experiment with tab based command completion when running in non-exiting loop..
 - Impl some type of globally accessible data point that will tell me if i'm running within the non-exiting command loop, windows service or one time command run.
 x ...NAI, we don't call get value for 'Empty' commmand options...Revisit GetValue<T>() on CommandOption...What about Non null value types... It pukes.
 x  Added default constraint of 'false' for empty bool command options...Getting 'must assign: yes' for boolean option that do not have a defaultArg.   bool is the exception, edge case...
 x TypeMap currently not using the custom boolean converter.
 - (related to previous 2 items).  Review Registery.EnsureCommandOptions lines 270 - 287.   Just doesn't seem right...like to squash the 4 op loops into max 2.
+x fix bool converter on default op args.
+x fix line hop (cursor jumps down when line on cls command).   Very noticable when cls is type and the screen is already clear.
+
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

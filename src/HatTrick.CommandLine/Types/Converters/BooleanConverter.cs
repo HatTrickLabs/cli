@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
-    public static class BooleanConverter
+    internal static class BooleanConverter
     {
         #region internals
         private static readonly string[] _validBools = { "false", "no", "n", "0", "true", "yes", "y", "1" };
