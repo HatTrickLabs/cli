@@ -2,6 +2,9 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 
 namespace HatTrick.CommandLine
 {
@@ -10,6 +13,8 @@ namespace HatTrick.CommandLine
         #region internals
         private T[] _items;
         private int _length;
+        private int _capacity;
+        private static readonly T[] _empty;
         #endregion
 
         #region interface
@@ -17,19 +22,44 @@ namespace HatTrick.CommandLine
 
         public T this[int i]
         {
-            get => _items[i];
-            set => _items[i] = value;
+            get
+            {
+                if (i >= _length)
+                    throw new ArgumentOutOfRangeException("Provided index is outside the upper bounds of the set.");
+
+                return _items[i];
+            }
+            set
+            {
+                if (i >= _length)
+                    throw new ArgumentOutOfRangeException("Provided index is outside the upper bounds of the set.");
+
+                _items[i] = value;
+            }
         }
         #endregion
 
         #region constructors
+        static SetOf()
+        {
+            _empty = Array.Empty<T>();
+        }
+
         public SetOf()
-        { }
+        {
+            _capacity = 0;
+        }
         #endregion
 
         #region get pointer to
         internal ref T GetPointerTo(int index)
         {
+            if (_items is null)
+                throw new ArgumentOutOfRangeException("Set is currently empty.");
+
+            if (index >= _length)
+                throw new ArgumentOutOfRangeException(nameof(index), "Provided index is outside the upper bounds of the set.");
+
             return ref _items[index];
         }
         #endregion
@@ -42,11 +72,12 @@ namespace HatTrick.CommandLine
 
             if (_items is null)
             {
-                _items = new T[1];
+                _capacity = 2;
+                _items = new T[_capacity];
             }
-            else
+            else if (_length == _capacity)
             {
-                var newItems = new T[_length + 1];
+                var newItems = new T[_capacity = (_capacity * 2)];
                 Array.Copy(_items, newItems, _length);
                 _items = newItems;
             }
@@ -61,7 +92,7 @@ namespace HatTrick.CommandLine
             if (_items is null)
                 return false;
 
-            return Array.Exists(_items, where);
+            return this.FindIndex(where) > -1;
         }
         #endregion
 
@@ -71,7 +102,7 @@ namespace HatTrick.CommandLine
             if (_items is null)
                 return -1;
 
-            return Array.FindIndex(_items, where);
+            return Array.FindIndex(_items, 0, _length, where);
         }
         #endregion
 
@@ -81,48 +112,170 @@ namespace HatTrick.CommandLine
             if (_items is null)
                 return default;
 
-            return Array.Find(_items, where);
+            int idx = this.FindIndex(where);
+            return idx > -1 ? _items[idx] : default;
         }
         #endregion
 
         #region find all
         public T[] FindAll(Predicate<T> where)
         {
-            if (_items is null)
-                return new T[0];
+            if (where is null)
+                throw new ArgumentNullException(nameof(where));
 
-            return Array.FindAll(_items, where);
+            if (_items is null)
+                return _empty;
+
+            if (_items.Length == 1 && where(_items[0]))
+                return new T[] { _items[0] };
+
+            bool[] matches = new bool[_length];
+            int count = 0;
+            for (int i = 0; i < _length; i++)
+            {
+                if (matches[i] = where(_items[i]))
+                    count += 1;
+            }
+
+            if (count == 0)
+                return _empty;
+
+            var matchSet = new T[count];
+            int at = 0;
+            for (int i = 0; i < _length; i++)
+            {
+                if (matches[i])
+                    matchSet[at++] = _items[i];
+            }
+
+            return matchSet;
         }
         #endregion
 
         #region max
-        public int Max(Func<T, int> given)
+        public Y Max<Y>(Func<T, Y> given) where Y : IComparable
         {
             if (_items is null || _items.Length == 0)
-                return 0;
+                return default;
 
-            int max = _items.Max(given);
+            Y max = given(_items[0]);
+
+            if (_length == 1)
+                return max;
+
+            for (int i = 1; i < _length; i++)
+            {
+                Y val = given(_items[i]);
+                if (val.CompareTo(max) > 0)
+                    max = val;
+            }
+
             return max;
+        }
+        #endregion
+
+        #region min
+        public Y Min<Y>(Func<T, Y> given) where Y : IComparable
+        {
+            if (_items is null || _items.Length == 0)
+                return default;
+
+            Y min = given(_items[0]);
+
+            if (_length == 1)
+                return min;
+
+            for (int i = 1; i < _length; i++)
+            {
+                Y val = given(_items[i]);
+                if (val.CompareTo(min) < 0)
+                    min = val;
+            }
+
+            return min;
         }
         #endregion
 
         #region get enumerator
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return new Enumerator(_items);
+            return new EnumeratorOf(_items, _length);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _items.GetEnumerator();
+            return new Enumerator(_items, _length);
+        }
+        #endregion
+
+        #region enumerator [class]
+        public class Enumerator : IEnumerator
+        {
+            #region internals
+            private readonly Array _items;
+            private int _length;
+            private int _index;
+            private object _current;
+            #endregion
+
+            #region interface
+            public object Current => _current!;
+
+            object IEnumerator.Current
+            {
+                get
+                {
+                    if (_index == 0 || _index > _length)
+                        throw new InvalidOperationException("Current object never materialized.");
+
+                    return Current;
+                }
+            }
+            #endregion
+
+            #region constructors
+            internal Enumerator(Array set, int length)
+            {
+                _items = set;
+                _length = length;
+                _index = 0;
+                _current = default;
+            }
+            #endregion
+
+            #region move next
+            public bool MoveNext()
+            {
+                if (_index < _length)
+                {
+                    _current = _items.GetValue(_index++);
+                    return true;
+                }
+                return false;
+            }
+            #endregion
+
+            #region ienumerator reset
+            void IEnumerator.Reset()
+            {
+                _index = 0;
+                _current = default;
+            }
+            #endregion
+
+            #region dispose
+            public void Dispose()
+            { }
+            #endregion
         }
         #endregion
 
         #region enumerator of <T> [class]
-        public struct Enumerator : IEnumerator<T>, IEnumerator
+        public struct EnumeratorOf : IEnumerator<T>, IEnumerator
         {
             #region internals
             private readonly T[] _items;
+            private int _length;
             private int _index;
             private T _current;
             #endregion
@@ -134,7 +287,7 @@ namespace HatTrick.CommandLine
             {
                 get
                 {
-                    if (_index == 0 || _index >= _items.Length)
+                    if (_index == 0 || _index > _length)
                         throw new InvalidOperationException("Current object never materialized.");
 
                     return Current;
@@ -143,9 +296,10 @@ namespace HatTrick.CommandLine
             #endregion
 
             #region constructors
-            internal Enumerator(T[] set)
+            internal EnumeratorOf(T[] set, int length)
             {
                 _items = set;
+                _length = length;
                 _index = 0;
                 _current = default;
             }
@@ -154,11 +308,9 @@ namespace HatTrick.CommandLine
             #region move next
             public bool MoveNext()
             {
-                T[] local = _items;
-
-                if (_index < local.Length)
+                if (_index < _length)
                 {
-                    _current = local[_index++];
+                    _current = _items[_index++];
                     return true;
                 }
                 return false;
