@@ -126,12 +126,14 @@ namespace HatTrick.CommandLine
             if (_items is null)
                 return _empty;
 
-            if (_items.Length == 1 && where(_items[0]))
+            int length = _length;
+
+            if (length == 1 && where(_items[0]))
                 return new T[] { _items[0] };
 
-            bool[] matches = new bool[_length];
+            Span<bool> matches = (length > 1024) ? new bool[length] : stackalloc bool[length];
             int count = 0;
-            for (int i = 0; i < _length; i++)
+            for (int i = 0; i < length; i++)
             {
                 if (matches[i] = where(_items[i]))
                     count += 1;
@@ -142,7 +144,7 @@ namespace HatTrick.CommandLine
 
             var matchSet = new T[count];
             int at = 0;
-            for (int i = 0; i < _length; i++)
+            for (int i = 0; i < length; i++)
             {
                 if (matches[i])
                     matchSet[at++] = _items[i];
