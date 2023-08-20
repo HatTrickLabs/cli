@@ -17,9 +17,12 @@ namespace HatTrick.CommandLine
         private int _capacity;
         private static readonly T[] _empty;
         private static readonly int _maxCapacity;
+        private static readonly int _initialCapacity;
         #endregion
 
         #region interface
+        public static int MaxCapacity => _maxCapacity;
+
         public int Length => _length;
 
         public T this[int i]
@@ -45,6 +48,7 @@ namespace HatTrick.CommandLine
         static SetOf()
         {
             _empty = Array.Empty<T>();
+            _initialCapacity = 4;//0x4
             _maxCapacity = 1_048_576;//0x100000;
         }
 
@@ -75,7 +79,7 @@ namespace HatTrick.CommandLine
 
             if (_items is null)
             {
-                _capacity = 2;
+                _capacity = _initialCapacity;
                 _items = new T[_capacity];
             }
             else if (_length == _capacity)
@@ -168,7 +172,7 @@ namespace HatTrick.CommandLine
         #region max
         public Y Max<Y>(Func<T, Y> given) where Y : IComparable
         {
-            if (_items is null || _items.Length == 0)
+            if (_items is null)
                 return default;
 
             Y max = given(_items[0]);
@@ -190,7 +194,7 @@ namespace HatTrick.CommandLine
         #region min
         public Y Min<Y>(Func<T, Y> given) where Y : IComparable
         {
-            if (_items is null || _items.Length == 0)
+            if (_items is null)
                 return default;
 
             Y min = given(_items[0]);
@@ -218,6 +222,22 @@ namespace HatTrick.CommandLine
         IEnumerator IEnumerable.GetEnumerator()
         {
             return new Enumerator(_items, _length);
+        }
+        #endregion
+
+        #region explict op -> T[]
+        public static explicit operator T[](SetOf<T> set)
+        {
+            var source = set._items;
+
+            if (source is null)
+                return _empty;
+
+            int length = set._length;
+
+            var destination = new T[length];
+            Array.Copy(source, destination, length);
+            return destination;
         }
         #endregion
 

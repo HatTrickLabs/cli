@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace HatTrick.CommandLine.Parsing
 {
@@ -8,8 +9,12 @@ namespace HatTrick.CommandLine.Parsing
         #region tokenize
         public static string[] Tokenize(string input, bool keepLiteralQuotes = false)
         {
+            if (input is null)
+                throw new ArgumentNullException(nameof(input));
+
             //no sense in holding a tokenizer for multi-generations of GC...just use and release.
             var instance = new Instance(input, keepLiteralQuotes);
+
             return instance.Tokenize();
         }
         #endregion
@@ -18,27 +23,48 @@ namespace HatTrick.CommandLine.Parsing
         private sealed class Instance
         {
             #region internals
-            private readonly char _etx = '\x3'; //end of text
+            private static readonly char _etx;//end of text
+            private static readonly int _maxSrcLength = 2048;
+            private static readonly string[] _empty;
             private string _src;
             private bool _keepLitQuotes;
-            private int _srcLen;
-            private int _idx;
+            private int _srcLength;
+            private int _index;
             #endregion
 
             #region constructors
-            public Instance(string input, bool keepLiteralQuotes = false)
+            static Instance()
             {
-                _src = input ?? throw new ArgumentNullException(nameof(input));
+                _etx = '\x3';
+                _maxSrcLength = 2_048;//0x800
+                _empty = Array.Empty<string>();
+            }
+
+            internal Instance(string input, bool keepLiteralQuotes = false)
+            {
+                if (input.Length > _maxSrcLength)
+                    throw new InternalBufferOverflowException($"{nameof(Tokenizer)} has a maximum internal buffer length for {nameof(input)} of {_maxSrcLength}.");
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    _src = string.Empty;
+                    _srcLength = 0;
+                }
+                else
+                {
+                    _src = input;
+                    _srcLength = input.Length;
+                }
+
                 _keepLitQuotes = keepLiteralQuotes;
-                _srcLen = _src.Length;
-                _idx = 0;
+                _index = 0;
             }
             #endregion
 
             #region peek
             private char Peek()
             {
-                char c = _srcLen > _idx ? _src[_idx] : _etx;
+                char c = _srcLength > _index ? _src[_index] : _etx;
 
                 return c;
             }
@@ -47,7 +73,7 @@ namespace HatTrick.CommandLine.Parsing
             #region read
             private char Read()
             {
-                char c = _srcLen > _idx ? _src[_idx++] : _etx;
+                char c = _srcLength > _index ? _src[_index++] : _etx;
 
                 return c;
             }
@@ -56,8 +82,8 @@ namespace HatTrick.CommandLine.Parsing
             #region tokenize
             public string[] Tokenize()
             {
-                if (_srcLen == 0)
-                    return new string[0];
+                if (_srcLength == 0)
+                    return _empty;
 
                 char etx = _etx;
                 bool keepLitQuotes = _keepLitQuotes;
@@ -73,8 +99,8 @@ namespace HatTrick.CommandLine.Parsing
 
                 bool inDblQuote = false;
 
-                Span<char> token = stackalloc char[_srcLen];
-                List<string> args = new List<string>(8);
+                Span<char> token = stackalloc char[_srcLength];
+                SetOf<string> args = new SetOf<string>();
 
                 int at = 0;
                 char c;
@@ -111,7 +137,7 @@ namespace HatTrick.CommandLine.Parsing
                 if (at > 0)
                     args.Add(new string(token.Slice(0, at)));
 
-                return args.ToArray();
+                return (string[])args;
             }
             #endregion
         }

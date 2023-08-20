@@ -61,7 +61,7 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region change type
+        #region change option argument type
         public static object ChangeOptionArgumentType(string value, Type changeTo)
         {
             if (changeTo == typeof(string))
