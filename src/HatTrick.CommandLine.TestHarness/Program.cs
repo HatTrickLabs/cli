@@ -11,53 +11,6 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
-            SetOf<int> set = new SetOf<int>();
-            List<int> list = new List<int>();
-            int count = 1_000_000;
-            Random r = new Random(420);
-            for (int i = 0; i < count; i++)
-            {
-                int next = r.Next(0, 10_000);
-                set.Add(next);
-                list.Add(next);
-            }
-
-            int target = 10_000;
-
-            int[] xxx = set.FindAll((x) => x <= target);
-            List<int> yyy = list.FindAll((x) => x <= target);
-
-            int runCount = 0;
-            Stopwatch sw = new Stopwatch();
-        AGAIN:
-            sw.Start();
-
-            int[] outSet = set.FindAll((x) => x > target);
-
-            sw.Stop();
-            Console.WriteLine($"Find all on set of {count} integers processed in {sw.ElapsedMilliseconds} milliseconds finding {outSet.Length} items.");
-            runCount += 1;
-            sw.Reset();
-            Console.ReadLine();
-            if (runCount < 5)
-                goto AGAIN;
-
-
-            runCount = 0;
-            AGAIN2:
-            sw.Start();
-
-            List<int> outList = list.FindAll((x) => x > target);
-
-            sw.Stop();
-            Console.WriteLine($"Find all on list of {count} integers processed in {sw.ElapsedMilliseconds} milliseconds finding {outList.Count} items.");
-            runCount += 1;
-            sw.Reset();
-            Console.ReadLine();
-            if (runCount < 5)
-                goto AGAIN2;
-
-            return;
             try
             {
                 RegisterCommands(out Registry registry);

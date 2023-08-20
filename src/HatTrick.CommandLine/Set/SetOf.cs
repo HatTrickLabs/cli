@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace HatTrick.CommandLine
 {
@@ -15,6 +16,7 @@ namespace HatTrick.CommandLine
         private int _length;
         private int _capacity;
         private static readonly T[] _empty;
+        private static readonly int _maxCapacity;
         #endregion
 
         #region interface
@@ -43,6 +45,7 @@ namespace HatTrick.CommandLine
         static SetOf()
         {
             _empty = Array.Empty<T>();
+            _maxCapacity = 1_048_576;//0x100000;
         }
 
         public SetOf()
@@ -77,6 +80,9 @@ namespace HatTrick.CommandLine
             }
             else if (_length == _capacity)
             {
+                if (_capacity == _maxCapacity)
+                    throw new InternalBufferOverflowException($"{nameof(SetOf<T>)} has a maximum internal buffer capacity of {_maxCapacity}.");
+
                 var newItems = new T[_capacity = (_capacity * 2)];
                 Array.Copy(_items, newItems, _length);
                 _items = newItems;
@@ -128,8 +134,13 @@ namespace HatTrick.CommandLine
 
             int length = _length;
 
-            if (length == 1 && where(_items[0]))
-                return new T[] { _items[0] };
+            if (length == 1)
+            {
+                if (where(_items[0]))
+                    return new T[] { _items[0] };
+                else
+                    return _empty;
+            }
 
             Span<bool> matches = (length > 1024) ? new bool[length] : stackalloc bool[length];
             int count = 0;

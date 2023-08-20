@@ -62,6 +62,9 @@ x TypeMap currently not using the custom boolean converter.
 - (related to previous 2 items).  Review Registery.EnsureCommandOptions lines 270 - 287.   Just doesn't seem right...like to squash the 4 op loops into max 2.
 x fix bool converter on default op args.
 x fix line hop (cursor jumps down when line on cls command).   Very noticable when cls is type and the screen is already clear.
+- impl implicit conversion of setof<T> to array<T>
+- replace list with setof anywhere possible.
+- 
 
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
