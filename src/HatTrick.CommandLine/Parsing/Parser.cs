@@ -6,68 +6,68 @@ namespace HatTrick.CommandLine.Parsing
     public static class Parser
     {
         #region parse
-        public static Command Parse(string[] args)
+        public static Command Parse(string[] tokens)
         {
-            if (args is null)
-                throw new ArgumentNullException(nameof(args));
+            if (tokens is null)
+                throw new ArgumentNullException(nameof(tokens));
 
-            if (args.Length == 0)
+            if (tokens.Length == 0)
                 return new Command(CommandDefinition.DefaultCommandName);//optionless default command...
 
-            bool isDefault = args[0][0] == '-';//no command, just jumps right into option flags
+            bool isDefault = tokens[0][0] == '-';//no command, just jumps right into option flags
 
             int startAt = isDefault ? 0 : 1;
-            var argSet = new ReadOnlySpan<string>(args, startAt, args.Length - startAt);
+            var opTokens = new ReadOnlySpan<string>(tokens, startAt, tokens.Length - startAt);
 
-            SetOf<CommandOption> options = ParseCommandOptions(argSet);
+            SetOf<CommandOption> options = ParseCommandOptions(opTokens);
 
-            string name = isDefault ? CommandDefinition.DefaultCommandName : args[0];
+            string name = isDefault ? CommandDefinition.DefaultCommandName : tokens[0];
             return new Command(name, options);
         }
         #endregion
 
         #region parse command options
-        public static SetOf<CommandOption> ParseCommandOptions(ReadOnlySpan<string> arguments)
+        public static SetOf<CommandOption> ParseCommandOptions(ReadOnlySpan<string> tokens)
         {
             var ops = new SetOf<CommandOption>();
 
             Func<string, bool> isExplicitAssign = (a) => a == "=" || a == ":";
 
             string prev = null;
-            for (int i = 0; i < arguments.Length; i++)
+            for (int i = 0; i < tokens.Length; i++)
             {
-                string arg = arguments[i];
+                string token = tokens[i];
 
-                if (isExplicitAssign(arg))
+                if (isExplicitAssign(token))
                 {
                     //TODO: expand on this...it could be a syntax error...ie: copy :--from c:\test -to c:\test2
                     //maybe check i%2 == 1
-                    prev = arg;
+                    prev = token;
                     continue;
                 }
 
                 //starts with '-' then must be option flag unless prev arg is an explicit assignment char
-                if (arg[0] == '-' && !isExplicitAssign(prev))
+                if (token[0] == '-' && !isExplicitAssign(prev))
                 {
-                    if (arg.Length == 1)
-                        throw new CommandInputException($"Invalid command line argument provided: '{arg}' at position: {i + 1}");
+                    if (token.Length == 1)
+                        throw new CommandInputException($"Invalid command line argument provided: '{token}' at position: {i + 1}");
 
-                    if (arg[1] == '-') //verbose option flag
-                        ops.Add(new CommandOption(arg));
+                    if (token[1] == '-') //verbose option flag
+                        ops.Add(new CommandOption(token));
 
-                    else if (arg.Length == 2) //single terse option flag
-                        ops.Add(new CommandOption(arg));
+                    else if (token.Length == 2) //single terse option flag
+                        ops.Add(new CommandOption(token));
 
                     else //must be a compound terse option flag, unroll into individual flags
-                        UnrollCompoundFlag(arg, (f) => ops.Add(f));
+                        UnrollCompoundFlag(token, (f) => ops.Add(f));
 
                 }
                 else //no '-' and prev not an explicit assign, must be an option argument
                 {
-                    ops[^1].ApplyArgument(arg);//apply current arg to the last op in the set
+                    ops[^1].ApplyArgument(token);//apply current arg to the last op in the set
                 }
 
-                prev = arg;
+                prev = token;
             }
 
             return ops;

@@ -7,8 +7,12 @@ namespace HatTrick.CommandLine
     #region resource accessor
     internal class TemplateAccessor
     {
+        #region internals
+        private Assembly _assembly;
+        #endregion
+
         #region interface
-        private Assembly ExecutingAssembly => Assembly.GetExecutingAssembly();
+        private Assembly ExecutingAssembly => _assembly is null ? _assembly = Assembly.GetExecutingAssembly() : _assembly;
         #endregion
 
         #region get template

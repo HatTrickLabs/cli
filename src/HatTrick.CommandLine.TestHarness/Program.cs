@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using HatTrick.CommandLine.Parsing;
 
 namespace HatTrick.CommandLine.TestHarness
@@ -14,7 +15,8 @@ namespace HatTrick.CommandLine.TestHarness
             try
             {
                 RegisterCommands(out Registry registry);
-                registry.ExecuteCommand(Parser.Parse(args));
+                Command cmd = Parser.Parse(args);
+                registry.ExecuteCommand(cmd);
             }
             catch (Exception ex)
             {
@@ -96,7 +98,11 @@ namespace HatTrick.CommandLine.TestHarness
             /********** Register Vault Commands **********/
             cmd = new(name: "vault.set");
             cmd.Help = "Encrypts data into a vault json file.";
-            cmd.Handler = (command) => { };
+            cmd.Handler = (command) => {
+                Console.WriteLine("Pease enter your password:");
+                string pw = new MaskedInputLineReader().ReadMaskedInput();
+                Console.WriteLine(pw);
+            };
             cmd.AddOption<string>(key: "key", help: "Key pointer within vault json file.", flags: ("-k", "--key"));
             cmd.AddOption<string>(key: "value", help: "Value to encrypt.", flags: ("-v", "--value"));
             registry.Add(cmd);
@@ -211,6 +217,22 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.Handler = (command) => { };
             cmd.AddOption<string>(key: "product_id", help: "Cancel all open orders for a specific product id.", flags:  ("-p", "--product-id"));
             registry.Add(cmd);
+
+            cmd = new(name: "guid.new");
+            cmd.Help = "Generate a new guid or set of guids using System.Guid.NewGuid().";
+            cmd.AddOption<int>(key: "count", defaultArg: 1, help: "Number of guids to generate.", flags: ("--count", "-c"));
+            cmd.AddOption<string>(key: "format", defaultArg: "n", help: "String format of output.", flags: ("--format", "-f"));
+            cmd["format"].AcceptedValues("N", "D", "B", "P", "X", "n", "d", "b", "p", "x");
+            cmd["count"].ApplyConstraint((int cnt) =>  cnt <= 1000, "max count", "count must be <= 1000");
+            cmd.Handler = (command) => {
+                for (int i = 0; i < command["count"].Value; i++)
+                {
+                    Console.WriteLine(Guid.NewGuid().ToString(command["format"].Value));
+                }
+            };
+            registry.Add(cmd);
+
+            Guid g = Guid.NewGuid();
         }
 
         static void EnumerateCommandOptions(Command cmd)

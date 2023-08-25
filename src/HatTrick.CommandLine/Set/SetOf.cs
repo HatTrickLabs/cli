@@ -102,7 +102,7 @@ namespace HatTrick.CommandLine
             if (_items is null)
                 return false;
 
-            return this.FindIndex(where) > -1;
+            return Array.FindIndex(_items, 0, _length, where) > -1;
         }
         #endregion
 

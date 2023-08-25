@@ -241,7 +241,7 @@ namespace HatTrick.CommandLine
                 cmdDef.EnsureConstraints(command, ref feedback);
 
             if (feedback.Length > 0)
-                throw new CommandInputException(feedback.ToArray());
+                throw new CommandInputException((string[])feedback);
         }
         #endregion
 

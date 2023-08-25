@@ -23,8 +23,8 @@ namespace HatTrick.CommandLine.Parsing
         private sealed class Instance
         {
             #region internals
-            private static readonly char _etx;//end of text
-            private static readonly int _maxSrcLength = 2048;
+            private static readonly char _etx;
+            private static readonly int _maxSrcLength;
             private static readonly string[] _empty;
             private string _src;
             private bool _keepLitQuotes;
@@ -35,7 +35,7 @@ namespace HatTrick.CommandLine.Parsing
             #region constructors
             static Instance()
             {
-                _etx = '\x3';
+                _etx = '\x3';//end of text
                 _maxSrcLength = 2_048;//0x800
                 _empty = Array.Empty<string>();
             }

@@ -10,6 +10,7 @@ namespace HatTrick.CommandLine
     {
         #region const
         public const int MaxNameLength = 40;
+        public const string DefaultCommandName = "DEFAULT";
         #endregion
 
         #region internals
@@ -73,8 +74,6 @@ namespace HatTrick.CommandLine
         }
 
         public bool HasConstraints => _constraints.Length > 0;
-
-        public static string DefaultCommandName => "DEFAULT";
         #endregion
 
         #region constructors

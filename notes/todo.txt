@@ -65,6 +65,9 @@ x fix line hop (cursor jumps down when line on cls command).   Very noticable wh
 x impl explicit conversion of setof<T> to array<T> (return internal array).
 x replace list with setof anywhere possible.
 x make setof default capacity static readonly
+- impl ability to explicity send null as an option argument.
+- impl ability to store local vars when running in command loop.
+
 
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
