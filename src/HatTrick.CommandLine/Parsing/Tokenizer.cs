@@ -87,19 +87,19 @@ namespace HatTrick.CommandLine.Parsing
 
                 char etx = _etx;
                 bool keepLitQuotes = _keepLitQuotes;
-                char dblQuote = '\"';
-                char space = ' ';
-                char tab = '\t';
-                char nl = '\n';
-                char cr = '\r';
-                char escape = '\\';
+                const char dblQuote = '\"';
+                const char space = ' ';
+                const char tab = '\t';
+                const char nl = '\n';
+                const char cr = '\r';
+                const char escape = '\\';
                 char previous = '\0';
 
                 Func<char, bool> isWhitespace = (c) => c == space || c == tab || c == nl || c == cr;
 
                 bool inDblQuote = false;
 
-                Span<char> token = stackalloc char[_srcLength];
+                Span<char> token = _srcLength > 1024 ? new char[_srcLength] : stackalloc char[_srcLength];
                 SetOf<string> args = new SetOf<string>();
 
                 int at = 0;

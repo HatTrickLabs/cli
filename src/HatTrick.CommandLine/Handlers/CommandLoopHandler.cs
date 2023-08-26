@@ -15,7 +15,9 @@ namespace HatTrick.CommandLine
 
         #region constructors
         private CommandLoopHandler()
-        {
+        { 
+            //this must be a singleton without any substantial internal state...MUST avoid init of multiple instances.
+            //if local var declaration is implemented, we must clear the state on ReleaseInstanceLock.
         }
         #endregion
 
@@ -68,6 +70,9 @@ namespace HatTrick.CommandLine
                         Console.Clear();
                         continue;
                     }
+
+                    //TODO: imple local var declaration command
+                    
 
                     if (this.IsExitCommand(line))
                         break;

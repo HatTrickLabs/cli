@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using HatTrick.CommandLine.Parsing;
@@ -232,7 +233,17 @@ namespace HatTrick.CommandLine.TestHarness
             };
             registry.Add(cmd);
 
-            Guid g = Guid.NewGuid();
+
+            cmd = new(name: "copy");
+            cmd.Help = "";
+            cmd.AddOption<string>(key: "from", help: "Specifies the file to be copied.", flags: ("-f", "--from"));
+            cmd.AddOption<string>(key: "to", help: "Specifies the path and name of the new file.", flags: ("-t", "--to"));
+            cmd.Handler = (command) =>
+            {
+                var nl = Environment.NewLine;
+                Console.WriteLine($"Copy file:{nl}from:\t{command["from"].Value}{nl}to:\t{command["to"].Value}");
+            };
+            registry.Add(cmd);
         }
 
         static void EnumerateCommandOptions(Command cmd)

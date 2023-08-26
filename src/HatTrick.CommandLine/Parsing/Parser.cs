@@ -50,7 +50,7 @@ namespace HatTrick.CommandLine.Parsing
                 if (token[0] == '-' && !isExplicitAssign(prev))
                 {
                     if (token.Length == 1)
-                        throw new CommandInputException($"Invalid command line argument provided: '{token}' at position: {i + 1}");
+                        throw new CommandInputException(Parser.ExceptionMessageHelper(token, i));
 
                     if (token[1] == '-') //verbose option flag
                         ops.Add(new CommandOption(token));
@@ -60,10 +60,12 @@ namespace HatTrick.CommandLine.Parsing
 
                     else //must be a compound terse option flag, unroll into individual flags
                         UnrollCompoundFlag(token, (f) => ops.Add(f));
-
                 }
                 else //no '-' and prev not an explicit assign, must be an option argument
                 {
+                    if (ops.Length == 0)
+                        throw new CommandInputException($"{Parser.ExceptionMessageHelper(token, i)}...positional arguments not supported.");
+
                     ops[^1].ApplyArgument(token);//apply current arg to the last op in the set
                 }
 
@@ -83,6 +85,13 @@ namespace HatTrick.CommandLine.Parsing
                 var op = new CommandOption(flag: "-" + flag[i]);
                 onFlagUnrolled(op);
             }
+        }
+        #endregion
+
+        #region exception message helper
+        private static string ExceptionMessageHelper(string token, int index)
+        {
+            return $"Invalid command line argument provided: '{token}' at postition: {index + 1}";
         }
         #endregion
     }
