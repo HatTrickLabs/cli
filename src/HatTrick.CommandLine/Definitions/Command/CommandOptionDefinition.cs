@@ -57,7 +57,7 @@ namespace HatTrick.CommandLine
             _key = key ?? throw new ArgumentNullException(nameof(key));
             _help = help;
             _flags = flags ?? throw new ArgumentNullException(nameof(flags));
-            _constraints = new();
+            _constraints = new SetOf<ArgumentConstraint>();
         }
         #endregion
 

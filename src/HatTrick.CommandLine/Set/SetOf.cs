@@ -18,6 +18,7 @@ namespace HatTrick.CommandLine
         private static readonly T[] _empty;
         private static readonly int _maxCapacity;
         private static readonly int _initialCapacity;
+        private static readonly int[] _allowedCapacities;
         #endregion
 
         #region interface
@@ -49,12 +50,35 @@ namespace HatTrick.CommandLine
         {
             _empty = Array.Empty<T>();
             _initialCapacity = 4;//0x4
-            _maxCapacity = 1_048_576;//0x100000;
+            _maxCapacity = 1048576;//0x100000;
+            _allowedCapacities = new[] 
+            { 0,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576 };
         }
 
         public SetOf()
         {
             _capacity = 0;
+        }
+
+        public SetOf(T[] items) : this(items is null ? 0 : items.Length)
+        {
+            if (items is not null && items.Length > 0)
+            {
+                Array.Copy(items, _items, items.Length);
+                _length = items.Length;
+            }
+        }
+
+        public SetOf(int minimumCapacity)
+        {
+            if (minimumCapacity < 0)
+                throw new ArgumentOutOfRangeException("Value must be >= 0.", nameof(minimumCapacity));
+
+            if (minimumCapacity > _maxCapacity)
+                throw new InternalBufferOverflowException($"{nameof(SetOf<T>)} has a maximum internal buffer capacity of {_maxCapacity}.");
+
+            _capacity = Array.Find(_allowedCapacities, c => c >= minimumCapacity);
+            _items = new T[_capacity];
         }
         #endregion
 
