@@ -17,7 +17,7 @@ namespace HatTrick.CommandLine
         private CommandLoopHandler()
         { 
             //this must be a singleton without any substantial internal state...MUST avoid init of multiple instances.
-            //if local var declaration is implemented, we must clear the state on ReleaseInstanceLock.
+            //clean up any state on ReleaseInstanceLock
         }
         #endregion
 
