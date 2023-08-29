@@ -85,9 +85,7 @@ namespace HatTrick.CommandLine
             }
 
             //at this point, we know the value is NOT null
-            Type underlying = Nullable.GetUnderlyingType(changeTo);
-            if (underlying is null)
-                underlying = changeTo;
+            Type underlying = Nullable.GetUnderlyingType(changeTo) ?? changeTo;
 
             if (underlying == typeof(bool))
             {

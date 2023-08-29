@@ -248,12 +248,11 @@ namespace HatTrick.CommandLine
         #region ensure command options
         private void EnsureCommandOptions(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
         {
-            //ensure options fully hydrated
             this.EnsureCommandOptionsFullyHydrated(cmdDef, cmd, ref feedback);
             if (feedback.Length > 0)
                 return;
 
-            this.EnsureAllInputCommandOptionsDefined(cmdDef, cmd, ref feedback);
+            this.EnsureAllProvidedOptionsDefined(cmdDef, cmd, ref feedback);
             if (feedback.Length > 0)
                 return;
 
@@ -261,14 +260,7 @@ namespace HatTrick.CommandLine
             if (feedback.Length > 0)
                 return;
 
-            for (int i = 0; i < cmdDef.Options.Length; i++)
-            {
-                CommandOptionDefinition opDef = cmdDef.Options[i];
-                ref CommandOption op = ref cmd.GetOptionByRef(opDef.Key);
-
-                //If empty op and a default constraint exists, empty op will be swapped for a default...hence the ref param
-                opDef.EnsureConstraints(ref op, ref feedback);
-            }
+            this.EnsureOptionConstraints(cmdDef, cmd, ref feedback);
         }
         #endregion
 
@@ -300,8 +292,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region ensure all input command options defined
-        private void EnsureAllInputCommandOptionsDefined(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
+        #region ensure all provided options defined
+        private void EnsureAllProvidedOptionsDefined(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
         {
             if (cmd.Options.Length > 0 && !cmdDef.HasOptions)
             {
@@ -341,6 +333,20 @@ namespace HatTrick.CommandLine
                     if (opDef.Flags.Contains(opDos.Flag))
                         feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opUno.Flag}' and '{opDos.Flag}'");
                 }
+            }
+        }
+        #endregion
+
+        #region ensure option constraints
+        private void EnsureOptionConstraints(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
+        {
+            for (int i = 0; i < cmdDef.Options.Length; i++)
+            {
+                CommandOptionDefinition opDef = cmdDef.Options[i];
+                ref CommandOption op = ref cmd.GetOptionByRef(opDef.Key);
+
+                //If empty op and a default constraint exists, empty op will be swapped for a default...hence the ref param
+                opDef.EnsureConstraints(ref op, ref feedback);
             }
         }
         #endregion

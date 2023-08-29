@@ -16,7 +16,7 @@ namespace HatTrick.CommandLine.TestHarness
             try
             {
                 RegisterCommands(out Registry registry);
-                Command cmd = Parser.Parse(args);
+                Command cmd = Parser.ParseCommand(args);
                 registry.ExecuteCommand(cmd);
             }
             catch (Exception ex)
@@ -120,7 +120,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmd.Handler = (command) => {
                 EnumerateCommandOptions(command);
             };
-            cmd.AddOption<bool>(key: "active", help: "Active profiles only.", flags: ("-a", "--active"));
+            cmd.AddOption<bool?>(key: "active", defaultArg: null, help: "Active profiles only.", flags: ("-a", "--active"));
             registry.Add(cmd);
 
             cmd = new(name: "cb.profiles.rename.put");
