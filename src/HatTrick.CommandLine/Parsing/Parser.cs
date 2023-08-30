@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HatTrick.CommandLine.Parsing
+namespace HatTrick.CommandLine
 {
     public static class Parser
     {

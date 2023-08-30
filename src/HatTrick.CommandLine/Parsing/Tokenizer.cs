@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace HatTrick.CommandLine.Parsing
+namespace HatTrick.CommandLine
 {
     public static class Tokenizer
     {

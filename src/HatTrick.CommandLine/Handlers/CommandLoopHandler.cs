@@ -1,6 +1,4 @@
-﻿using HatTrick.CommandLine.Parsing;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.IO;
 
 namespace HatTrick.CommandLine
