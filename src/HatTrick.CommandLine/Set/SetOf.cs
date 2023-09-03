@@ -24,8 +24,6 @@ namespace HatTrick.CommandLine
         #region interface
         public static int MaxCapacity => _maxCapacity;
 
-        public int Capacity => _capacity;
-
         public int Length => _length;
 
         public T this[int i]
