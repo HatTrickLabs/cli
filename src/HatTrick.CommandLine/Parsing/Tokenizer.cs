@@ -43,7 +43,7 @@ namespace HatTrick.CommandLine
             internal Instance(string input, bool keepLiteralQuotes = false)
             {
                 if (input.Length > _maxSrcLength)
-                    throw new InternalBufferOverflowException($"{nameof(Tokenizer)} has a maximum internal buffer length for {nameof(input)} of {_maxSrcLength}.");
+                    throw new RangeOverflowException($"{nameof(Tokenizer)} has a maximum internal buffer length for {nameof(input)} of {_maxSrcLength}.");
 
                 if (string.IsNullOrWhiteSpace(input))
                 {
@@ -137,7 +137,7 @@ namespace HatTrick.CommandLine
                 if (at > 0)
                     args.Add(new string(token.Slice(0, at)));
 
-                return (string[])args;
+                return args.ToArray();
             }
             #endregion
         }

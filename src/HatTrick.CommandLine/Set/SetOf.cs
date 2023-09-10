@@ -3,9 +3,6 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
-using System.IO;
 
 namespace HatTrick.CommandLine
 {
@@ -23,6 +20,8 @@ namespace HatTrick.CommandLine
 
         #region interface
         public static int MaxCapacity => _maxCapacity;
+
+        public int Capacity => _capacity;
 
         public int Length => _length;
 
@@ -75,7 +74,7 @@ namespace HatTrick.CommandLine
                 throw new ArgumentOutOfRangeException("Value must be >= 0.", nameof(minimumCapacity));
 
             if (minimumCapacity > _maxCapacity)
-                throw new InternalBufferOverflowException($"{nameof(SetOf<T>)} has a maximum internal buffer capacity of {_maxCapacity}.");
+                throw new RangeOverflowException($"{nameof(SetOf<T>)} has a maximum internal buffer capacity of {_maxCapacity}.");
 
             _capacity = Array.Find(_allowedCapacities, c => c >= minimumCapacity);
             _items = new T[_capacity];
@@ -109,7 +108,7 @@ namespace HatTrick.CommandLine
             else if (_length == _capacity)
             {
                 if (_capacity == _maxCapacity)
-                    throw new InternalBufferOverflowException($"{nameof(SetOf<T>)} has a maximum internal buffer capacity of {_maxCapacity}.");
+                    throw new RangeOverflowException($"{nameof(SetOf<T>)} has a maximum internal buffer capacity of {_maxCapacity}.");
 
                 var newItems = new T[_capacity = (_capacity * 2)];
                 Array.Copy(_items, newItems, _length);
@@ -123,6 +122,9 @@ namespace HatTrick.CommandLine
         #region exists
         public bool Exists(Predicate<T> where)
         {
+            if (where is null)
+                throw new ArgumentNullException(nameof(where));
+
             if (_items is null)
                 return false;
 
@@ -133,6 +135,9 @@ namespace HatTrick.CommandLine
         #region find index
         public int FindIndex(Predicate<T> where)
         {
+            if (where is null)
+                throw new ArgumentNullException(nameof(where));
+
             if (_items is null)
                 return -1;
 
@@ -143,6 +148,9 @@ namespace HatTrick.CommandLine
         #region find
         public T Find(Predicate<T> where)
         {
+            if (where is null)
+                throw new ArgumentNullException(nameof(where));
+
             if (_items is null)
                 return default;
 
@@ -194,8 +202,11 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region max
-        public Y Max<Y>(Func<T, Y> given) where Y : IComparable
+        public Y Max<Y>(Func<T, Y> given = null) where Y : IComparable
         {
+            if (given is null)
+                throw new ArgumentNullException(nameof(given));
+
             if (_items is null)
                 return default;
 
@@ -218,6 +229,9 @@ namespace HatTrick.CommandLine
         #region min
         public Y Min<Y>(Func<T, Y> given) where Y : IComparable
         {
+            if (given is null)
+                throw new ArgumentNullException(nameof(given));
+
             if (_items is null)
                 return default;
 
@@ -249,17 +263,27 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region explict op -> T[]
-        public static explicit operator T[](SetOf<T> set)
+        #region to array
+        public T[] ToArray()
         {
-            var source = set._items;
+            var source = _items;
 
             if (source is null)
                 return _empty;
 
-            int length = set._length;
+            int length = _length;
+            //TODO: benchmark...assumption
+            if (length == 1)
+                return new T[] { _items[0] };
+
+            if (length == 2)
+                return new T[] { _items[0], _items[1] };
+
+            if (length == 3)
+                return new T[] { _items[0], _items[1], _items[2] };
 
             var destination = new T[length];
+
             Array.Copy(source, destination, length);
             return destination;
         }
@@ -276,8 +300,6 @@ namespace HatTrick.CommandLine
             #endregion
 
             #region interface
-            public object Current => _current!;
-
             object IEnumerator.Current
             {
                 get
@@ -285,7 +307,7 @@ namespace HatTrick.CommandLine
                     if (_index == 0 || _index > _length)
                         throw new InvalidOperationException("Current object never materialized.");
 
-                    return Current;
+                    return _current;
                 }
             }
             #endregion
