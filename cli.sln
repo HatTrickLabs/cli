@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HatTrick.CommandLine", "src\HatTrick.CommandLine\HatTrick.CommandLine.csproj", "{13A1B13D-1AAF-4E23-AE11-30AE32508CD7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HatTrick.CommandLine.Test", "test\HatTrick.CommandLine.Test\HatTrick.CommandLine.Test.csproj", "{F6CF18C8-3DD5-4973-98E0-C54922ED5AFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{13A1B13D-1AAF-4E23-AE11-30AE32508CD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13A1B13D-1AAF-4E23-AE11-30AE32508CD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13A1B13D-1AAF-4E23-AE11-30AE32508CD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6CF18C8-3DD5-4973-98E0-C54922ED5AFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6CF18C8-3DD5-4973-98E0-C54922ED5AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6CF18C8-3DD5-4973-98E0-C54922ED5AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6CF18C8-3DD5-4973-98E0-C54922ED5AFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
