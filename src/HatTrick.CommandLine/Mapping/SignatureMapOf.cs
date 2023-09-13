@@ -77,8 +77,8 @@ namespace HatTrick.CommandLine
 
                 if (!parameter.ParameterType.IsAssignableFrom(valType))
                 {
-                    var opTypeName = TypeMap.GetAliasOrName(op.GenericType);
-                    var paramTypeName = TypeMap.GetAliasOrName(parameter.ParameterType);
+                    var opTypeName = OptionTypeMap.GetAliasOrName(op.GenericType);
+                    var paramTypeName = OptionTypeMap.GetAliasOrName(parameter.ParameterType);
                     var msg = $"Type mismatch while mapping option value to parameter...Option key: {opKey}...Option type: {opTypeName}...Parameter type: {paramTypeName}";
                     throw new CommandMappingException(msg);
                 }

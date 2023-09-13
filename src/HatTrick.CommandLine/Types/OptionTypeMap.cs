@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HatTrick.CommandLine
 {
-    public static class TypeMap
+    public static class OptionTypeMap
     {
         #region internals
         private static readonly Dictionary<Type, string> TypeAliases = new()
@@ -56,18 +56,18 @@ namespace HatTrick.CommandLine
         #region get alias or name
         public static string GetAliasOrName(Type type)
         {
-            var aliases = TypeMap.TypeAliases;
+            var aliases = OptionTypeMap.TypeAliases;
             return aliases.TryGetValue(type, out string alias) ? alias : type.Name;
         }
         #endregion
 
         #region change option argument type
-        public static T ChangeOptionArgumentType<T>(string value)
+        public static T GetTypedArgument<T>(string argument)
         {
-            return (T)TypeMap.ChangeOptionArgumentType(value, typeof(T));
+            return (T)OptionTypeMap.ChangeType(argument, typeof(T));
         }
 
-        private static object ChangeOptionArgumentType(string value, Type changeTo)
+        private static object ChangeType(string value, Type changeTo)
         {
             if (changeTo == typeof(string))
                 return value;
@@ -79,7 +79,7 @@ namespace HatTrick.CommandLine
                     return true;
 
                 if (changeTo.IsValueType)
-                    throw new InvalidCastException($"Cannot parse null into value type of {TypeMap.GetAliasOrName(changeTo)}");
+                    throw new InvalidCastException($"Cannot parse null into value type of {OptionTypeMap.GetAliasOrName(changeTo)}");
 
                 return null;
             }
@@ -114,7 +114,7 @@ namespace HatTrick.CommandLine
             if (underlying == typeof(Guid))
                 return Guid.Parse(value);
 
-            throw new NotImplementedException($"Cannot change provided value '{value}' to provided type '{TypeMap.GetAliasOrName(changeTo)}'.");
+            throw new NotImplementedException($"Cannot change provided value '{value}' to provided type '{OptionTypeMap.GetAliasOrName(changeTo)}'.");
         }
         #endregion
     }

@@ -308,7 +308,7 @@ namespace HatTrick.CommandLine
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
             ngin.LambdaRepo.Register("GetOps", () => target.Options.FindAll(o => !o.Hidden));
-            ngin.LambdaRepo.Register("GetFriendlyTypeName", (Type t) => TypeMap.GetAliasOrName(t));
+            ngin.LambdaRepo.Register("GetFriendlyTypeName", (Type t) => OptionTypeMap.GetAliasOrName(t));
             ngin.LambdaRepo.Register(nameof(GetOpDefHelp), GetOpDefHelp);
             ngin.LambdaRepo.Register(nameof(GetOpDefArgConstraintHelp), GetOpDefArgConstraintHelp);
             ngin.LambdaRepo.Register(nameof(GetCommandConstraintHelp), GetCommandConstraintHelp);

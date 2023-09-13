@@ -64,8 +64,8 @@ namespace HatTrick.CommandLine
 
                 if (!prop.PropertyType.IsAssignableFrom(valType))
                 {
-                    var opTypeName = TypeMap.GetAliasOrName(op.GenericType);
-                    var propTypeName = TypeMap.GetAliasOrName(prop.PropertyType);
+                    var opTypeName = OptionTypeMap.GetAliasOrName(op.GenericType);
+                    var propTypeName = OptionTypeMap.GetAliasOrName(prop.PropertyType);
                     var msg = $"Type mismatch while mapping option value to target...Option key: {op.Key}...Option type: {opTypeName}...Property type: {propTypeName}";
                     throw new CommandMappingException(msg);
                 }

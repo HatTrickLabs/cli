@@ -71,8 +71,8 @@ namespace HatTrick.CommandLine
             else
             {
                 var name = nameof(CommandOptionDefinition);
-                var classGenericName = TypeMap.GetAliasOrName(this.GenericType);
-                var localGenericName = TypeMap.GetAliasOrName(typeof(T));
+                var classGenericName = OptionTypeMap.GetAliasOrName(this.GenericType);
+                var localGenericName = OptionTypeMap.GetAliasOrName(typeof(T));
                 var msg = $"Cannot cast {name}<{classGenericName}> to {name}<{localGenericName}>";
                 throw new InvalidCastException(msg);
             }
@@ -97,8 +97,8 @@ namespace HatTrick.CommandLine
             {
                 var vals = string.Join("|", values);
                 var name = nameof(CommandOptionDefinition);
-                var classGenericName = TypeMap.GetAliasOrName(this.GenericType);
-                var localGenericName = TypeMap.GetAliasOrName(typeof(T));
+                var classGenericName = OptionTypeMap.GetAliasOrName(this.GenericType);
+                var localGenericName = OptionTypeMap.GetAliasOrName(typeof(T));
                 var msg = $"Cannot set accepted values '{vals}' of type {localGenericName} for {name}<{classGenericName}>.";
                 throw new CommandDefinitionException(msg, ice);
             }
@@ -124,8 +124,8 @@ namespace HatTrick.CommandLine
             catch (InvalidCastException ice)
             {
                 var className = nameof(CommandOptionDefinition);
-                var classGenericName = TypeMap.GetAliasOrName(this.GenericType);
-                var localGenericName = TypeMap.GetAliasOrName(typeof(T));
+                var classGenericName = OptionTypeMap.GetAliasOrName(this.GenericType);
+                var localGenericName = OptionTypeMap.GetAliasOrName(typeof(T));
                 string msg = $"Cannot apply constraint of type {localGenericName} to {className}<{classGenericName}>. ";
                 throw new CommandDefinitionException(msg, ice);
             }
