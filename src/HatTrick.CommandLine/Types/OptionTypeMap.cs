@@ -72,35 +72,26 @@ namespace HatTrick.CommandLine
             if (changeTo == typeof(string))
                 return value;
 
+            Type underlying = Nullable.GetUnderlyingType(changeTo) ?? changeTo;
+
             if (value is null)
             {
-                //if a bool op is provided, no argument should be required...the flag alone results in true.
-                if (changeTo == typeof(bool))
-                    return true;
+                //if a bool op is provided, no argument should be required...
+                //the flag alone results in true UNLESS the bool is nullable, then return null.
+                if (underlying == typeof(bool))
+                    return (changeTo == typeof(bool?)) ? null : (bool?)true;
 
-                if (changeTo.IsValueType)
+                if (changeTo == underlying)//the requested type IS NOT nullable, throw cast exception.
                     throw new InvalidCastException($"Cannot parse null into value type of {OptionTypeMap.GetAliasOrName(changeTo)}");
 
                 return null;
             }
 
-            //at this point, we know the value is NOT null
-            Type underlying = Nullable.GetUnderlyingType(changeTo) ?? changeTo;
-
             if (underlying == typeof(bool))
-            {
-                //if a bool op is provided, no argument should be required...the flag alone results in true.
-                if (value == string.Empty)
-                    return true;
-                else//at this point we've accounted for null and empty string, run it through the bool converter.
-                    return BooleanConverter.ToBoolean(value);
-            }
+                return BooleanConverter.ToBoolean(value);
 
             if (typeof(IConvertible).IsAssignableFrom(underlying))
-                return Convert.ChangeType(value, changeTo);
-
-            if (underlying == typeof(DateTime))
-                return DateTime.Parse(value);
+                return Convert.ChangeType(value, underlying);
 
             if (underlying == typeof(DateOnly))
                 return DateOnly.Parse(value);
