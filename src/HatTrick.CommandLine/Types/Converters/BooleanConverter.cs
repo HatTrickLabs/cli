@@ -9,7 +9,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region is valid bool
-        public static bool IsValidBool(string value, out bool result)
+        private static bool IsValidBool(string value, out bool result)
         {
             int idx = Array.FindIndex(_validBools, (b) => string.Compare(b, value, true) == 0);
             result = idx < 4 ? false : true;
@@ -18,10 +18,13 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region convert to boolean
-        public static bool ToBoolean(string value)
+        internal static bool ToBoolean(string value)
         {
-            if (value == null || value == string.Empty)
-                return false;//just default to false...
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
+            if (value == string.Empty)
+                return false;
 
             if (BooleanConverter.IsValidBool(value, out bool boolean))
                 return boolean;
