@@ -15,7 +15,7 @@ namespace HatTrick.CommandLine
                 key: "help",
                 defaultArg: null,
                 help: "Display help (accepts a command or namespace as argument).",
-                converter: OptionTypeMap.GetTypedArgument<string>,
+                converter: OptionTypeMap.ParseOptionArgument<string>,
                 "-?", "-h", "--help"
             );
             base.Options.Add(helpOp);
@@ -24,7 +24,7 @@ namespace HatTrick.CommandLine
                 key: "version", 
                 defaultArg: false, 
                 help: "Displays version information.", 
-                converter: OptionTypeMap.GetTypedArgument<bool>,
+                converter: OptionTypeMap.ParseOptionArgument<bool>,
                 "-v", "--version");
             base.Options.Add(verOp);
 
@@ -32,7 +32,7 @@ namespace HatTrick.CommandLine
                 key: "run", 
                 defaultArg: false, 
                 help: "Run a non-exiting command loop.", 
-                converter: OptionTypeMap.GetTypedArgument<bool>,
+                converter: OptionTypeMap.ParseOptionArgument<bool>,
                 "-r", "--run");
             base.Options.Add(runOp);
 

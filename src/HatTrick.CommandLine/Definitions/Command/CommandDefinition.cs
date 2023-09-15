@@ -98,7 +98,7 @@ namespace HatTrick.CommandLine
             var op = new CommandOptionDefinition<T>(
                 key: key, 
                 help: help, 
-                converter: OptionTypeMap.GetTypedArgument<T>,
+                converter: OptionTypeMap.ParseOptionArgument<T>,
                 flags.terse, flags.verbose
             );
             this.Options.Add(op);
@@ -110,7 +110,7 @@ namespace HatTrick.CommandLine
                 key: key, 
                 defaultArg: defaultArg, 
                 help: help, 
-                converter: OptionTypeMap.GetTypedArgument<T>, 
+                converter: OptionTypeMap.ParseOptionArgument<T>, 
                 flags: flags
             );
         }

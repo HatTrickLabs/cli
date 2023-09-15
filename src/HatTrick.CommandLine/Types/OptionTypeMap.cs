@@ -61,8 +61,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region change option argument type
-        public static T GetTypedArgument<T>(string argument)
+        #region parse option argument
+        public static T ParseOptionArgument<T>(string argument)
         {
             return (T)OptionTypeMap.ChangeType(argument, typeof(T));
         }
