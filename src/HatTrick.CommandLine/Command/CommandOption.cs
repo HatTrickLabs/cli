@@ -15,6 +15,7 @@ namespace HatTrick.CommandLine
         public string Key => _key;
         public string Flag => _flag;
         public string Argument => _arg;
+        public bool HasArgument => _arg is not null;
         public dynamic Value => _value;
         #endregion
 

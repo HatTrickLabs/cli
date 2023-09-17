@@ -6,7 +6,7 @@ namespace HatTrick.CommandLine.Test
     public class TokenizerTests
     {
         [Fact]
-        public void Tokenize_ShouldSplit_SingleChars_OnSpace()
+        public void Tokenize_ShouldSplit_SingleCharTokens_OnSpace()
         {
             string value = "x y z";
             string[] result = Tokenizer.Tokenize(value);
@@ -30,7 +30,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleChars_OnTab()
+        public void Tokenize_ShouldSplit_SingleCharTokens_OnTab()
         {
             string value = "x\ty\tz";
             string[] result = Tokenizer.Tokenize(value);
@@ -54,7 +54,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleChars_OnNewLine()
+        public void Tokenize_ShouldSplit_SingleCharTokens_OnNewLine()
         {
             string value = "x\ny\nz";
             string[] result = Tokenizer.Tokenize(value);
@@ -78,7 +78,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleChars_OnCarriageReturn()
+        public void Tokenize_ShouldSplit_SingleCharTokens_OnCarriageReturn()
         {
             string value = "x\ry\rz";
             string[] result = Tokenizer.Tokenize(value);
@@ -102,7 +102,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleChars_OnCarriageReturnNewLine()
+        public void Tokenize_ShouldSplit_SingleCharTokens_OnCarriageReturnNewLine()
         {
             string value = "x\r\ny\r\nz";
             string[] result = Tokenizer.Tokenize(value);
@@ -126,7 +126,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleChars_OnWhitespace_WhenWhitespace_MoreThanOneSpace()
+        public void Tokenize_ShouldSplit_SingleCharTokens_OnWhitespace_WhenWhitespace_MoreThanOneSpace()
         {
             string value = "x    y           z";
             string[] result = Tokenizer.Tokenize(value);
@@ -150,7 +150,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleChars_OnWhitespace_WhenWhitespace_Chaos()
+        public void Tokenize_ShouldSplit_SingleCharTokens_OnWhitespace_WhenWhitespace_Chaos()
         {
             string value = "x \t\r\n   y  \n         z";
             string[] result = Tokenizer.Tokenize(value);

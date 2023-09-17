@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace HatTrick.CommandLine
 {
     public static class Parser
     {
         #region parse
-        public static Command ParseCommand(string[] tokens)
+        public static Command Parse(string[] tokens)
         {
             if (tokens is null)
                 throw new ArgumentNullException(nameof(tokens));
@@ -66,8 +67,9 @@ namespace HatTrick.CommandLine
 
                     if (isExplicitAssign(token))
                     {
-                        //TODO: expand on this...it could be a syntax error.
-                        //maybe check i % 2 == 1
+                        if (i == 0)
+                            throw new CommandInputException(this.ExceptionMessageHelper(token, i));
+
                         prev = token;
                         continue;
                     }
@@ -92,7 +94,11 @@ namespace HatTrick.CommandLine
                         if (ops.Length == 0)
                             throw new CommandInputException($"{this.ExceptionMessageHelper(token, i)}...positional arguments not supported.");
 
-                        ops[^1].ApplyArgument(token);//apply current arg to the last op in the set
+                        CommandOption op = ops[^1];
+                        if (op.HasArgument)
+                            throw new CommandInputException($"{this.ExceptionMessageHelper(token, i)}...multi value arguments not supported.");
+
+                        op.ApplyArgument(token);//apply current arg to the last op in the set
                     }
 
                     prev = token;

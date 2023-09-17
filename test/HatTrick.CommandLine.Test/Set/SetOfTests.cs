@@ -435,8 +435,7 @@ namespace HatTrick.CommandLine.Test
         {
             var set = new SetOf<string>(new string[] { "uno", "dos", "tres" });
 
-            Func<string, int> given = null;
-            Assert.Throws<ArgumentNullException>(() => set.Max(given));
+            Assert.Throws<ArgumentNullException>(() => set.Max(null as Func<string, int>));
         }
         #endregion
 
@@ -502,8 +501,7 @@ namespace HatTrick.CommandLine.Test
         {
             var set = new SetOf<string>(new string[] { "uno", "dos", "tres" });
 
-            Func<string, int> given = null;
-            Assert.Throws<ArgumentNullException>(() => set.Min(given));
+            Assert.Throws<ArgumentNullException>(() => set.Min(null as Func<string, int>));
         }
         #endregion
 
