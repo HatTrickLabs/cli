@@ -1,10 +1,10 @@
 Low Level
 ---------------------
-- SetOf<T>
+x SetOf<T>
 - Tokenizer
 - Parser
-- BooleanConverter
-- TypeMap
+x BooleanConverter
+x TypeMap
 
 
 Definitions

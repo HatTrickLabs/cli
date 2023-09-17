@@ -3,7 +3,7 @@ using HatTrick.CommandLine;
 
 namespace HatTrick.CommandLine.Test
 {
-    public class TypeMapTests
+    public class OptionTypeMapTests
     {
         #region aliasing
         [Fact]
@@ -195,14 +195,14 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForBool_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForBool_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<bool>("xxxx");
             Assert.Throws<FormatException>(action);
         }
 
         [Fact]
-        public void TypeChanage_ForNullableBool_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForNullableBool_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<bool?>("xxxx");
             Assert.Throws<FormatException>(action);
@@ -235,7 +235,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForIConvertable_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForIConvertable_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<long>("xxxx");
             Assert.Throws<FormatException>(action);
@@ -264,7 +264,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForNullableIConvertable_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForNullableIConvertable_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<long?>("xxxx");
             Assert.Throws<FormatException>(action);
@@ -295,7 +295,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForDateOnly_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForDateOnly_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<DateOnly>("abcdef");
             Assert.Throws<FormatException>(action);
@@ -324,7 +324,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForNullableDateOnly_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForNullableDateOnly_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<DateOnly?>("abcdef");
             Assert.Throws<FormatException>(action);
@@ -356,7 +356,7 @@ namespace HatTrick.CommandLine.Test
 
 
         [Fact]
-        public void TypeChanage_ForDateTimeOffset_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForDateTimeOffset_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<DateTimeOffset>("abcdef");
             Assert.Throws<FormatException>(action);
@@ -385,7 +385,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForNullableDateTimeOffsetShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForNullableDateTimeOffsetShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<DateTimeOffset?>("abcdef");
             Assert.Throws<FormatException>(action);
@@ -416,7 +416,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForTimeSpan_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForTimeSpan_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<TimeSpan>("abcdef");
             Assert.Throws<FormatException>(action);
@@ -445,7 +445,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForNullableTimeSpan_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForNullableTimeSpan_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<TimeSpan?>("xxxxx");
             Assert.Throws<FormatException>(action);
@@ -476,7 +476,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForGuid_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForGuid_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<Guid>("abcdef");
             Assert.Throws<FormatException>(action);
@@ -505,7 +505,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void TypeChanage_ForNullableGuid_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        public void ParseOptionArgument_ForNullableGuid_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {
             Action action = () => OptionTypeMap.ParseOptionArgument<Guid?>("abcdef");
             Assert.Throws<FormatException>(action);

@@ -23,8 +23,9 @@ namespace HatTrick.CommandLine
         private sealed class Instance
         {
             #region internals
-            private static readonly char _etx;
+            private static readonly char _null;
             private static readonly int _maxSrcLength;
+            private static readonly int _maxStackallocLength;
             private static readonly string[] _empty;
             private string _src;
             private bool _keepLitQuotes;
@@ -35,8 +36,9 @@ namespace HatTrick.CommandLine
             #region constructors
             static Instance()
             {
-                _etx = '\x3';//end of text
+                _null = '\0';//null char
                 _maxSrcLength = 2_048;//0x800
+                _maxStackallocLength = 1_024;//0x400
                 _empty = Array.Empty<string>();
             }
 
@@ -64,18 +66,22 @@ namespace HatTrick.CommandLine
             #region peek
             private char Peek()
             {
-                char c = _srcLength > _index ? _src[_index] : _etx;
+                char c = _srcLength > _index ? _src[_index] : _null;
 
                 return c;
             }
             #endregion
 
             #region read
-            private char Read()
+            private bool Read(out char c)
             {
-                char c = _srcLength > _index ? _src[_index++] : _etx;
-
-                return c;
+                if (_srcLength > _index)
+                {
+                    c = _src[_index++];
+                    return true;
+                }
+                c = _null;
+                return false;
             }
             #endregion
 
@@ -85,7 +91,6 @@ namespace HatTrick.CommandLine
                 if (_srcLength == 0)
                     return _empty;
 
-                char etx = _etx;
                 bool keepLitQuotes = _keepLitQuotes;
                 const char dblQuote = '\"';
                 const char space = ' ';
@@ -99,12 +104,12 @@ namespace HatTrick.CommandLine
 
                 bool inDblQuote = false;
 
-                Span<char> token = _srcLength > 1024 ? new char[_srcLength] : stackalloc char[_srcLength];
+                Span<char> token = _srcLength > _maxStackallocLength ? new char[_srcLength] : stackalloc char[_srcLength];
                 SetOf<string> args = new SetOf<string>();
 
                 int at = 0;
                 char c;
-                while ((c = Read()) != etx)
+                while (Read(out c))
                 {
                     if (c == dblQuote && previous != escape)
                     {
