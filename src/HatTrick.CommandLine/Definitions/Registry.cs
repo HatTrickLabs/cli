@@ -66,6 +66,10 @@ namespace HatTrick.CommandLine
             if (_cmdDefs.ContainsKey(ns.Name))
                 throw new NamespaceDefinitionException($"Naming collision between namespace and command definition: {ns.Name}");
 
+            //TODO: entire following block feels extremely out of place...it feels like it should be part of
+            //'NamespaceDefinition.Validate()'...the reason it lives here is this block needs a ref to the other namespaces
+            //within the dictionary...We can either create a NamespaceDefinitionDictionary so this can happen on Add...
+            //OR we could pass the local _namespaceDefs as ref into the Validate ... But that seems backasswords also.
             if (ns.Name.Contains('.'))
             {
                 //ensure no segment gaps
@@ -89,14 +93,11 @@ namespace HatTrick.CommandLine
 
         public void Add(CommandDefinition commandDef)
         {
-            if (commandDef is not DefaultCommandDefinition)
-            {
-                commandDef.Validate();
+            commandDef.Validate();
 
-                //ensure no namespace name collisions
-                if (_namespaceDefs.ContainsKey(commandDef.Name))
-                    throw new NamespaceDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
-            }
+            //ensure no namespace name collisions
+            if (_namespaceDefs.ContainsKey(commandDef.Name))
+                throw new NamespaceDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
 
             _cmdDefs.Add(commandDef.Name, commandDef);
         }

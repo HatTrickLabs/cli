@@ -79,5 +79,12 @@ namespace HatTrick.CommandLine
             CommandLoopHandler.GetInstance().Go(cmd);
         }
         #endregion
+
+        #region validate
+        internal override void Validate()
+        {
+            //base.Validate();
+        }
+        #endregion
     }
 }

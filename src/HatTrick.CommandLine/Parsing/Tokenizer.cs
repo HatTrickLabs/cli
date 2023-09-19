@@ -115,7 +115,9 @@ namespace HatTrick.CommandLine
                     {
                         inDblQuote = !inDblQuote;
                         if (keepLitQuotes)
+                        {
                             token[at++] = c;
+                        }
                     }
                     else if (isWhitespace(c) && !inDblQuote)
                     {
@@ -140,7 +142,9 @@ namespace HatTrick.CommandLine
                 }
 
                 if (at > 0)
+                {
                     args.Add(new string(token.Slice(0, at)));
+                }
 
                 return args.ToArray();
             }

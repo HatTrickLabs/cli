@@ -1,6 +1,4 @@
-﻿using HatTrick.CommandLine;
-using NuGet.Frameworks;
-using Xunit;
+﻿using Xunit;
 
 namespace HatTrick.CommandLine.Test
 {

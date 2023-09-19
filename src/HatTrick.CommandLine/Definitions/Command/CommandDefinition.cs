@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.ComponentModel.Design;
 
 namespace HatTrick.CommandLine
 {
@@ -246,7 +247,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region validate
-        internal void Validate()
+        internal virtual void Validate()
         {
             if (_name is null || _name == string.Empty)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Name)}.");

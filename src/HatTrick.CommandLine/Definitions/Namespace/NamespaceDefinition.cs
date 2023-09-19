@@ -1,13 +1,10 @@
 ﻿using System;
+using System.Reflection;
 
 namespace HatTrick.CommandLine
 {
     public class NamespaceDefinition
     {
-        #region const
-        public const int MaxNameLength = 31;//one less than max command name length...
-        #endregion
-
         #region internals
         private string _name;
         private string _help;
@@ -16,6 +13,10 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region interface
+        public static readonly int MaxNameLength;
+
+        public static readonly Func<char, bool> IsValidNamespaceChar;
+
         public string Name => _name;
 
         public string Help => _help;
@@ -26,19 +27,22 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
+        static NamespaceDefinition()
+        {
+            MaxNameLength = 31;//one less than max command name length
+            IsValidNamespaceChar = (c) => (char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-');
+        }
+
         public NamespaceDefinition(string name, string help)
         {
-            _name = name == null
-                ? throw new ArgumentNullException(nameof(name))
-                : name == string.Empty
-                    ? throw new ArgumentException("Argument value cannot be empty.", nameof(name))
-                    : name;
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
 
-            _help = help == null
-                ? throw new ArgumentNullException(nameof(help))
-                : help == string.Empty
-                    ? throw new ArgumentException("Argument value cannot be empty.", nameof(help))
-                    : help;
+            if (help is null)
+                throw new ArgumentNullException(nameof(help));
+
+            _name = name;
+            _help = help;
         }
         #endregion
 
@@ -55,23 +59,28 @@ namespace HatTrick.CommandLine
             string name = _name;
             string help = _help;
 
-            if (!char.IsLetter(name[0]))
-                throw new NamespaceDefinitionException("Invalid namespace...Namespace definitions must begin with a letter.");
+            if (name == string.Empty)
+                throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' cannot be empty.");
 
-            if (_name.Length > NamespaceDefinition.MaxNameLength)
-                throw new CommandDefinitionException($"{nameof(NamespaceDefinition)}.{nameof(Name)}...max accepted char length is {NamespaceDefinition.MaxNameLength}.");
+            if (help == string.Empty)
+                throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Help)}' cannot be empty.");
+
+            if (!char.IsLetter(name[0]))
+                throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' must begin with a letter.");
+
+            if (name.Length > NamespaceDefinition.MaxNameLength)
+                throw new NamespaceDefinitionException($"Invalid namespace...Length of '{nameof(Name)}' cannot exceed {MaxNameLength} characters.");
 
             int depth = 0;
             for (int i = 1; i < name.Length; i++)
             {
                 char c = name[i];
-                if (!(char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-'))
-                    throw new NamespaceDefinitionException("Invalid namespace...Namespace definitions can only contain letters, digits, '-' and '.'");
+                if (!IsValidNamespaceChar(c))
+                    throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' can only contain letters, digits, '-' and '.'");
 
                 if (c == '.')
                     depth += 1;
             }
-
             _depth = depth;
         }
         #endregion
