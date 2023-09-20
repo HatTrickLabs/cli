@@ -78,7 +78,7 @@ namespace HatTrick.CommandLine
         internal override bool Ensure(ref Option option, out string feedback)
         {
             feedback = null;
-            T val = option.HasValue() ? option.GetValue<T>() : default(T);
+            T val = option.HasValue ? option.GetValue<T>() : default(T);
             bool pass = _constraint(val);
 
             if (!pass)

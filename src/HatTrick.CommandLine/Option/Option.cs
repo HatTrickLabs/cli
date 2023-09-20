@@ -17,27 +17,49 @@ namespace HatTrick.CommandLine
         public string Argument => _arg;
         public bool HasArgument => _arg is not null;
         public dynamic Value => _value;
+        public bool HasValue => _value is not null;
         #endregion
 
         #region constructors
-        protected Option()
-        { }
-
         internal Option(string flag)
         {
-            _flag = flag ?? throw new ArgumentNullException(nameof(flag));
+            if (flag is null)
+                throw new ArgumentNullException(nameof(flag));
+
+            if (flag == string.Empty)
+                throw new ArgumentException("Argument cannot be empty.", nameof(flag));
+
+            _flag = flag;
         }
 
         internal Option(string key, string flag)
         {
-            _key = key ?? throw new ArgumentNullException(nameof(key));
-            _flag = flag ?? throw new ArgumentNullException(nameof(flag));
+            if (key is null)
+                throw new ArgumentNullException(nameof(key));
+
+            if (key == string.Empty)
+                throw new ArgumentException("Argument cannot be empty.", nameof(key));
+
+            if (flag is null)
+                throw new ArgumentNullException(nameof(flag));
+
+            if (flag == string.Empty)
+                throw new ArgumentException("Argument cannot be empty.", nameof(flag));
+
+            _key = key;
+            _flag = flag;
         }
         #endregion
 
         #region apply key
         internal void ApplyKey(string key)
         {
+            if (key is null)
+                throw new ArgumentNullException(nameof(key));
+
+            if (key == string.Empty)
+                throw new ArgumentException("Argument cannot be empty.", nameof(key));
+
             _key = key;
         }
         #endregion
@@ -45,6 +67,12 @@ namespace HatTrick.CommandLine
         #region apply arg
         internal void ApplyArgument(string argument)
         {
+            if (argument is null)
+                throw new ArgumentNullException(nameof(argument));
+
+            if (argument == string.Empty)
+                throw new ArgumentException("Argument cannot be empty.", nameof(argument));
+
             _arg = argument;
         }
         #endregion
@@ -53,13 +81,6 @@ namespace HatTrick.CommandLine
         internal void SetValue<T>(T value)
         {
             _value = value;
-        }
-        #endregion
-
-        #region has value
-        public bool HasValue()
-        {
-            return _value is not null;
         }
         #endregion
 
