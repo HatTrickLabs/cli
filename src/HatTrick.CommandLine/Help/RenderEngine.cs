@@ -42,7 +42,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region compute option flags descriptor lengths
-        private int ComputeMaxFlagsDescriptorLength(SetOf<CommandOptionDefinition> optionSet)
+        private int ComputeMaxFlagsDescriptorLength(SetOf<OptionDefinition> optionSet)
         {
             int max = optionSet.Max(o => string.Join('|', o.Flags).Length);
             return max;
@@ -117,7 +117,7 @@ namespace HatTrick.CommandLine
             int blockStart = this.ResolveBlockStartPosition(this.ComputeMaxFlagsDescriptorLength(target.Options));
             string indent = new string(' ', RenderEngine.Indent);
 
-            Func<CommandOptionDefinition, string> GetOpDefHelp = (op) =>
+            Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {
                 string flags = string.Join('|', op.Flags);
                 int startAt = indent.Length + flags.Length;
@@ -283,7 +283,7 @@ namespace HatTrick.CommandLine
             int cmdConstBlockStart = this.ResolveBlockStartPosition(target.HasConstraints ? target.Constraints.Max(c => c.Name.Length) : 0);
             string indent = new string(' ', RenderEngine.Indent);
 
-            Func<CommandOptionDefinition, string> GetOpDefHelp = (op) =>
+            Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {
                 string flags = string.Join('|', op.Flags);
                 int startAt = indent.Length + flags.Length;

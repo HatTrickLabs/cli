@@ -21,7 +21,7 @@ namespace HatTrick.CommandLine
         private Action _mappedHanderValidators;
         private Action<Command> _handler;
         private Func<Command, Task> _asyncHandler;
-        private SetOf<CommandOptionDefinition> _options;
+        private SetOf<OptionDefinition> _options;
         private SetOf<CommandConstraint> _constraints;
         #endregion
 
@@ -54,9 +54,9 @@ namespace HatTrick.CommandLine
 
         public bool HasOptions => _options is not null && _options.Length > 0;
 
-        public SetOf<CommandOptionDefinition> Options => _options;
+        public SetOf<OptionDefinition> Options => _options;
 
-        public CommandOptionDefinition this[string key]
+        public OptionDefinition this[string key]
         {
             get
             {
@@ -86,7 +86,7 @@ namespace HatTrick.CommandLine
         public CommandDefinition(string name)
         {
             _name = name;
-            _options = new SetOf<CommandOptionDefinition>();
+            _options = new SetOf<OptionDefinition>();
             _constraints = new SetOf<CommandConstraint>();
         }
         #endregion
@@ -146,7 +146,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get option
-        internal CommandOptionDefinition GetOption(string key)
+        internal OptionDefinition GetOption(string key)
         {
             var op = _options.Find(o => o.Key == key);
             return op;
@@ -168,7 +168,7 @@ namespace HatTrick.CommandLine
                 var opDef = this[optionKeys[i]];
 
                 if (opDef.MustAssign)
-                    throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'{MustAssignOneOfConstraint.ConstraintName}' constraint cannot be applied.");
+                    throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(OptionDefinition.MustAssign)}'...'{MustAssignOneOfConstraint.ConstraintName}' constraint cannot be applied.");
 
                 opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
             }
@@ -194,7 +194,7 @@ namespace HatTrick.CommandLine
                 var opDef = this[optionKeys[i]];
 
                 if (opDef.MustAssign)
-                    throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(CommandOptionDefinition.MustAssign)}'...'{MutuallyExclusiveSetConstraint.ConstraintName}' constraint cannot be applied.");
+                    throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(OptionDefinition.MustAssign)}'...'{MutuallyExclusiveSetConstraint.ConstraintName}' constraint cannot be applied.");
 
                 opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
             }

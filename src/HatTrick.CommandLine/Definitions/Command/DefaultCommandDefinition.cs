@@ -46,7 +46,7 @@ namespace HatTrick.CommandLine
             //command def ensures only one of these can be true...
             bool version = cmd["version"].GetValue<bool>();
             bool run = cmd["run"].GetValue<bool>();
-            bool help = cmd["help"] is not DefaultCommandOption || !(run || version);
+            bool help = cmd["help"] is not DefaultOption || !(run || version);
 
             if (help)
                 this.InvokeHelp(cmd);

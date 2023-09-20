@@ -228,7 +228,7 @@ namespace HatTrick.CommandLine
                 {
                     //empty, just need an empty shell with correct key
                     op = opDef.EmptyInstance();
-                    cmd.ApplyEmptyOption(op as EmptyCommandOption);
+                    cmd.ApplyEmptyOption(op as EmptyOption);
                 }
                 else
                 {
@@ -259,7 +259,7 @@ namespace HatTrick.CommandLine
                 var op = cmd.Options[i];
 
                 //empty ops can always be assumed to be valid...because they were injected not provided
-                if (op is EmptyCommandOption)
+                if (op is EmptyOption)
                     continue;
 
                 if (!cmdDef.Options.Exists(o => o.Flags.Contains(op.Flag)))
@@ -294,8 +294,8 @@ namespace HatTrick.CommandLine
         {
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
-                CommandOptionDefinition opDef = cmdDef.Options[i];
-                ref CommandOption op = ref cmd.GetOptionByRef(opDef.Key);
+                OptionDefinition opDef = cmdDef.Options[i];
+                ref Option op = ref cmd.GetOptionByRef(opDef.Key);
 
                 //If empty op and a default constraint exists, empty op will be swapped for a default...hence the ref param
                 opDef.EnsureConstraints(ref op, ref feedback);

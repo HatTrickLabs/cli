@@ -46,7 +46,7 @@ namespace HatTrick.CommandLine
                 int startAt = isDefault ? 0 : 1;
                 var opTokens = new ReadOnlySpan<string>(tokens, startAt, tokens.Length - startAt);
 
-                SetOf<CommandOption> options = this.ParseCommandOptions(opTokens);
+                SetOf<Option> options = this.ParseCommandOptions(opTokens);
 
                 string name = isDefault ? CommandDefinition.DefaultCommandName : tokens[0];
                 return new Command(name, options);
@@ -54,9 +54,9 @@ namespace HatTrick.CommandLine
             #endregion
 
             #region parse command options
-            private SetOf<CommandOption> ParseCommandOptions(ReadOnlySpan<string> tokens)
+            private SetOf<Option> ParseCommandOptions(ReadOnlySpan<string> tokens)
             {
-                var ops = new SetOf<CommandOption>();
+                var ops = new SetOf<Option>();
 
                 var isExplicitAssign = (string tkn) => tkn == "=" || tkn == ":";
 
@@ -81,10 +81,10 @@ namespace HatTrick.CommandLine
                             throw new CommandInputException(this.ExceptionMessageHelper(token, i));
 
                         if (token[1] == '-') //verbose option flag
-                            ops.Add(new CommandOption(token));
+                            ops.Add(new Option(token));
 
                         else if (token.Length == 2) //single terse option flag
-                            ops.Add(new CommandOption(token));
+                            ops.Add(new Option(token));
 
                         else //must be a compound terse option flag, unroll into individual flags
                             UnrollCompoundFlag(token, (f) => ops.Add(f));
@@ -94,7 +94,7 @@ namespace HatTrick.CommandLine
                         if (ops.Length == 0)
                             throw new CommandInputException($"{this.ExceptionMessageHelper(token, i)}...positional arguments not supported.");
 
-                        CommandOption op = ops[^1];
+                        Option op = ops[^1];
                         if (op.HasArgument)
                             throw new CommandInputException($"{this.ExceptionMessageHelper(token, i)}...multi value arguments not supported.");
 
@@ -109,12 +109,12 @@ namespace HatTrick.CommandLine
             #endregion
 
             #region unroll compound flag
-            private void UnrollCompoundFlag(string flag, Action<CommandOption> onFlagUnrolled)
+            private void UnrollCompoundFlag(string flag, Action<Option> onFlagUnrolled)
             {
                 //start at idx 1 to skip the '-'
                 for (int i = 1; i < flag.Length; i++)
                 {
-                    var op = new CommandOption(flag: "-" + flag[i]);
+                    var op = new Option(flag: "-" + flag[i]);
                     onFlagUnrolled(op);
                 }
             }

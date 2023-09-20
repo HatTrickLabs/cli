@@ -7,8 +7,8 @@ using System.Threading;
 
 namespace HatTrick.CommandLine
 {
-    #region command option definition
-    public abstract class CommandOptionDefinition
+    #region option definition
+    public abstract class OptionDefinition
     {
         #region const
         public const int MaxKeyLength = 32;
@@ -52,7 +52,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        protected CommandOptionDefinition(string key, string help, params string[] flags)
+        protected OptionDefinition(string key, string help, params string[] flags)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));
             _help = help;
@@ -70,7 +70,7 @@ namespace HatTrick.CommandLine
             }
             else
             {
-                var name = nameof(CommandOptionDefinition);
+                var name = nameof(OptionDefinition);
                 var classGenericName = OptionTypeMap.GetAliasOrName(this.GenericType);
                 var localGenericName = OptionTypeMap.GetAliasOrName(typeof(T));
                 var msg = $"Cannot cast {name}<{classGenericName}> to {name}<{localGenericName}>";
@@ -96,7 +96,7 @@ namespace HatTrick.CommandLine
             catch (InvalidCastException ice)
             {
                 var vals = string.Join("|", values);
-                var name = nameof(CommandOptionDefinition);
+                var name = nameof(OptionDefinition);
                 var classGenericName = OptionTypeMap.GetAliasOrName(this.GenericType);
                 var localGenericName = OptionTypeMap.GetAliasOrName(typeof(T));
                 var msg = $"Cannot set accepted values '{vals}' of type {localGenericName} for {name}<{classGenericName}>.";
@@ -123,7 +123,7 @@ namespace HatTrick.CommandLine
             }
             catch (InvalidCastException ice)
             {
-                var className = nameof(CommandOptionDefinition);
+                var className = nameof(OptionDefinition);
                 var classGenericName = OptionTypeMap.GetAliasOrName(this.GenericType);
                 var localGenericName = OptionTypeMap.GetAliasOrName(typeof(T));
                 string msg = $"Cannot apply constraint of type {localGenericName} to {className}<{classGenericName}>. ";
@@ -133,11 +133,11 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply converted value to
-        internal abstract void ApplyConvertedValueTo(CommandOption option, out string feedback);
+        internal abstract void ApplyConvertedValueTo(Option option, out string feedback);
         #endregion
 
         #region ensure custom constraints
-        internal void EnsureConstraints(ref CommandOption option, ref SetOf<string> feedback)
+        internal void EnsureConstraints(ref Option option, ref SetOf<string> feedback)
         {
             if (!this.HasConstraints)
                 return;
@@ -154,9 +154,9 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region empty instance
-        internal EmptyCommandOption EmptyInstance()
+        internal EmptyOption EmptyInstance()
         {
-            var op = new EmptyCommandOption(_key, this.MostVerboseFlag);
+            var op = new EmptyOption(_key, this.MostVerboseFlag);
             return op;
         }
         #endregion
@@ -167,11 +167,11 @@ namespace HatTrick.CommandLine
             if (_key == string.Empty)
                 throw new CommandDefinitionException("All options must have a valid key...Provided key is empty.");
 
-            if (_key.Length > CommandOptionDefinition.MaxKeyLength)
-                throw new CommandDefinitionException($"{nameof(CommandOptionDefinition)}.{nameof(Key)}...max accepted char length is {CommandOptionDefinition.MaxKeyLength}.");
+            if (_key.Length > OptionDefinition.MaxKeyLength)
+                throw new CommandDefinitionException($"{nameof(OptionDefinition)}.{nameof(Key)}...max accepted char length is {OptionDefinition.MaxKeyLength}.");
 
             if (_flags is null || _flags.Length == 0)
-                throw new CommandDefinitionException($"Options[{_key}] must contain at least 1 {nameof(CommandOptionDefinition.Flags)}.");
+                throw new CommandDefinitionException($"Options[{_key}] must contain at least 1 {nameof(OptionDefinition.Flags)}.");
 
             foreach (string flag in _flags)
             {
@@ -187,8 +187,8 @@ namespace HatTrick.CommandLine
                     if (flag.Length < 4)
                         throw new CommandDefinitionException($"Verbose option flags begin with '--' and must be longer than 1 additional char...'{flag}' is not valid.");
 
-                    if (flag.Length > CommandOptionDefinition.MaxFlagLength)
-                        throw new CommandDefinitionException($"Verbose option flags cannot be > {CommandOptionDefinition.MaxFlagLength} chars in length.");
+                    if (flag.Length > OptionDefinition.MaxFlagLength)
+                        throw new CommandDefinitionException($"Verbose option flags cannot be > {OptionDefinition.MaxFlagLength} chars in length.");
                 }
                 else //terse definition
                 {
@@ -201,8 +201,8 @@ namespace HatTrick.CommandLine
     }
     #endregion
 
-    #region command option definition of T
-    public class CommandOptionDefinition<T> : CommandOptionDefinition
+    #region option definition of T
+    public class CommandOptionDefinition<T> : OptionDefinition
     {
         #region internals
         private Type _genericType;
@@ -297,7 +297,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply converted value to
-        internal override void ApplyConvertedValueTo(CommandOption option, out string feedback)
+        internal override void ApplyConvertedValueTo(Option option, out string feedback)
         {
             try
             {

@@ -53,11 +53,11 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region resolve assignment result
-        protected bool[] ResolveAssignmentResults(Func<string, CommandOption> getOptionByKey, string[] optionDefinitionKeys)
+        protected bool[] ResolveAssignmentResults(Func<string, Option> getOptionByKey, string[] optionDefinitionKeys)
         {
             bool[] results = new bool[optionDefinitionKeys.Length];
 
-            Func<CommandOption, bool> wasAssigned = (op) => !(op is DefaultCommandOption || op is EmptyCommandOption);
+            Func<Option, bool> wasAssigned = (op) => !(op is DefaultOption || op is EmptyOption);
 
             for (int i = 0; i < optionDefinitionKeys.Length; i++)
             {

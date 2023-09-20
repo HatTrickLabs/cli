@@ -33,7 +33,7 @@ namespace HatTrick.CommandLine
         {
             base.Validate();
 
-            SetOf<CommandOptionDefinition> options = CommandDefinition.Options;
+            SetOf<OptionDefinition> options = CommandDefinition.Options;
 
             Type t = typeof(T);
             PropertyInfo[] props = t.GetProperties();
@@ -78,7 +78,7 @@ namespace HatTrick.CommandLine
         {
             to = new();
 
-            CommandOption[] options = command.GetOptions();
+            Option[] options = command.GetOptions();
 
             Type t = typeof(T);
             PropertyInfo[] props = t.GetProperties();

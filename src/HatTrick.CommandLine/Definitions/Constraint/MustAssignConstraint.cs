@@ -23,11 +23,11 @@
         #endregion
 
         #region ensure
-        internal override bool Ensure(ref CommandOption option, out string feedback)
+        internal override bool Ensure(ref Option option, out string feedback)
         {
             feedback = null;
 
-            if (option is EmptyCommandOption)
+            if (option is EmptyOption)
                 feedback = $"An expected option [{string.Join("|", _optionFlags)}] not found...option has a '{MustAssignConstraint<T>.ConstraintName}' constraint.";
 
             return feedback is null;

@@ -33,7 +33,7 @@ namespace HatTrick.CommandLine
             var registry = Registry.GetInstance();
             var renderer = new RenderEngine();
 
-            if (cmd["help"] is DefaultCommandOption) //no option flag provided at all...
+            if (cmd["help"] is DefaultOption) //no option flag provided at all...
             {
                 renderer.RenderUsageHelp();
                 return;

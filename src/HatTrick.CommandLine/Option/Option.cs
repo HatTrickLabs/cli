@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
-    public class CommandOption
+    public class Option
     {
         #region internals
         private string _key;
@@ -20,15 +20,15 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        protected CommandOption()
+        protected Option()
         { }
 
-        internal CommandOption(string flag)
+        internal Option(string flag)
         {
             _flag = flag ?? throw new ArgumentNullException(nameof(flag));
         }
 
-        internal CommandOption(string key, string flag)
+        internal Option(string key, string flag)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));
             _flag = flag ?? throw new ArgumentNullException(nameof(flag));

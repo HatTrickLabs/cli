@@ -7,8 +7,8 @@ namespace HatTrick.CommandLine
     {
         public string Key { get; }
 
-        public CommandOption this[string key] { get; }
+        public Option this[string key] { get; }
 
-        public CommandOption[] GetOptions(Predicate<CommandOption> where = null);
+        public Option[] GetOptions(Predicate<Option> where = null);
     }
 }

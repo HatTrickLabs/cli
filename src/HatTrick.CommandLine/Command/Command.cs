@@ -9,15 +9,15 @@ namespace HatTrick.CommandLine
     {
         #region internals
         private string _key;
-        private SetOf<CommandOption> _ops;
+        private SetOf<Option> _ops;
         #endregion
 
         #region interface
         public string Key => _key;
 
-        internal SetOf<CommandOption> Options => _ops;
+        internal SetOf<Option> Options => _ops;
 
-        public CommandOption this[string key]
+        public Option this[string key]
         {
             get
             {
@@ -32,7 +32,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal Command(string key, SetOf<CommandOption> options = null)
+        internal Command(string key, SetOf<Option> options = null)
         {
             if (key is null)
                 throw new ArgumentNullException(nameof(key));
@@ -46,7 +46,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply default option
-        internal void ApplyDefaultOption(DefaultCommandOption option)
+        internal void ApplyDefaultOption(DefaultOption option)
         {
             //we swap in default for empty when default constraint exists.
             int idx = _ops.FindIndex((o) => o.Key == option.Key);
@@ -58,16 +58,16 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply empty option
-        internal void ApplyEmptyOption(EmptyCommandOption option)
+        internal void ApplyEmptyOption(EmptyOption option)
         {
             _ops.Add(option);
         }
         #endregion
 
         #region get options
-        public CommandOption[] GetOptions(Predicate<CommandOption> where = null)
+        public Option[] GetOptions(Predicate<Option> where = null)
         {
-            CommandOption[] ops = _ops.FindAll(where == null ? (o) => true : where);
+            Option[] ops = _ops.FindAll(where == null ? (o) => true : where);
             return ops;
         }
         #endregion
@@ -81,7 +81,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get option by ref
-        internal ref CommandOption GetOptionByRef(string optionKey)
+        internal ref Option GetOptionByRef(string optionKey)
         {
             int i = _ops.FindIndex(o => o.Key == optionKey);
             
@@ -93,9 +93,9 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get option by flag
-        public CommandOption GetOptionByFlag(params string[] flags)
+        public Option GetOptionByFlag(params string[] flags)
         {
-            CommandOption op = _ops.Find(o => flags.Contains(o.Flag));
+            Option op = _ops.Find(o => flags.Contains(o.Flag));
             return op;
         }
         #endregion

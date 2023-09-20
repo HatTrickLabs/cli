@@ -42,7 +42,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        internal abstract bool Ensure(ref CommandOption option, out string feedback);
+        internal abstract bool Ensure(ref Option option, out string feedback);
         #endregion
     }
 
@@ -75,7 +75,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        internal override bool Ensure(ref CommandOption option, out string feedback)
+        internal override bool Ensure(ref Option option, out string feedback)
         {
             feedback = null;
             T val = option.HasValue() ? option.GetValue<T>() : default(T);
