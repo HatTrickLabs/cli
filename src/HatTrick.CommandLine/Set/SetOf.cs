@@ -25,6 +25,8 @@ namespace HatTrick.CommandLine
 
         public int Length => _length;
 
+        protected T[] Empty => _empty;
+
         public T this[int i]
         {
             get
@@ -95,7 +97,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region add
-        public void Add(T item)
+        public virtual void Add(T item)
         {
             if (item is null)
                 throw new ArgumentNullException(nameof(item));

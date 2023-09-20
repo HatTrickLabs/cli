@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 
 namespace HatTrick.CommandLine
 {
@@ -15,8 +14,6 @@ namespace HatTrick.CommandLine
         #region interface
         public static readonly int MaxNameLength;
 
-        public static readonly Func<char, bool> IsValidNamespaceChar;
-
         public string Name => _name;
 
         public string Help => _help;
@@ -29,8 +26,7 @@ namespace HatTrick.CommandLine
         #region constructors
         static NamespaceDefinition()
         {
-            MaxNameLength = 31;//one less than max command name length
-            IsValidNamespaceChar = (c) => (char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-');
+            MaxNameLength = CommandDefinition.MaxNameLength - 1;//one less than max command name length
         }
 
         public NamespaceDefinition(string name, string help)
@@ -53,6 +49,13 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
+        #region is valid namespace char
+        public bool IsValidNamespaceChar(char c)
+        {
+            return char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-';
+        }
+        #endregion
+
         #region validate
         internal void Validate()
         {
@@ -72,15 +75,19 @@ namespace HatTrick.CommandLine
                 throw new NamespaceDefinitionException($"Invalid namespace...Length of '{nameof(Name)}' cannot exceed {MaxNameLength} characters.");
 
             int depth = 0;
-            for (int i = 1; i < name.Length; i++)
+            for (int i = 1; i < name.Length - 1; i++)
             {
                 char c = name[i];
-                if (!IsValidNamespaceChar(c))
+                if (!this.IsValidNamespaceChar(c))
                     throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' can only contain letters, digits, '-' and '.'");
 
                 if (c == '.')
                     depth += 1;
             }
+
+            if (name[^1] == '.')
+                throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' cannot end with '.'");
+
             _depth = depth;
         }
         #endregion

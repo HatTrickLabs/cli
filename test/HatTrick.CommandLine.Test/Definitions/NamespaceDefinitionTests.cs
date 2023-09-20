@@ -4,7 +4,6 @@ namespace HatTrick.CommandLine.Test
 {
     public class NamespaceDefinitionTests
     {
-        //Test anything that throw ex and Validate();
         #region constructor tests
         [Fact]
         public void Constructor_WhenNameArgumentIsNull_ShouldThrow_ArgumentNullException()

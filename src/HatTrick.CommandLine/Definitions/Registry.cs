@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Reflection.Metadata.Ecma335;
 
 namespace HatTrick.CommandLine
 {
@@ -10,21 +11,21 @@ namespace HatTrick.CommandLine
         #region internals
         private static Registry _instance;
         private static object _lock = new();
-        private Dictionary<string, NamespaceDefinition> _namespaceDefs;
-        private Dictionary<string, CommandDefinition> _cmdDefs;
+        private SetOfNamespaceDefinition _namespaces;
+        private SetOfCommandDefinition _commands;
         #endregion
 
         #region interface
-        public int CommandDefinitionCount => _cmdDefs.Count;
+        public int CommandDefinitionCount => _commands.Length;
 
-        public int NamespaceDefinitionCount => _namespaceDefs.Count;
+        public int NamespaceDefinitionCount => _namespaces.Length;
         #endregion
 
         #region constructors
         private Registry()
         {
-            _cmdDefs = new Dictionary<string, CommandDefinition>();
-            _namespaceDefs = new Dictionary<string, NamespaceDefinition>();
+            _commands = new SetOfCommandDefinition();
+            _namespaces = new SetOfNamespaceDefinition();
         }
         #endregion
 
@@ -46,115 +47,71 @@ namespace HatTrick.CommandLine
         #region get command definitions
         public CommandDefinition[] GetCommandDefinitions(Predicate<CommandDefinition> where = null)
         {
-            return Array.FindAll(_cmdDefs.Values.ToArray(), (where is null) ? (cmd) => true : where);
+            return _commands.FindAll(where is null ? (cmd) => true : where);
         }
         #endregion
 
         #region get namespace definitions
         public NamespaceDefinition[] GetNamespaceDefinitions(Predicate<NamespaceDefinition> where = null)
         {
-            return Array.FindAll(_namespaceDefs.Values.ToArray(), (where is null) ? (ns) => true : where);
+            return _namespaces.FindAll(where);
         }
         #endregion
 
         #region add
-        public void Add(NamespaceDefinition ns)
+        public void Add(NamespaceDefinition namespaceDef)
         {
-            ns.Validate();
-
             //ensure no command name collisions
-            if (_cmdDefs.ContainsKey(ns.Name))
-                throw new NamespaceDefinitionException($"Naming collision between namespace and command definition: {ns.Name}");
+            if (_commands.ContainsName(namespaceDef.Name))
+                throw new NamespaceDefinitionException($"Naming collision between namespace and command definition: {namespaceDef.Name}");
 
-            //TODO: entire following block feels extremely out of place...it feels like it should be part of
-            //'NamespaceDefinition.Validate()'...the reason it lives here is this block needs a ref to the other namespaces
-            //within the dictionary...We can either create a NamespaceDefinitionDictionary so this can happen on Add...
-            //OR we could pass the local _namespaceDefs as ref into the Validate ... But that seems backasswords also.
-            if (ns.Name.Contains('.'))
-            {
-                //ensure no segment gaps
-                string[] segments = ns.Name.Split('.');
-                string segment = null;
-                for (int i = 0; i < (segments.Length - 1); i++)
-                {
-                    segment = (i > 0) 
-                        ? string.Concat(segment, '.', segments[i])
-                        : segments[i];
-
-                    if (!_namespaceDefs.ContainsKey(segment))
-                    {
-                        string msg = $"Cannot register namespace {ns.Name}...no parent namespace for '{segment}' exists.";
-                        throw new NamespaceDefinitionException(msg);
-                    }
-                }
-            }
-            _namespaceDefs.Add(ns.Name, ns);
+            _namespaces.Add(namespaceDef);
         }
 
         public void Add(CommandDefinition commandDef)
         {
-            commandDef.Validate();
-
             //ensure no namespace name collisions
-            if (_namespaceDefs.ContainsKey(commandDef.Name))
+            if (_namespaces.ContainsName(commandDef.Name))
                 throw new NamespaceDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
 
-            _cmdDefs.Add(commandDef.Name, commandDef);
+            _commands.Add(commandDef);
         }
         #endregion
 
-        #region try get namespace
+        #region try get namespace definition
         public bool TryGetNamespaceDefinition(string name, out NamespaceDefinition namespaceDef)
         {
-            return _namespaceDefs.TryGetValue(name, out namespaceDef);
+            return _namespaces.TryGet(name, out namespaceDef);
         }
         #endregion
 
         #region try get command definition
         public bool TryGetCommandDefinition(string name, out CommandDefinition cmdDef)
         {
-            return _cmdDefs.TryGetValue(name, out cmdDef);
+            return _commands.TryGet(name, out cmdDef);
         }
         #endregion
 
         #region get namespace definition
         public NamespaceDefinition GetNamespaceDefinition(string name)
         {
-            return _namespaceDefs.ContainsKey(name)
-                ? _namespaceDefs[name]
-                : throw new CommandInputException($"No namespace registered for provided name: {name}");
+            NamespaceDefinition namespaceDef = _namespaces[name];
+            return namespaceDef;
         }
         #endregion
 
         #region get child namespace definitions
         internal NamespaceDefinition[] GetChildNamespaceDefinitions(NamespaceDefinition parent, bool includeHidden)
         {
-            if (parent is null)
-                throw new ArgumentNullException(nameof(parent));
-
-            int atDepth = parent.Depth + 1;
-            var children = this.GetNamespaceDefinitions((ns) => 
-                ns.Hidden == includeHidden &&
-                ns.Depth == atDepth &&
-                ns.Name.StartsWith(parent.Name)
-            );
-
+            var children = _namespaces.GetChildren(parent, includeHidden);
             return children;
         }
         #endregion
 
-        #region get descendent namespaces
-        internal NamespaceDefinition[] GetDescendentNamespaces(NamespaceDefinition parent, bool includeHidden)
+        #region get descendent namespaces definitions
+        internal NamespaceDefinition[] GetDescendentNamespaceDefinitions(NamespaceDefinition parent, bool includeHidden)
         {
-            if (parent is null)
-                throw new ArgumentNullException(nameof(parent));
-
-            var descendents = this.GetNamespaceDefinitions((ns) =>
-                ns.Hidden == includeHidden && 
-                ns.Depth > parent.Depth &&
-                ns.Name.StartsWith(parent.Name)
-            );
-
+            var descendents = _namespaces.GetDescendents(parent, includeHidden);
             return descendents;
         }
         #endregion
@@ -162,9 +119,8 @@ namespace HatTrick.CommandLine
         #region get command definition
         public CommandDefinition GetCommandDefinition(string name)
         {
-            return _cmdDefs.ContainsKey(name) 
-                ? _cmdDefs[name] 
-                : throw new CommandInputException($"No command registered for provided name: {name}");
+            CommandDefinition cmdDef =  _commands[name];
+            return cmdDef;
         }
         #endregion
 
@@ -174,13 +130,12 @@ namespace HatTrick.CommandLine
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
 
-            NamespaceDefinition[] descNamespaces = this.GetDescendentNamespaces(parent, includeHidden);
+            NamespaceDefinition[] descendentNamespaces = this.GetDescendentNamespaceDefinitions(parent, includeHidden);
 
-            var children = this.GetCommandDefinitions((cmd) => 
-                      cmd.Hidden == includeHidden &&
-                      cmd.Depth > parent.Depth && //must check for > because commands can have segment gaps...
-                      cmd.Name.StartsWith(parent.Name) &&
-                      !Array.Exists(descNamespaces, (ns) => cmd.Name.StartsWith(ns.Name))
+            CommandDefinition[] descendents = _commands.GetDescendents(parent.Name, includeHidden);
+
+            CommandDefinition[] children = Array.FindAll(descendents, (d) => 
+                !Array.Exists(descendentNamespaces, (ns) => d.Name.StartsWith(ns.Name))
             );
 
             return children;
@@ -193,11 +148,7 @@ namespace HatTrick.CommandLine
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
 
-            var descendents = this.GetCommandDefinitions((cmd) => 
-                    cmd.Hidden == includeHidden && 
-                    cmd.Depth > parent.Depth &&
-                    cmd.Name.StartsWith(parent.Name)
-            );
+            var descendents = _commands.GetDescendents(parent.Name, includeHidden);
 
             return descendents;
         }

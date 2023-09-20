@@ -10,7 +10,6 @@ namespace HatTrick.CommandLine
     public class CommandDefinition
     {
         #region const
-        public const int MaxNameLength = 40;
         public const string DefaultCommandName = "DEFAULT";
         #endregion
 
@@ -27,6 +26,8 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region interface
+        public static readonly int MaxNameLength;
+
         public string Name => _name;
 
         public string Help
@@ -78,6 +79,10 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
+        static CommandDefinition()
+        {
+            MaxNameLength = 40;
+        }
         public CommandDefinition(string name)
         {
             _name = name;
