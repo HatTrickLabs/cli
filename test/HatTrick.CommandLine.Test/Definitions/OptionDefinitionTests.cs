@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine.Test
 {
-    public class CommandDefinitionOptionTests
+    public class OptionDefinitionTests
     {
         //Test anything that throw ex and Validate();
     }

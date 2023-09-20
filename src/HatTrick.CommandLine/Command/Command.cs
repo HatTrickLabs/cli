@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Transactions;
 
@@ -46,20 +47,25 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply default option
-        internal void ApplyDefaultOption(DefaultOption option)
-        {
-            //we swap in default for empty when default constraint exists.
-            int idx = _ops.FindIndex((o) => o.Key == option.Key);
-            if (idx > -1)
-                _ops[idx] = option;
-            else
-                _ops.Add(option);
-        }
+        //internal void ApplyDefaultOption(DefaultOption option)
+        //{
+        //    //we swap in default for empty when default constraint exists.
+        //    int idx = _ops.FindIndex((o) => o.Key == option.Key);
+
+        //    if (idx > -1)
+        //        _ops[idx] = option;
+        //    else
+        //        _ops.Add(option);
+        //}
         #endregion
 
-        #region apply empty option
-        internal void ApplyEmptyOption(EmptyOption option)
+        #region add empty option
+        internal void AddEmptyOption(EmptyOption option)
         {
+            int idx = _ops.FindIndex((o) => o.Key == option.Key);
+            if (idx > -1)
+                throw new ArgumentException($"Duplication option key exists...Cannot add option with key: {option.Key}");
+
             _ops.Add(option);
         }
         #endregion
@@ -72,31 +78,35 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get option
-        //public CommandOption GetOption(string optionKey)
-        //{
-        //    CommandOption op = _ops.Find(o => o.Key == optionKey);
-        //    return op;
-        //}
-        #endregion
-
-        #region get option by ref
-        internal ref Option GetOptionByRef(string optionKey)
-        {
-            int i = _ops.FindIndex(o => o.Key == optionKey);
-            
-            if (i < 0)
-                throw new KeyNotFoundException($"Provided option key: {optionKey} not found.");
-
-            return ref _ops.GetPointerTo(i);
-        }
-        #endregion
-
         #region get option by flag
         public Option GetOptionByFlag(params string[] flags)
         {
+            if (flags is null)
+                throw new ArgumentNullException(nameof(flags));
+
+            if (flags.Length == 0)
+                throw new ArgumentException("Argument cannot be empty.", nameof(flags));
+
             Option op = _ops.Find(o => flags.Contains(o.Flag));
             return op;
+        }
+        #endregion
+
+        #region get option by ref
+        internal ref Option GetOptionByRef(string key)
+        {
+            if (key is null)
+                throw new ArgumentNullException(nameof(key));
+
+            if (key == string.Empty)
+                throw new ArgumentException("Argument cannot be empty.", nameof(key));
+
+            int i = _ops.FindIndex(o => o.Key == key);
+            
+            if (i < 0)
+                throw new KeyNotFoundException($"Provided option key: {key} not found.");
+
+            return ref _ops.GetPointerTo(i);
         }
         #endregion
     }
