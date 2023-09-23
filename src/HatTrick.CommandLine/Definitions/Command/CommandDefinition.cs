@@ -21,7 +21,7 @@ namespace HatTrick.CommandLine
         private Action _mappedHanderValidators;
         private Action<Command> _handler;
         private Func<Command, Task> _asyncHandler;
-        private SetOf<OptionDefinition> _options;
+        private SetOfOptionDefinition _options;
         private SetOf<CommandConstraint> _constraints;
         #endregion
 
@@ -54,7 +54,7 @@ namespace HatTrick.CommandLine
 
         public bool HasOptions => _options is not null && _options.Length > 0;
 
-        public SetOf<OptionDefinition> Options => _options;
+        internal SetOfOptionDefinition Options => _options;
 
         public OptionDefinition this[string key]
         {
@@ -69,7 +69,7 @@ namespace HatTrick.CommandLine
             }
         }
 
-        public SetOf<CommandConstraint> Constraints
+        internal SetOf<CommandConstraint> Constraints
         {
             get => _constraints;
             set => _constraints = value;
@@ -83,10 +83,11 @@ namespace HatTrick.CommandLine
         {
             MaxNameLength = 40;
         }
+
         public CommandDefinition(string name)
         {
             _name = name;
-            _options = new SetOf<OptionDefinition>();
+            _options = new SetOfOptionDefinition();
             _constraints = new SetOf<CommandConstraint>();
         }
         #endregion
@@ -98,16 +99,22 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
+        #region is valid command definition char
+        public bool IsValidCommandDefinitionChar(char c)
+        {
+            return (char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-');
+        }
+        #endregion
+
         #region add option of T
         public void AddOption<T>(string key, string help, (string terse, string verbose) flags)
         {
-            var op = new CommandOptionDefinition<T>(
-                key: key, 
-                help: help, 
+            this.AddOption<T>(
+                key: key,
+                help: help,
                 converter: OptionTypeMap.ParseOptionArgument<T>,
-                flags.terse, flags.verbose
+                flags: flags
             );
-            this.Options.Add(op);
         }
 
         public void AddOption<T>(string key, T defaultArg, string help, (string terse, string verbose) flags)
@@ -145,11 +152,11 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get option
-        internal OptionDefinition GetOption(string key)
+        #region option exists
+        internal bool OptionExists(string key)
         {
-            var op = _options.Find(o => o.Key == key);
-            return op;
+            bool exists = _options.Exists((o) => string.Compare(o.Key, key, false) == 0);
+            return exists;
         }
         #endregion
 
@@ -270,8 +277,8 @@ namespace HatTrick.CommandLine
             for (int i = 1; i < _name.Length; i++)
             {
                 char c = _name[i];
-                if (!(char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-'))
-                    throw new NamespaceDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)} can only contain letters, digits, '-' and '.'");
+                if (!this.IsValidCommandDefinitionChar(c))
+                    throw new CommandDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)} can only contain letters, digits, '-' and '.'");
 
                 if (c == '.')
                     depth += 1;
@@ -279,51 +286,7 @@ namespace HatTrick.CommandLine
 
             _depth = depth;
 
-            this.ValidateOptions();
-
             _mappedHanderValidators?.Invoke();
-        }
-        #endregion
-
-        #region validate options
-        private void ValidateOptions()
-        {
-            int opLen = _options?.Length ?? 0;
-            if (opLen > 0)
-            {
-                string key = null;
-                string flag = null;
-                var flagsMap = new string[opLen, 2];
-                for (int i = 0; i < opLen; i++)
-                {
-                    var op = _options[i];
-                    op.Validate();
-                    key = op.Key;
-
-                    for (int j = 0; j < i; j++)
-                    {
-                        if (op.Key == _options[j].Key)
-                            throw new CommandDefinitionException($"Command option key collision command key '{op.Key}'.");
-
-                        flag = op.Flags[0];
-                        if (flagsMap[j, 0] == flag || flagsMap[j, 1] == flag)
-                            throw new CommandDefinitionException($"Option flag collision in command options '{op.Key}' and '{_options[j].Key}' for flag '{flag}'.");
-
-                        flag = op.Flags[1];
-                        if (flagsMap[j, 0] == flag || flagsMap[j, 1] == flag)
-                            throw new CommandDefinitionException($"Option flag collision in command options '{op.Key}' and '{_options[j].Key}' for flag '{flag}'.");
-                    }
-
-                    //Note: technically do not need x markers as op.Validate() ensures
-                    //neither of the flags is null or empty...leave this logic just in case 
-                    //I make the decision to allow only one valid flag and the other null/empty
-                    //Note: x is not a valid flag and we wouldn't make it past op.Validate() if it 
-                    //was attempted as a flag...the right side of the above conditions (ops.Flags[?])
-                    //can never be x
-                    flagsMap[i, 0] = string.IsNullOrEmpty(op.Flags[0]) ? "x" : op.Flags[0];
-                    flagsMap[i, 1] = string.IsNullOrEmpty(op.Flags[1]) ? "x" : op.Flags[1];
-                }
-            }
         }
         #endregion
     }

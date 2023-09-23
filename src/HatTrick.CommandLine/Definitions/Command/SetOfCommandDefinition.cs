@@ -67,7 +67,7 @@ namespace HatTrick.CommandLine
         private void ThrowOnDuplicateName(string name)
         {
             if (this.ContainsName(name))
-                throw new ArgumentException($"Cannot insert {nameof(CommandDefinition)}, duplicate key found: '{name}'");
+                throw new CommandDefinitionException($"Cannot add {nameof(CommandDefinition)}, duplicate key found: '{name}'");
         }
         #endregion
 

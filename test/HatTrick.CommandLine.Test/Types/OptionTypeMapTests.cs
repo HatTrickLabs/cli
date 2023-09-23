@@ -354,7 +354,6 @@ namespace HatTrick.CommandLine.Test
             Assert.Equal(target, result);
         }
 
-
         [Fact]
         public void ParseOptionArgument_ForDateTimeOffset_ShouldThrow_FormatException_WhenInvalidValueProvide()
         {

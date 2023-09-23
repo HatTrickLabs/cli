@@ -72,7 +72,7 @@ namespace HatTrick.CommandLine
 
             foreach (var c in correlations)
             {
-                if (cmdDef.GetOption(c.optionKey) is null)
+                if (!cmdDef.OptionExists(c.optionKey))
                     throw new CommandMappingException($"Command '{cmdDef.Name} does not contain an option key that matches provided correlation: {c}");
             }
         }

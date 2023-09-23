@@ -271,6 +271,7 @@ namespace HatTrick.CommandLine
         #region ensure no duplicate options
         private void EnsureNoDuplicateOptions(CommandDefinition cmdDef, Command cmd, ref SetOf<string> feedback)
         {
+            //TODO: refactor, this looks fundamentally wrong
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
                 var opDef = cmdDef.Options[i];

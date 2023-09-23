@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Tests\EndToEnd\" />
-    <Folder Include="Tests\Smoke\" />
+    <Folder Include="Tests\" />
   </ItemGroup>
 
 </Project>

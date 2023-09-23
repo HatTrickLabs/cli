@@ -67,9 +67,10 @@ x replace list with setof anywhere possible.
 x make setof default capacity static readonly
 - impl ability to explicity send null as an option argument.
 - impl ability to store local vars when running in command loop.
-- harden command parser...handle garbage input eloquently
+x harden command parser...handle garbage input eloquently
 - Rework op constraint ... name and description work well for help, but not for the exception thrown.
 x Make Parser work like Tokenizer...static shell with private instance based internals.
+- Add unit tests to SetOf<T> for getting enumerators (specifically if the SetOf<T> is empty with null internal array).
 
 
 
