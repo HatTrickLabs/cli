@@ -1,4 +1,6 @@
-﻿namespace HatTrick.CommandLine
+﻿using System;
+
+namespace HatTrick.CommandLine
 {
     public class EmptyOption : Option
     {

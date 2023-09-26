@@ -30,7 +30,7 @@ namespace HatTrick.CommandLine.Test
         public void Constructor_WithValidKeyArgument_ShouldRetainKey()
         {
             var cmd = new Command("abc");
-            Assert.Equal("abc", cmd.Key);
+            Assert.Equal("abc", cmd.Name);
         }
 
         [Fact]

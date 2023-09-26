@@ -10,11 +10,6 @@ namespace HatTrick.CommandLine
     #region option definition
     public abstract class OptionDefinition
     {
-        #region const
-        public const int MaxKeyLength = 32;
-        public const int MaxFlagLength = 32;
-        #endregion
-
         #region internals
         private readonly string _key;
         private readonly string _help;
@@ -24,6 +19,10 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region interface
+        public static readonly int MaxKeyLength;
+
+        public static readonly int MaxFlagLength;
+
         public string Key => _key;
 
         public abstract Type GenericType { get; }
@@ -52,6 +51,12 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
+        static OptionDefinition()
+        {
+            MaxKeyLength = 32;
+            MaxFlagLength = 32;
+        }
+
         protected OptionDefinition(string key, string help, params string[] flags)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));

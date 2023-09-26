@@ -5,7 +5,7 @@ namespace HatTrick.CommandLine
 {
     public interface IConstrainedCommand
     {
-        public string Key { get; }
+        public string Name { get; }
 
         public Option this[string key] { get; }
 

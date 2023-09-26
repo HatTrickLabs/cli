@@ -13,7 +13,7 @@ namespace HatTrick.CommandLine.TestHarness
             RegisterCommands();
 
             Command cmd = Parser.Parse(args);
-            Registry.GetInstance().ExecuteCommand(cmd);
+            DefinitionRegistry.GetInstance().ExecuteCommand(cmd);
         }
 
         static void RegisterCommands()
@@ -21,7 +21,7 @@ namespace HatTrick.CommandLine.TestHarness
             CommandDefinition cmd = new("guid");
             cmd.Help = "Generates new globaly unique identifiers.";
             cmd.Handler = (c) => { Console.WriteLine(Guid.NewGuid().ToString()); };
-            Registry.GetInstance().Add(cmd);
+            DefinitionRegistry.GetInstance().Add(cmd);
         }
     }
 }

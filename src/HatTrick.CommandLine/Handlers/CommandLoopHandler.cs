@@ -51,7 +51,7 @@ namespace HatTrick.CommandLine
         #region run command loop
         private void RunCommandLoop()
         {
-            var registry = Registry.GetInstance();
+            var registry = DefinitionRegistry.GetInstance();
             string prompt = this.ResolvePrompt();
 
             while (true)

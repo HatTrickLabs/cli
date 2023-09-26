@@ -16,7 +16,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = Array.Empty<string>();
             Command result = Parser.Parse(input);
-            Assert.Equal(CommandDefinition.DefaultCommandName, result.Key);
+            Assert.Equal(CommandDefinition.DefaultCommandName, result.Name);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "-a", "-b" };
             Command result = Parser.Parse(input);
-            Assert.Equal(CommandDefinition.DefaultCommandName, result.Key);
+            Assert.Equal(CommandDefinition.DefaultCommandName, result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => Assert.Equal("-a", x.Flag),
                 (x) => Assert.Equal("-b", x.Flag)
@@ -44,7 +44,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "test", "-a", "-b" };
             Command result = Parser.Parse(input);
-            Assert.Equal("test", result.Key);
+            Assert.Equal("test", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => Assert.Equal("-a", x.Flag),
                 (x) => Assert.Equal("-b", x.Flag)
@@ -56,7 +56,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "add", "-x", "-3", "-y", "3" };
             Command result = Parser.Parse(input);
-            Assert.Equal("add", result.Key);
+            Assert.Equal("add", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => Assert.Equal("-x", x.Flag),
                 (x) => Assert.Equal("-3", x.Flag),
@@ -69,7 +69,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "add", "-x", "=", "-3", "-y", "3" };
             Command result = Parser.Parse(input);
-            Assert.Equal("add", result.Key);
+            Assert.Equal("add", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => { Assert.Equal("-x", x.Flag); Assert.Equal("-3", x.Argument); },
                 (x) => Assert.Equal("-y", x.Flag)
@@ -81,7 +81,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "add", "-x", ":", "-3", "-y", "3" };
             Command result = Parser.Parse(input);
-            Assert.Equal("add", result.Key);
+            Assert.Equal("add", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => { Assert.Equal("-x", x.Flag); Assert.Equal("-3", x.Argument); },
                 (x) => { Assert.Equal("-y", x.Flag); Assert.Equal("3", x.Argument); }
@@ -133,7 +133,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "abc", "-xyz" };
             Command result = Parser.Parse(input);
-            Assert.Equal("abc", result.Key);
+            Assert.Equal("abc", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => Assert.Equal("-x", x.Flag),
                 (x) => Assert.Equal("-y", x.Flag),
@@ -146,7 +146,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "abc", "-xyz", "1" };
             Command result = Parser.Parse(input);
-            Assert.Equal("abc", result.Key);
+            Assert.Equal("abc", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => { Assert.Equal("-x", x.Flag); Assert.False(x.HasArgument); },
                 (x) => { Assert.Equal("-y", x.Flag); Assert.False(x.HasArgument); },
@@ -159,7 +159,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "abc", "--silent" };
             Command result = Parser.Parse(input);
-            Assert.Equal("abc", result.Key);
+            Assert.Equal("abc", result.Name);
             Assert.Single(result.GetOptions());
             Assert.Equal("--silent", result.GetOptions()[0].Flag);
         }
@@ -169,7 +169,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "abc", "--silent=1" };
             Command result = Parser.Parse(input);
-            Assert.Equal("abc", result.Key);
+            Assert.Equal("abc", result.Name);
             Assert.Equal("--silent=1", result.GetOptions()[0].Flag);
         }
 
@@ -178,7 +178,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "abc", "--silent:1" };
             Command result = Parser.Parse(input);
-            Assert.Equal("abc", result.Key);
+            Assert.Equal("abc", result.Name);
             Assert.Equal("--silent:1", result.GetOptions()[0].Flag);
         }
 
@@ -187,7 +187,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "abc=xyz", "--silent" };
             Command result = Parser.Parse(input);
-            Assert.Equal("abc=xyz", result.Key);
+            Assert.Equal("abc=xyz", result.Name);
             Assert.Equal("--silent", result.GetOptions()[0].Flag);
         }
 
@@ -196,7 +196,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] input = new string[] { "abc:xyz", "--silent" };
             Command result = Parser.Parse(input);
-            Assert.Equal("abc:xyz", result.Key);
+            Assert.Equal("abc:xyz", result.Name);
             Assert.Equal("--silent", result.GetOptions()[0].Flag);
         }
     }

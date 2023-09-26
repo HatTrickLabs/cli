@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.ComponentModel.Design;
+using System.Linq;
 
 namespace HatTrick.CommandLine
 {
@@ -81,7 +82,7 @@ namespace HatTrick.CommandLine
         #region constructors
         static CommandDefinition()
         {
-            MaxNameLength = 40;
+            MaxNameLength = 64;
         }
 
         public CommandDefinition(string name)
@@ -100,7 +101,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region is valid command definition char
-        public bool IsValidCommandDefinitionChar(char c)
+        public static bool IsValidCommandDefinitionChar(char c)
         {
             return (char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-');
         }
@@ -277,7 +278,7 @@ namespace HatTrick.CommandLine
             for (int i = 1; i < _name.Length; i++)
             {
                 char c = _name[i];
-                if (!this.IsValidCommandDefinitionChar(c))
+                if (!CommandDefinition.IsValidCommandDefinitionChar(c))
                     throw new CommandDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)} can only contain letters, digits, '-' and '.'");
 
                 if (c == '.')
@@ -287,6 +288,128 @@ namespace HatTrick.CommandLine
             _depth = depth;
 
             _mappedHanderValidators?.Invoke();
+        }
+        #endregion
+
+        #region ensure command
+        internal void EnsureCommand(Command command)
+        {
+            var feedback = new SetOf<string>();
+
+            this.EnsureCommandOptions(command, ref feedback);
+
+            if (feedback.Length == 0)
+                this.EnsureConstraints(command, ref feedback);
+
+            if (feedback.Length > 0)
+                throw new CommandInputException(feedback.ToArray());
+        }
+        #endregion
+
+        #region ensure command options
+        private void EnsureCommandOptions(Command cmd, ref SetOf<string> feedback)
+        {
+            this.EnsureCommandOptionsFullyHydrated(cmd, ref feedback);
+            if (feedback.Length > 0)
+                return;
+
+            this.EnsureAllProvidedOptionsDefined(cmd, ref feedback);
+            if (feedback.Length > 0)
+                return;
+
+            this.EnsureNoDuplicateOptions(cmd, ref feedback);
+            if (feedback.Length > 0)
+                return;
+
+            this.EnsureOptionConstraints(cmd, ref feedback);
+        }
+        #endregion
+
+        #region ensure options fully hydrated
+        private void EnsureCommandOptionsFullyHydrated(Command cmd, ref SetOf<string> feedback)
+        {
+            for (int i = 0; i < this.Options.Length; i++)
+            {
+                var opDef = this.Options[i];
+                var op = cmd.GetOptionByFlag(opDef.Flags);
+
+                if (op is null)
+                {
+                    //empty, just need an empty shell with correct key
+                    op = opDef.EmptyInstance();
+                    cmd.AddEmptyOption(op as EmptyOption);
+                }
+                else
+                {
+                    //apply the definition key to the option
+                    op.ApplyKey(opDef.Key);
+
+                    //pass op to opDef to set the value (passing in because only the def knows what T is).
+                    opDef.ApplyConvertedValueTo(op, out string error);
+                    if (error is not null)
+                        feedback.Add(error);
+                }
+            }
+        }
+        #endregion
+
+        #region ensure all provided options defined
+        private void EnsureAllProvidedOptionsDefined(Command cmd, ref SetOf<string> feedback)
+        {
+            if (cmd.Options.Length > 0 && !this.HasOptions)
+            {
+                feedback.Add($"The '{this.Name}' command does not accept any options...provided options are invalid.");
+                return;
+            }
+
+            //if any options are defined for the command, confirm each option provided is valid
+            for (int i = 0; i < cmd.Options.Length; i++)
+            {
+                var op = cmd.Options[i];
+
+                //empty ops can always be assumed to be valid...because they were injected not provided
+                if (op is EmptyOption)
+                    continue;
+
+                if (!this.Options.Exists(o => o.Flags.Contains(op.Flag)))
+                    feedback.Add($"Undefined option at position: {i + 1} ... option: {op.Flag}");
+            }
+        }
+        #endregion
+
+        #region ensure no duplicate options
+        private void EnsureNoDuplicateOptions(Command cmd, ref SetOf<string> feedback)
+        {
+            //TODO: refactor, this looks fundamentally wrong
+            for (int i = 0; i < this.Options.Length; i++)
+            {
+                var opDef = this.Options[i];
+                var opUno = cmd.GetOptionByFlag(opDef.Flags);
+                for (int j = 0; j < cmd.Options.Length; j++)
+                {
+                    var opDos = cmd.Options[j];
+
+                    if (opDos == opUno)
+                        continue;
+
+                    if (opDef.Flags.Contains(opDos.Flag))
+                        feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opUno.Flag}' and '{opDos.Flag}'");
+                }
+            }
+        }
+        #endregion
+
+        #region ensure option constraints
+        private void EnsureOptionConstraints(Command cmd, ref SetOf<string> feedback)
+        {
+            for (int i = 0; i < this.Options.Length; i++)
+            {
+                OptionDefinition opDef = this.Options[i];
+                ref Option op = ref cmd.GetOptionByRef(opDef.Key);
+
+                //If empty op and a default constraint exists, empty op will be swapped for a default...hence the ref param
+                opDef.EnsureConstraints(ref op, ref feedback);
+            }
         }
         #endregion
     }

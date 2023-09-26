@@ -30,7 +30,7 @@ namespace HatTrick.CommandLine
         #region go
         internal void Go(Command cmd)
         {
-            var registry = Registry.GetInstance();
+            var registry = DefinitionRegistry.GetInstance();
             var renderer = new RenderEngine();
 
             if (cmd["help"] is DefaultOption) //no option flag provided at all...

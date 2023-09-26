@@ -9,12 +9,12 @@ namespace HatTrick.CommandLine
     public class Command : IConstrainedCommand
     {
         #region internals
-        private string _key;
+        private string _name;
         private SetOf<Option> _ops;
         #endregion
 
         #region interface
-        public string Key => _key;
+        public string Name => _name;
 
         internal SetOf<Option> Options => _ops;
 
@@ -33,15 +33,15 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal Command(string key, SetOf<Option> options = null)
+        internal Command(string name, SetOf<Option> options = null)
         {
-            if (key is null)
-                throw new ArgumentNullException(nameof(key));
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
 
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException($"{nameof(key)} argument must contain a value.");
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException($"{nameof(name)} argument must contain a value.");
 
-            _key = key;
+            _name = name;
             _ops = options ?? new();
         }
         #endregion

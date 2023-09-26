@@ -13,10 +13,15 @@ namespace HatTrick.CommandLine
 
         #region interface
         public string Key => _key;
+
         public string Flag => _flag;
+
         public string Argument => _arg;
+
         public bool HasArgument => _arg is not null;
+
         public dynamic Value => _value;
+
         public bool HasValue => _value is not null;
         #endregion
 
