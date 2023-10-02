@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HatTrick.CommandLine
 {
@@ -92,7 +93,7 @@ namespace HatTrick.CommandLine
         private void ThrowOnDuplicateName(string name)
         {
             if (this.ContainsName(name))
-                throw new ArgumentException($"Cannot insert namespace, duplicate key found: '{name}'");
+                throw new NamespaceDefinitionException($"Cannot insert namespace, duplicate key found: '{name}'");
         }
         #endregion
 
@@ -105,42 +106,50 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get roots
-        internal NamespaceDefinition[] GetRoots(bool includeHidden)
+        internal NamespaceDefinition[] GetRoots(bool includeHidden = false)
         {
-            var roots = base.FindAll((ns) => ns.Hidden == includeHidden && ns.Depth == 0);
+            var roots = base.FindAll((ns) =>
+            {
+                bool isRoot = ns.Depth == 0;
+                return includeHidden ? isRoot : (isRoot && !ns.Hidden);
+            });
 
             return roots;
         }
         #endregion
 
         #region get children
-        internal NamespaceDefinition[] GetChildren(NamespaceDefinition parent, bool includeHidden)
+        internal NamespaceDefinition[] GetChildren(NamespaceDefinition parent, bool includeHidden = false)
         {
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
 
             int atDepth = parent.Depth + 1;
             var children = base.FindAll((ns) =>
-                ns.Hidden == includeHidden &&
-                ns.Depth == atDepth &&
-                ns.Name.StartsWith(parent.Name)
-            );
+            {
+                bool isChild = ns.Depth == atDepth && ns.Name.StartsWith(parent.Name);
+                return includeHidden 
+                    ? isChild 
+                    : (isChild && !ns.Hidden);
+            });
 
             return children;
         }
         #endregion
 
         #region get descendents
-        internal NamespaceDefinition[] GetDescendents(NamespaceDefinition parent, bool includeHidden)
+        internal NamespaceDefinition[] GetDescendents(NamespaceDefinition parent, bool includeHidden = false)
         {
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
 
             var descendents = base.FindAll((ns) =>
-                ns.Hidden == includeHidden &&
-                ns.Depth > parent.Depth &&
-                ns.Name.StartsWith(parent.Name)
-            );
+            {
+                bool isDescendent = ns.Depth > parent.Depth && ns.Name.StartsWith(parent.Name);
+                return includeHidden
+                    ? isDescendent
+                    : (isDescendent && !ns.Hidden);
+            });
 
             return descendents;
         }

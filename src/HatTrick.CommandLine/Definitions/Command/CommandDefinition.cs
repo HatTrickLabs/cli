@@ -87,6 +87,9 @@ namespace HatTrick.CommandLine
 
         public CommandDefinition(string name)
         {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
             _name = name;
             _options = new SetOfOptionDefinition();
             _constraints = new SetOf<CommandConstraint>();
@@ -100,8 +103,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region is valid command definition char
-        public static bool IsValidCommandDefinitionChar(char c)
+        #region is valid command name char
+        public static bool IsValidCommandNameChar(char c)
         {
             return (char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-');
         }
@@ -131,7 +134,7 @@ namespace HatTrick.CommandLine
 
         public void AddOption<T>(string key, string help, Func<string, T> converter, (string terse, string verbose) flags)
         {
-            var op = new CommandOptionDefinition<T>(
+            var op = new OptionDefinition<T>(
                 key: key,
                 help: help,
                 converter: converter,
@@ -142,7 +145,7 @@ namespace HatTrick.CommandLine
 
         public void AddOption<T>(string key, T defaultArg, string help, Func<string, T> converter, (string terse, string verbose) flags)
         {
-            var op = new CommandOptionDefinition<T>(
+            var op = new OptionDefinition<T>(
                 key: key, 
                 defaultArg: defaultArg, 
                 help: help, 
@@ -188,7 +191,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region mutually exclusive set
-        public void MutaullyExclusiveSet(params string[] optionKeys)
+        public void MutuallyExclusiveSet(params string[] optionKeys)
         {
             if (optionKeys is null)
                 throw new ArgumentNullException(nameof(optionKeys));
@@ -262,7 +265,7 @@ namespace HatTrick.CommandLine
         #region validate
         internal virtual void Validate()
         {
-            if (_name is null || _name == string.Empty)
+            if (_name == string.Empty)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Name)}.");
 
             if (_name[0] == '-')
@@ -278,12 +281,15 @@ namespace HatTrick.CommandLine
             for (int i = 1; i < _name.Length; i++)
             {
                 char c = _name[i];
-                if (!CommandDefinition.IsValidCommandDefinitionChar(c))
+                if (!CommandDefinition.IsValidCommandNameChar(c))
                     throw new CommandDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)} can only contain letters, digits, '-' and '.'");
 
                 if (c == '.')
                     depth += 1;
             }
+
+            if (_name[^1] == '.')
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} '{nameof(Name)}' cannot end with '.'");
 
             _depth = depth;
 

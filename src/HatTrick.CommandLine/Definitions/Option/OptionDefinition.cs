@@ -67,9 +67,9 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region of T
-        private CommandOptionDefinition<T> Of<T>()
+        private OptionDefinition<T> Of<T>()
         {
-            if (this is CommandOptionDefinition<T> cmdOpDefT)
+            if (this is OptionDefinition<T> cmdOpDefT)
             {
                 return cmdOpDefT;
             }
@@ -207,7 +207,7 @@ namespace HatTrick.CommandLine
     #endregion
 
     #region option definition of T
-    public class CommandOptionDefinition<T> : OptionDefinition
+    public class OptionDefinition<T> : OptionDefinition
     {
         #region internals
         private Type _genericType;
@@ -219,7 +219,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal CommandOptionDefinition(string key, string help, Func<string, T> converter, params string[] flags) 
+        internal OptionDefinition(string key, string help, Func<string, T> converter, params string[] flags) 
                                   : base(key: key, help: help, flags: flags)
         {
             _converter = converter ?? throw new ArgumentNullException(nameof(converter));
@@ -230,7 +230,7 @@ namespace HatTrick.CommandLine
                 this.Constraints.Add(new MustAssignConstraint<T>(this.Flags));
         }
 
-        internal CommandOptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, params string[] flags) 
+        internal OptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, params string[] flags) 
                                   : base(key: key, help: help, flags: flags)
         {
             _converter = converter ?? throw new ArgumentNullException(nameof(converter));

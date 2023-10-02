@@ -50,7 +50,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region is valid namespace char
-        public bool IsValidNamespaceChar(char c)
+        public static bool IsValidNamespaceChar(char c)
         {
             return char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-';
         }
@@ -78,7 +78,7 @@ namespace HatTrick.CommandLine
             for (int i = 1; i < name.Length - 1; i++)
             {
                 char c = name[i];
-                if (!this.IsValidNamespaceChar(c))
+                if (!NamespaceDefinition.IsValidNamespaceChar(c))
                     throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' can only contain letters, digits, '-' and '.'");
 
                 if (c == '.')

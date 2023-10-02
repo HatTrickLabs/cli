@@ -11,7 +11,7 @@ namespace HatTrick.CommandLine
             base.Hide();
             base.Handler = this.DefaultCommandHandler;
 
-            var helpOp = new CommandOptionDefinition<string>(
+            var helpOp = new OptionDefinition<string>(
                 key: "help",
                 defaultArg: null,
                 help: "Display help (accepts a command or namespace as argument).",
@@ -20,7 +20,7 @@ namespace HatTrick.CommandLine
             );
             base.Options.Add(helpOp);
 
-            var verOp = new CommandOptionDefinition<bool>(
+            var verOp = new OptionDefinition<bool>(
                 key: "version", 
                 defaultArg: false, 
                 help: "Displays version information.", 
@@ -28,7 +28,7 @@ namespace HatTrick.CommandLine
                 "-v", "--version");
             base.Options.Add(verOp);
 
-            var runOp = new CommandOptionDefinition<bool>(
+            var runOp = new OptionDefinition<bool>(
                 key: "run", 
                 defaultArg: false, 
                 help: "Run a non-exiting command loop.", 
@@ -36,7 +36,7 @@ namespace HatTrick.CommandLine
                 "-r", "--run");
             base.Options.Add(runOp);
 
-            base.MutaullyExclusiveSet("help", "version", "run");
+            base.MutuallyExclusiveSet("help", "version", "run");
         }
         #endregion
 
