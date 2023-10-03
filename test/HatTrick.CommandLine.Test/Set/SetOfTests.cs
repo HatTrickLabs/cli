@@ -69,11 +69,8 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Constructor_MinimumCapacity_RollsToMultipleOf2()
+        public void Constructor_MinimumCapacity_RollsToPowerOf2()
         {
-            //allowed capacities: 0,4,8,16,32,64,128,256,512,1024,2048,4096,8192,
-            //................... 16384,32768,65536,131072,262144,524288,1048576
-
             int min = 10; //should roll actual capcity to 16
             int actual = 16;
             var set = new SetOf<string>(min);
@@ -92,7 +89,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Constructor_Items_CapacityShouldBeFactorOf2()
+        public void Constructor_Items_MinCapacityShouldBePowerOf2()
         {
             var items = new string[] { "uno", "dos", "tres" };
 

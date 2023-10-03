@@ -342,8 +342,7 @@ namespace HatTrick.CommandLine
                 if (op is null)
                 {
                     //empty, just need an empty shell with correct key
-                    op = opDef.EmptyInstance();
-                    cmd.AddEmptyOption(op as EmptyOption);
+                    cmd.AddEmptyOption(opDef.EmptyInstance());
                 }
                 else
                 {

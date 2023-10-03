@@ -6,13 +6,6 @@ using HatTrick.CommandLine;
 
 namespace HatTrick.CommandLine.TestHarness
 {
-    public class Person
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-    }
-
     internal class Program
     {
         static void Main(string[] args)
@@ -23,21 +16,13 @@ namespace HatTrick.CommandLine.TestHarness
             DefinitionRegistry.GetInstance().ExecuteCommand(cmd);
         }
 
-        static Person[] BuildPeople(int length)
-        {
-            Person[] people = new Person[length];
-            for (int i = 0; i < length; i++)
-            {
-                people[i] = new() { Id = i, FirstName = "xxxxx", LastName = "yyyyyy" };
-            }
-            return people;
-        }
-
         static void RegisterCommands()
         {
             CommandDefinition cmd = new("guid");
             cmd.Help = "Generates new globaly unique identifiers.";
             cmd.Handler = (c) => { Console.WriteLine(Guid.NewGuid().ToString()); };
+            cmd.AddOption<string>(key: "format", help: "Output format.", (terse: "-f", verbose: "--format"));
+            cmd["format"].ApplyConstraint<string>((arg) => false, "constraint name", "Constraint description.");
             DefinitionRegistry.GetInstance().Add(cmd);
         }
     }

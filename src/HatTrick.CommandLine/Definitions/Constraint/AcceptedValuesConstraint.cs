@@ -24,7 +24,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region is in accepted set
-        private bool IsInAcceptedSet(T val)
+        internal bool IsInAcceptedSet(T val)
         {
             EqualityComparer<T> comparer = EqualityComparer<T>.Default;
             T[] set = _accepted;

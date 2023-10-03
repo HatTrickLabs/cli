@@ -12,8 +12,4 @@
     <ProjectReference Include="..\HatTrick.CommandLine\HatTrick.CommandLine.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Tests\" />
-  </ItemGroup>
-
 </Project>

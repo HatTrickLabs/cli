@@ -18,14 +18,20 @@ namespace HatTrick.CommandLine
         #region constructors
         public ArgumentConstraint(string name, string description)
         {
-            _name = name ?? throw new ArgumentNullException(nameof(name));
-            _description = description ?? throw new ArgumentNullException(nameof(description));
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
+            if (description is null)
+                throw new ArgumentNullException(nameof(description));
 
             if (name == string.Empty)
                 throw new ArgumentException("Argument must contain a value.", nameof(name));
 
             if (description == string.Empty)
                 throw new ArgumentException("Argument must contain a value.", nameof(description));
+
+            _name = name;
+            _description = description;
         }
 
         public ArgumentConstraint(string name)

@@ -83,7 +83,7 @@ namespace HatTrick.CommandLine
         #region validate
         internal override void Validate()
         {
-            //base.Validate();
+            base.Validate();
         }
         #endregion
     }

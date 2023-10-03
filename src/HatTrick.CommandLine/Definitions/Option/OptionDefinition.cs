@@ -40,7 +40,7 @@ namespace HatTrick.CommandLine
         public SetOf<ArgumentConstraint> Constraints
         {
             get => _constraints;
-            set => _constraints = value;
+            protected set => _constraints = value;
         }
 
         public bool HasConstraints => _constraints.Length > 0;
@@ -60,7 +60,7 @@ namespace HatTrick.CommandLine
         protected OptionDefinition(string key, string help, params string[] flags)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));
-            _help = help;
+            _help = help ?? throw new ArgumentNullException(nameof(help));
             _flags = flags ?? throw new ArgumentNullException(nameof(flags));
             _constraints = new SetOf<ArgumentConstraint>();
         }
@@ -116,11 +116,11 @@ namespace HatTrick.CommandLine
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));
 
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
-
-            if (description == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(description));
 
             try
             {
@@ -175,9 +175,17 @@ namespace HatTrick.CommandLine
             if (_key.Length > OptionDefinition.MaxKeyLength)
                 throw new CommandDefinitionException($"{nameof(OptionDefinition)}.{nameof(Key)}...max accepted char length is {OptionDefinition.MaxKeyLength}.");
 
+            if (_help == string.Empty)
+                throw new CommandDefinitionException($"Options[{_key}] must contain valid help...Provided value is empty.");
+
             if (_flags is null || _flags.Length == 0)
                 throw new CommandDefinitionException($"Options[{_key}] must contain at least 1 {nameof(OptionDefinition.Flags)}.");
 
+            this.ValidateFlags();
+        }
+
+        private void ValidateFlags()
+        {
             foreach (string flag in _flags)
             {
                 //TODO: may rethink this...quick prototypes may not want to provide more than 1 flag per op.
@@ -219,10 +227,13 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal OptionDefinition(string key, string help, Func<string, T> converter, params string[] flags) 
+        internal OptionDefinition(string key, string help, Func<string, T> converter, params string[] flags)
                                   : base(key: key, help: help, flags: flags)
         {
-            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+            if (converter is null)
+                throw new ArgumentNullException(nameof(converter));
+
+            _converter = converter;
 
             if (typeof(T) == typeof(bool))//bool should never require assignment...should simply default to false
                 base.Constraints.Add(new DefaultConstraint<bool>(key, base.MostVerboseFlag, false));
@@ -230,10 +241,13 @@ namespace HatTrick.CommandLine
                 this.Constraints.Add(new MustAssignConstraint<T>(this.Flags));
         }
 
-        internal OptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, params string[] flags) 
+        internal OptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, params string[] flags)
                                   : base(key: key, help: help, flags: flags)
         {
-            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+            if (converter is null)
+                throw new ArgumentNullException(nameof(converter));
+
+            _converter = converter;
 
             base.Constraints.Add(new DefaultConstraint<T>(key, base.MostVerboseFlag, defaultArg));
         }
@@ -242,8 +256,8 @@ namespace HatTrick.CommandLine
         #region get generic type
         private Type GetGenericType()
         {
-            var type = _genericType is null 
-                ? _genericType = this.GetType().GetGenericArguments()[0] 
+            var type = _genericType is null
+                ? _genericType = this.GetType().GetGenericArguments()[0]
                 : _genericType;
 
             return type;
@@ -291,11 +305,11 @@ namespace HatTrick.CommandLine
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));
 
+            if (name is null)
+                throw new ArgumentException(nameof(name));
+
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
-
-            if (description == string.Empty)
-                throw new ArgumentException("Argument must contain a value.", nameof(description));
 
             base.Constraints.Add(new ArgumentConstraint<T>(constraint, name, description));
         }

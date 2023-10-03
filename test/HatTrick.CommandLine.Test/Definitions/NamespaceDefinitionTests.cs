@@ -4,7 +4,7 @@ namespace HatTrick.CommandLine.Test
 {
     public class NamespaceDefinitionTests
     {
-        #region constructor tests
+        #region constructor
         [Fact]
         public void Constructor_WhenNameArgumentIsNull_ShouldThrow_ArgumentNullException()
         {
@@ -66,7 +66,7 @@ namespace HatTrick.CommandLine.Test
         }
         #endregion
 
-        #region validate tests
+        #region validate
         [Fact]
         public void Validate_WhenNameIsEmpty_ShouldThrow_NamespaceDefinitionException()
         {

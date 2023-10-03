@@ -92,13 +92,15 @@ namespace HatTrick.CommandLine
             for (int i = 1; i < ofNamespace.Length - 1; i++)
                 if (ofNamespace[i] == '.') { depth += 1; }
 
-            var children = base.FindAll((cmd) =>
-                      cmd.Hidden == includeHidden &&
-                      cmd.Depth > depth && //must check for > because commands can have segment gaps...
-                      cmd.Name.StartsWith(ofNamespace)
-            );
+            var descendents = base.FindAll((cmd) =>
+            {
+                bool isDescendent = cmd.Depth > depth && cmd.Name.StartsWith(ofNamespace);
+                return includeHidden
+                    ? isDescendent
+                    : (isDescendent && !cmd.Hidden);
+            });
 
-            return children;
+            return descendents;
         }
         #endregion
     }
