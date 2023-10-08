@@ -164,6 +164,13 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
+        #region get options
+        public OptionDefinition[] GetOptions(bool includeHidden = false)
+        {
+            return includeHidden ? _options.ToArray() : _options.FindAll(o => !o.Hidden);
+        }
+        #endregion
+
         #region must assign one of
         public void MustAssignOneOf(params string[] optionKeys)
         {

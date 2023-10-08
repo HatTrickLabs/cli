@@ -71,6 +71,7 @@ x harden command parser...handle garbage input eloquently
 - Rework op constraint ... name and description work well for help, but not for the exception thrown.
 x Make Parser work like Tokenizer...static shell with private instance based internals.
 - Add unit tests to SetOf<T> for getting enumerators (specifically if the SetOf<T> is empty with null internal array).
+- CommandRegistry.RegisterCommands(Action).Then(
 
 
 

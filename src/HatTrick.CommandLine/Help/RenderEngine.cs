@@ -127,6 +127,7 @@ namespace HatTrick.CommandLine
             var ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
+            ngin.LambdaRepo.Register(nameof(target.GetOptions), target.GetOptions);
             ngin.LambdaRepo.Register(nameof(GetOpDefHelp), GetOpDefHelp);
 
             string output = ngin.Merge(target);
@@ -307,7 +308,7 @@ namespace HatTrick.CommandLine
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
-            ngin.LambdaRepo.Register("GetOps", () => target.Options.FindAll(o => !o.Hidden));
+            ngin.LambdaRepo.Register(nameof(CommandDefinition.GetOptions), target.GetOptions);
             ngin.LambdaRepo.Register("GetFriendlyTypeName", (Type t) => OptionTypeMap.GetAliasOrName(t));
             ngin.LambdaRepo.Register(nameof(GetOpDefHelp), GetOpDefHelp);
             ngin.LambdaRepo.Register(nameof(GetOpDefArgConstraintHelp), GetOpDefArgConstraintHelp);

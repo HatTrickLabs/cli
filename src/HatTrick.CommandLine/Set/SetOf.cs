@@ -279,7 +279,7 @@ namespace HatTrick.CommandLine
                 return _empty;
 
             int length = _length;
-            //TODO: benchmark...assumption
+            //TODO: benchmark this assumption
             if (length == 1)
                 return new T[] { _items[0] };
 

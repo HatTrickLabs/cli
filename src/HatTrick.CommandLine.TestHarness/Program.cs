@@ -10,20 +10,39 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
-            RegisterCommands();
+            var registry = DefinitionRegistry.GetInstance();
+
+            RegisterCommands(registry);
 
             Command cmd = Parser.Parse(args);
-            DefinitionRegistry.GetInstance().ExecuteCommand(cmd);
+            registry.ExecuteCommand(cmd);
         }
 
-        static void RegisterCommands()
+        static void RegisterCommands(DefinitionRegistry registry)
         {
-            CommandDefinition cmd = new("guid");
-            cmd.Help = "Generates new globaly unique identifiers.";
-            cmd.Handler = (c) => { Console.WriteLine(Guid.NewGuid().ToString()); };
-            cmd.AddOption<string>(key: "format", help: "Output format.", (terse: "-f", verbose: "--format"));
-            cmd["format"].ApplyConstraint<string>((arg) => false, "constraint name", "Constraint description.");
-            DefinitionRegistry.GetInstance().Add(cmd);
+            registry.Add(new NamespaceDefinition("htl", "HatTrick Labs"));
+
+            var cmdDef = new CommandDefinition(name: "htl.guid");
+
+            //cmdDef.Handler = (cmd) => GenerateGuids(cmd["count"].Value, cmd["format"].Value);
+
+            cmdDef.Handler = Mapper.MapCommand(cmdDef).ToSignature<Action<int, string>>().Then(GenerateGuids);
+
+            cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", ("-f", "--format"));
+            cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
+
+            cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", ("-c", "--count"));
+            cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "arg must be within range 1..100.");
+
+            registry.Add(cmdDef);
+        }
+
+        static void GenerateGuids(int count, string format)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine(Guid.NewGuid().ToString(format));
+            }
         }
     }
 }
