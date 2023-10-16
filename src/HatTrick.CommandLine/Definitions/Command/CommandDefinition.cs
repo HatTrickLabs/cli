@@ -138,7 +138,7 @@ namespace HatTrick.CommandLine
                 key: key,
                 help: help,
                 converter: converter,
-                flags.terse, flags.verbose
+                (flags.terse, flags.verbose)
             );
             this.Options.Add(op);
         }
@@ -150,7 +150,7 @@ namespace HatTrick.CommandLine
                 defaultArg: defaultArg, 
                 help: help, 
                 converter: converter, 
-                flags.terse, flags.verbose
+                (flags.terse, flags.verbose)
             );
             this.Options.Add(op);
         }
@@ -188,7 +188,7 @@ namespace HatTrick.CommandLine
                 if (opDef.MustAssign)
                     throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(OptionDefinition.MustAssign)}'...'{MustAssignOneOfConstraint.ConstraintName}' constraint cannot be applied.");
 
-                opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
+                opDefKeys[i] = (optionKeys[i], opDef.Flags.verbose);
             }
 
             var constraint = new MustAssignOneOfConstraint(opDefKeys);
@@ -214,7 +214,7 @@ namespace HatTrick.CommandLine
                 if (opDef.MustAssign)
                     throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(OptionDefinition.MustAssign)}'...'{MutuallyExclusiveSetConstraint.ConstraintName}' constraint cannot be applied.");
 
-                opDefKeys[i] = (optionKeys[i], opDef.MostVerboseFlag);
+                opDefKeys[i] = (optionKeys[i], opDef.Flags.verbose);
             }
 
             var constraint = new MutuallyExclusiveSetConstraint(opDefKeys);
@@ -344,7 +344,7 @@ namespace HatTrick.CommandLine
             for (int i = 0; i < this.Options.Length; i++)
             {
                 var opDef = this.Options[i];
-                var op = cmd.GetOptionByFlag(opDef.Flags);
+                var op = cmd.GetOptionByFlag(opDef.Flags.verbose, opDef.Flags.terse);
 
                 if (op is null)
                 {
@@ -383,7 +383,7 @@ namespace HatTrick.CommandLine
                 if (op is EmptyOption)
                     continue;
 
-                if (!this.Options.Exists(o => o.Flags.Contains(op.Flag)))
+                if (!this.Options.Exists(o => o.Flags.terse == op.Flag || o.Flags.verbose == op.Flag))
                     feedback.Add($"Undefined option at position: {i + 1} ... option: {op.Flag}");
             }
         }
@@ -396,7 +396,7 @@ namespace HatTrick.CommandLine
             for (int i = 0; i < this.Options.Length; i++)
             {
                 var opDef = this.Options[i];
-                var opUno = cmd.GetOptionByFlag(opDef.Flags);
+                var opUno = cmd.GetOptionByFlag(opDef.Flags.verbose, opDef.Flags.terse);
                 for (int j = 0; j < cmd.Options.Length; j++)
                 {
                     var opDos = cmd.Options[j];
@@ -404,7 +404,7 @@ namespace HatTrick.CommandLine
                     if (opDos == opUno)
                         continue;
 
-                    if (opDef.Flags.Contains(opDos.Flag))
+                    if (opDef.Flags.verbose == opDos.Flag || opDef.Flags.terse == opDos.Flag)
                         feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opUno.Flag}' and '{opDos.Flag}'");
                 }
             }

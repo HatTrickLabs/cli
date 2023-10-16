@@ -16,6 +16,8 @@ namespace HatTrick.CommandLine.TestHarness
 
             Command cmd = Parser.Parse(args);
             registry.ExecuteCommand(cmd);
+
+            Console.ReadLine();
         }
 
         static void RegisterCommands(DefinitionRegistry registry)
@@ -31,7 +33,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", ("-f", "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
 
-            cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", ("-c", "--count"));
+            cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (null, "--count"));
             cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "arg must be within range 1..100.");
 
             registry.Add(cmdDef);

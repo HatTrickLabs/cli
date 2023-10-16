@@ -9,7 +9,7 @@ namespace HatTrick.CommandLine.Test
         public void Constructor_WhenKeyArgument_IsNull_ShouldThrow_ArgumentNullException()
         {
             OptionDefinition? opDef = null;
-            Action action = () => opDef = new OptionDefinition<string>(key: null, help: "help", converter: (arg) => arg, "-x");
+            Action action = () => opDef = new OptionDefinition<string>(key: null, help: "help", converter: (arg) => arg, ("-x", "--xx"));
             Assert.Throws<ArgumentNullException>(action);
         }
 
@@ -17,7 +17,7 @@ namespace HatTrick.CommandLine.Test
         public void Constructor_WhenHelpArgument_IsNull_ShouldThrow_ArgumentNullException()
         {
             OptionDefinition? opDef = null;
-            Action action = () => opDef = new OptionDefinition<string>(key: "key", help: null, converter: (arg) => arg, "-x");
+            Action action = () => opDef = new OptionDefinition<string>(key: "key", help: null, converter: (arg) => arg, ("-x", "--xx"));
             Assert.Throws<ArgumentNullException>(action);
         }
 
@@ -25,15 +25,15 @@ namespace HatTrick.CommandLine.Test
         public void Constructor_WhenConverterArgument_IsNull_ShouldThrow_ArgumentNullException()
         {
             OptionDefinition? opDef = null;
-            Action action = () => opDef = new OptionDefinition<string>(key: "key", help: "help", converter: null, "-x");
+            Action action = () => opDef = new OptionDefinition<string>(key: "key", help: "help", converter: null, ("-x", "--xx"));
             Assert.Throws<ArgumentNullException>(action);
         }
 
         [Fact]
-        public void Constructor_WhenFlagsArgument_IsNull_ShouldThrow_ArgumentNullException()
+        public void Constructor_WhenFlagsArgument_IsDefault_ShouldThrow_ArgumentNullException()
         {
             OptionDefinition? opDef = null;
-            Action action = () => opDef = new OptionDefinition<string>(key: "key", help: "help", converter: (arg) => arg, null);
+            Action action = () => opDef = new OptionDefinition<string>(key: "key", help: "help", converter: (arg) => arg, default);
             Assert.Throws<ArgumentNullException>(action);
         }
 
@@ -44,7 +44,8 @@ namespace HatTrick.CommandLine.Test
                 key: "key", 
                 help: "help", 
                 converter: (arg) => bool.Parse(arg), 
-                "-x", "--xxx");
+                ("-x", "--xxx")
+            );
 
             Assert.True(opDef.HasConstraints);
             Assert.False(opDef.MustAssign);
@@ -60,7 +61,8 @@ namespace HatTrick.CommandLine.Test
                 key: "key",
                 help: "help",
                 converter: (arg) => int.Parse(arg),
-                "-x", "--xxx");
+                ("-x", "--xxx")
+            );
 
             Assert.True(opDef.HasConstraints);
             Assert.False(opDef.HasDefault);
@@ -76,7 +78,8 @@ namespace HatTrick.CommandLine.Test
                 defaultArg: 128,
                 help: "help",
                 converter: (arg) => int.Parse(arg),
-                "-x", "--xxx");
+                ("-x", "--xxx")
+            );
 
             Assert.True(opDef.HasConstraints);
             Assert.True(opDef.HasDefault);
@@ -90,7 +93,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Hide_ShouldMarkDefinition_Hidden()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), "-x");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xx"));
             Assert.False(opDef.Hidden);
             opDef.Hide();
             Assert.True(opDef.Hidden);
@@ -101,7 +104,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void AcceptedValuesOfT_WhenT_IsCompatibleWith_TOfOption_ShouldHave_AcceptedValuesConstraint_ContainingProvidedAcceptedValues()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), "--xxx");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xx"));
             opDef.AcceptedValues(128, 256, 512);
 
             Assert.True(opDef.HasConstraints);
@@ -115,7 +118,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void AcceptedValuesOfT_WhenT_IsNotCompatibleWith_TOfOption_ShouldThrow_CommandDefinitionException()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), "--xxx");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xxx"));
             //attempt to add string values to op def of int
             Action action = () => opDef.AcceptedValues("128", "256", "512");
             Assert.Throws<CommandDefinitionException>(action);
@@ -126,7 +129,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void ApplyConstraint_WhenConstraintArgument_IsNull_ShouldThrow_ArgumentNullException()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), "-x");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
             //get the abstract implementation
             OptionDefinition op = opDef as OptionDefinition;
             Action action = () => op.ApplyConstraint<int>(null, "name", "description");
@@ -136,7 +139,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void ApplyConstraint_WhenNameArgument_IsNull_ShouldThrow_ArgumentNullException()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), "-x");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
             //get the abstract implementation
             OptionDefinition op = opDef as OptionDefinition;
             Action action = () => op.ApplyConstraint<int>((x) => true, null, "description");
@@ -146,7 +149,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void ApplyConstraint_WhenDescriptionArgument_IsNull_ShouldThrow_ArgumentNullException()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), "-x");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
             //get the abstract implementation
             OptionDefinition op = opDef as OptionDefinition;
             Action action = () => op.ApplyConstraint<int>((x) => true, "name", null);
@@ -156,7 +159,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void ApplyConstraint_WhenT_IsNotCompatibleWith_TofOption_ShouldThrow_CommandDefinitionException()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), "-x");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
             //get the abstract implementation
             OptionDefinition op = opDef as OptionDefinition;
             Action action = () => op.ApplyConstraint<DateTime>((x) => true, "name", "description");
@@ -166,9 +169,9 @@ namespace HatTrick.CommandLine.Test
 
         #region empty instance
         [Fact]
-        public void EmptyInstance_()
+        public void EmptyInstance_MapsCorrectly()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), "-k", "--key");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-k", "--key"));
             EmptyOption empty = opDef.EmptyInstance();
             Assert.Equal("key", empty.Key);
             Assert.Equal("--key", empty.Flag);
@@ -179,7 +182,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Validate_WhenKeyIsEmpty_ShouldThrow_CommandDefinitionException()
         {
-            var opDef = new OptionDefinition<int>(key: string.Empty, help: "help", converter: (arg) => int.Parse(arg), "-x", "--x");
+            var opDef = new OptionDefinition<int>(key: string.Empty, help: "help", converter: (arg) => int.Parse(arg), ("-x", "--x"));
             Action action = () => opDef.Validate();
             Assert.Throws<CommandDefinitionException>(action);
         }
@@ -191,7 +194,8 @@ namespace HatTrick.CommandLine.Test
                 key: new string('x', OptionDefinition.MaxKeyLength + 1), 
                 help: "help", 
                 converter: (arg) => int.Parse(arg), 
-                "-x", "--x");
+                ("-x", "--x")
+            );
 
             Action action = () => opDef.Validate();
             Assert.Contains("max accepted char length is", Assert.Throws<CommandDefinitionException>(action).Message);
@@ -200,54 +204,29 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Validate_WhenHelpIsEmpty_ShouldThrow_CommandDefinitionException()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: string.Empty, converter: (arg) => int.Parse(arg), "-x", "--x");
+            var opDef = new OptionDefinition<int>(key: "key", help: string.Empty, converter: (arg) => int.Parse(arg), ("-x", "--x"));
             Action action = () => opDef.Validate();
             Assert.Throws<CommandDefinitionException>(action);
         }
 
         [Fact]
-        public void Validate_WhenFlagsIsEmpty_ShouldThrow_CommandDefinitionException()
+        public void Validate_WhenVerboseFlagsLength_LessThan4_ShouldThrow_CommandDefinitionException()
         {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), new string[] { }) ;
-            Action action = () => opDef.Validate();
-            Assert.Throws<CommandDefinitionException>(action);
-        }
-
-        [Fact]
-        public void Validate_WhenFlagsIsNullOrWhitespace_ShouldThrow_CommandDefinitionException()
-        {
-            var opDef = new OptionDefinition<int>(
-                key: "key", 
-                help: "help", 
-                converter: (arg) => int.Parse(arg), 
-                "-x", "--xxx", string.Empty);
-            Action action = () => opDef.Validate();
-            Assert.Contains("contains a flag that is null or empty", Assert.Throws<CommandDefinitionException>(action).Message);
-        }
-
-        [Fact]
-        public void Validate_WhenFlagsDoesNotStartWithDash_ShouldThrow_CommandDefinitionException()
-        {
-            var opDef = new OptionDefinition<int>(
-                key: "key", 
-                help: "help", 
-                converter: (arg) => int.Parse(arg), 
-                "-x", "--xxx", "xyz");
-            Action action = () => opDef.Validate();
-            Assert.Contains("Option flags must begin with a '-'", Assert.Throws<CommandDefinitionException>(action).Message);
-        }
-
-        [Fact]
-        public void Validate_WhenVerboseFlagLengthLessThan4_ShouldThrow_CommandDefinitionException()
-        {
-            var opDef = new OptionDefinition<int>(
-                key: "key",
-                help: "help",
-                converter: (arg) => int.Parse(arg),
-                "-x", "--xxx", "--x");
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), (terse: "-x", verbose: "--x")) ;
             Action action = () => opDef.Validate();
             Assert.Contains(
-                "Verbose option flags begin with '--' and must be longer than 1 additional char", 
+                "verbose flag must contain 2 dashes and at least 2 additional chars.",
+                Assert.Throws<CommandDefinitionException>(action).Message
+            );
+        }
+
+        [Fact]
+        public void Validate_WhenVerboseFlags_DoesNotStartWith_2Dashes_ShouldThrow_CommandDefinitionException()
+        {
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), (terse: "-x", verbose: "-xxxx"));
+            Action action = () => opDef.Validate();
+            Assert.Contains(
+                "verbose flags must start with 2 dashes.",
                 Assert.Throws<CommandDefinitionException>(action).Message
             );
         }
@@ -259,27 +238,172 @@ namespace HatTrick.CommandLine.Test
                 key: "key",
                 help: "help",
                 converter: (arg) => int.Parse(arg),
-                "-x", "--xxx", ("--" + new string('x', OptionDefinition.MaxFlagLength)));
+                ("-x", "--" + new string('x', OptionDefinition.MaxFlagLength))
+            );
             Action action = () => opDef.Validate();
             Assert.Contains(
-                "Verbose option flags cannot be >",
+                "is greater than max allowed",
                 Assert.Throws<CommandDefinitionException>(action).Message
             );
         }
 
         [Fact]
-        public void Validate_WhenTerseFlagLengthGreaterThan2_ShouldThrow_CommandDefinitionException()
+        public void Validate_WhenVerboseFlag_ContainsAChar_NotLetterOrDigit_ShouldThrow_CommandDefinitionException()
         {
             var opDef = new OptionDefinition<int>(
                 key: "key",
                 help: "help",
                 converter: (arg) => int.Parse(arg),
-                "-xy", "--xxx");
+                ("-x}", "--xxx.x")
+            );
             Action action = () => opDef.Validate();
             Assert.Contains(
-                "Terse option flags begin with '-' and must be exactly 1 other char",
+                "verbose flags can contain letters, digits and dashes.",
                 Assert.Throws<CommandDefinitionException>(action).Message
             );
+        }
+
+        [Fact]
+        public void Validate_WhenTerseFlagLength_LessThan2_ShouldThrow_CommandDefinitionException()
+        {
+            var opDef = new OptionDefinition<int>(
+                key: "key",
+                help: "help",
+                converter: (arg) => int.Parse(arg),
+                ("-", "--xxx")
+            );
+            Action action = () => opDef.Validate();
+            Assert.Contains(
+                "terse flags start with a single dash followed by a single char", 
+                Assert.Throws<CommandDefinitionException>(action).Message
+            );
+        }
+
+        [Fact]
+        public void Validate_WhenTerseFlagLength_GreaterThan2_ShouldThrow_CommandDefinitionException()
+        {
+            var opDef = new OptionDefinition<int>(
+                key: "key",
+                help: "help",
+                converter: (arg) => int.Parse(arg),
+                ("-xx", "--xxx")
+            );
+            Action action = () => opDef.Validate();
+            Assert.Contains(
+                "terse flags start with a single dash followed by a single char", 
+                Assert.Throws<CommandDefinitionException>(action).Message
+            );
+        }
+
+        [Fact]
+        public void Validate_WhenTerseFlagDoesNotStartWithDash_ShouldThrow_CommandDefinitionException()
+        {
+            var opDef = new OptionDefinition<int>(
+                key: "key", 
+                help: "help", 
+                converter: (arg) => int.Parse(arg), 
+                ("+x", "--xxx")
+            );
+            Action action = () => opDef.Validate();
+            Assert.Contains(
+                "terse flags must start with a single dash", 
+                Assert.Throws<CommandDefinitionException>(action).Message
+            );
+        }
+
+        [Fact]
+        public void Validate_WhenTerseFlagDoesNotEndWith_LetterOrDigit_ShouldThrow_CommandDefinitionException()
+        {
+            var opDef = new OptionDefinition<int>(
+                key: "key",
+                help: "help",
+                converter: (arg) => int.Parse(arg),
+                ("-}", "--xxx")
+            );
+            Action action = () => opDef.Validate();
+            Assert.Contains(
+                "terse flags start with a dash followed by a single letter or digit", 
+                Assert.Throws<CommandDefinitionException>(action).Message
+            );
+        }
+        #endregion
+
+        #region get generic type
+        [Fact]
+        public void GenericType_Accessor_ResolvesCorrectGenericType_ForCLRTypes()
+        {
+            var opDefInt32 = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-k", "--key"));
+            var opDefInt64 = new OptionDefinition<long>(key: "key", help: "help", (arg) => long.Parse(arg), ("-k", "--key"));
+            var opDefChar = new OptionDefinition<char>(key: "key", help: "help", (arg) => char.Parse(arg), ("-k", "--key"));
+            var opDefString = new OptionDefinition<string>(key: "key", help: "help", (arg) => arg, ("-k", "--key"));
+            var opDefDateTime = new OptionDefinition<DateTime>(key: "key", help: "help", (arg) => DateTime.Parse(arg), ("-k", "--key"));
+            var opDefGuid = new OptionDefinition<Guid>(key: "key", help: "help", (arg) => Guid.Parse(arg), ("-k", "--key"));
+            var opDefByte = new OptionDefinition<byte>(key: "key", help: "help", (arg) => byte.Parse(arg), ("-k", "--key"));
+            var opDefBoolean = new OptionDefinition<bool>(key: "key", help: "help", (arg) => bool.Parse(arg), ("-k", "--key"));
+            //...that's enouch to prove the point...
+
+            Assert.Equal(typeof(int), opDefInt32.GenericType);
+            Assert.Equal(typeof(long), opDefInt64.GenericType);
+            Assert.Equal(typeof(char), opDefChar.GenericType);
+            Assert.Equal(typeof(string), opDefString.GenericType);
+            Assert.Equal(typeof(DateTime), opDefDateTime.GenericType);
+            Assert.Equal(typeof(Guid), opDefGuid.GenericType);
+            Assert.Equal(typeof(byte), opDefByte.GenericType);
+            Assert.Equal(typeof(bool), opDefBoolean.GenericType);
+        }
+
+        [Fact]
+        public void GenericType_Accessor_ResolvesCorrectGenericType_ForNullableCLRTypes()
+        {
+            var opDefInt32 = new OptionDefinition<int?>(key: "key", help: "help", (arg) => arg is not null ? int.Parse(arg) : null, ("-k", "--key"));
+            var opDefInt64 = new OptionDefinition<long?>(key: "key", help: "help", (arg) => arg is not null ? long.Parse(arg) : null, ("-k", "--key"));
+            var opDefChar = new OptionDefinition<char?>(key: "key", help: "help", (arg) => arg is not null ? char.Parse(arg) : null, ("-k", "--key"));
+            var opDefDateTime = new OptionDefinition<DateTime?>(key: "key", help: "help", (arg) => arg is not null ? DateTime.Parse(arg) : null, ("-k", "--key"));
+            var opDefGuid = new OptionDefinition<Guid?>(key: "key", help: "help", (arg) => arg is not null ? Guid.Parse(arg) : null, ("-k", "--key"));
+            var opDefByte = new OptionDefinition<byte?>(key: "key", help: "help", (arg) => arg is not null ? byte.Parse(arg) : null, ("-k", "--key"));
+            var opDefBoolean = new OptionDefinition<bool?>(key: "key", help: "help", (arg) => arg is not null ? bool.Parse(arg) : null, ("-k", "--key"));
+            //...that's enouch to prove the point...
+
+            Assert.Equal(typeof(int?), opDefInt32.GenericType);
+            Assert.Equal(typeof(long?), opDefInt64.GenericType);
+            Assert.Equal(typeof(char?), opDefChar.GenericType);
+            Assert.Equal(typeof(DateTime?), opDefDateTime.GenericType);
+            Assert.Equal(typeof(Guid?), opDefGuid.GenericType);
+            Assert.Equal(typeof(byte?), opDefByte.GenericType);
+            Assert.Equal(typeof(bool?), opDefBoolean.GenericType);
+        }
+
+        [Fact]
+        public void GenericType_Accessor_ResolvesCorrectGenericType_ForNonCLRReferenceTypes()
+        {
+            var opDefFileInfo = new OptionDefinition<FileInfo>(key: "file", help: "help", (arg) => new FileInfo(arg), ("-f", "--file-name"));
+            var opDefUri = new OptionDefinition<Uri>(key: "file", help: "help", (arg) => new Uri(arg), ("-u", "--uri"));
+            //...that's enouch to prove the point...
+
+            Assert.Equal(typeof(FileInfo), opDefFileInfo.GenericType);
+            Assert.Equal(typeof(Uri), opDefUri.GenericType);
+        }
+
+        [Fact]
+        public void GenericType_Accessor_ResolvesCorrectGenericType_ForEnumerationTypes()
+        {
+            var opDefFileMode = new OptionDefinition<FileMode>(key: "file", help: "help", (arg) => Enum.Parse<FileMode>(arg, true), ("-f", "--file-name"));
+            var opDefFileAccess = new OptionDefinition<FileAccess>(key: "file", help: "help", (arg) => Enum.Parse<FileAccess>(arg, true), ("-u", "--uri"));
+            //...that's enouch to prove the point...
+
+            Assert.Equal(typeof(FileMode), opDefFileMode.GenericType);
+            Assert.Equal(typeof(FileAccess), opDefFileAccess.GenericType);
+        }
+
+        [Fact]
+        public void GenericType_Accessor_ResolvesCorrectGenericType_ForNullableEnumerationTypes()
+        {
+            var opDefFileMode = new OptionDefinition<FileMode?>(key: "file", help: "help", (arg) => arg is not null ? Enum.Parse<FileMode>(arg, true) : null, ("-f", "--file-name"));
+            var opDefFileAccess = new OptionDefinition<FileAccess?>(key: "file", help: "help", (arg) => arg is not null ? Enum.Parse<FileAccess>(arg, true) : null, ("-u", "--uri"));
+            //...that's enouch to prove the point...
+
+            Assert.Equal(typeof(FileMode?), opDefFileMode.GenericType);
+            Assert.Equal(typeof(FileAccess?), opDefFileAccess.GenericType);
         }
         #endregion
     }

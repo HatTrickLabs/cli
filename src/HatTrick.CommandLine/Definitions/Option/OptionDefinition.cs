@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Threading;
 
@@ -14,7 +15,7 @@ namespace HatTrick.CommandLine
         private readonly string _key;
         private readonly string _help;
         private bool _hidden;
-        private readonly string[] _flags;
+        private readonly (string terse, string verbose) _flags;
         private SetOf<ArgumentConstraint> _constraints;
         #endregion
 
@@ -31,11 +32,11 @@ namespace HatTrick.CommandLine
 
         public bool Hidden => _hidden;
 
-        public string[] Flags => _flags;
+        public (string terse, string verbose) Flags => _flags;
 
-        public string MostVerboseFlag => _flags.MaxBy((f) => f.Length);
+        //public string MostVerboseFlag => _flags.MaxBy((f) => f.Length);
 
-        public string LeastVerboseFlag => _flags.MinBy((f) => f.Length);
+        //public string LeastVerboseFlag => _flags.MinBy((f) => f.Length);
 
         public SetOf<ArgumentConstraint> Constraints
         {
@@ -57,11 +58,20 @@ namespace HatTrick.CommandLine
             MaxFlagLength = 32;
         }
 
-        protected OptionDefinition(string key, string help, params string[] flags)
+        protected OptionDefinition(string key, string help, (string terse, string verbose) flags)
         {
-            _key = key ?? throw new ArgumentNullException(nameof(key));
-            _help = help ?? throw new ArgumentNullException(nameof(help));
-            _flags = flags ?? throw new ArgumentNullException(nameof(flags));
+            if (key is null)
+                throw new ArgumentNullException(nameof(key));
+
+            if (help is null)
+                throw new ArgumentNullException(nameof(help));
+
+            if (flags == default)
+                 throw new ArgumentNullException(nameof(flags));
+
+            _key = key;
+            _help = help;
+            _flags = flags;
             _constraints = new SetOf<ArgumentConstraint>();
         }
         #endregion
@@ -161,7 +171,7 @@ namespace HatTrick.CommandLine
         #region empty instance
         internal EmptyOption EmptyInstance()
         {
-            var op = new EmptyOption(_key, this.MostVerboseFlag);
+            var op = new EmptyOption(_key, this.Flags.verbose);
             return op;
         }
         #endregion
@@ -169,6 +179,7 @@ namespace HatTrick.CommandLine
         #region validate
         internal virtual void Validate()
         {
+            //we did null checks in constructor, just check for empty
             if (_key == string.Empty)
                 throw new CommandDefinitionException("All options must have a valid key...Provided key is empty.");
 
@@ -178,37 +189,48 @@ namespace HatTrick.CommandLine
             if (_help == string.Empty)
                 throw new CommandDefinitionException($"Options[{_key}] must contain valid help...Provided value is empty.");
 
-            if (_flags is null || _flags.Length == 0)
+            if (_flags.verbose == string.Empty)
                 throw new CommandDefinitionException($"Options[{_key}] must contain at least 1 {nameof(OptionDefinition.Flags)}.");
 
-            this.ValidateFlags();
+            this.ValidateVerboseFlag();
+            this.ValidateTerseFlag();
         }
 
-        private void ValidateFlags()
+        private void ValidateVerboseFlag()
         {
-            foreach (string flag in _flags)
+            string verbose = _flags.verbose;
+            if (verbose.Length < 4)//must be two dashes and at least 2 additional chars
+                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...verbose flag must contain 2 dashes and at least 2 additional chars.");
+
+            if (!(verbose[0] == '-' && verbose[1] == '-'))
+                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...verbose flags must start with 2 dashes.");
+
+            if (verbose.Length > OptionDefinition.MaxFlagLength)
+                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...flag length '{verbose.Length}' is greater than max allowed '{OptionDefinition.MaxFlagLength}'. ");
+
+            //Not sure we really need to be this strict with verbose flags
+            for (int i = 2; i < verbose.Length; i++)
             {
-                //TODO: may rethink this...quick prototypes may not want to provide more than 1 flag per op.
-                if (string.IsNullOrWhiteSpace(flag))
-                    throw new CommandDefinitionException($"Options[{_key}] contains a flag that is null or empty.");
-
-                if (flag[0] != '-')
-                    throw new CommandDefinitionException($"Option flags must begin with a '-'...'{flag}' is not valid.");
-
-                if (flag[1] == '-') //verbose definition
-                {
-                    if (flag.Length < 4)
-                        throw new CommandDefinitionException($"Verbose option flags begin with '--' and must be longer than 1 additional char...'{flag}' is not valid.");
-
-                    if (flag.Length > OptionDefinition.MaxFlagLength)
-                        throw new CommandDefinitionException($"Verbose option flags cannot be > {OptionDefinition.MaxFlagLength} chars in length.");
-                }
-                else //terse definition
-                {
-                    if (flag.Length > 2)
-                        throw new CommandDefinitionException($"Terse option flags begin with '-' and must be exactly 1 other char...'{flag}' is not valid.");
-                }
+                char c = verbose[i];
+                if (!(char.IsLetter(c) || char.IsDigit(c) || c == '-'))
+                    throw new CommandDefinitionException($"Option '{_key}' contains an invalid flag...char '{c}' at index '{i}'...verbose flags can contain letters, digits and dashes.");
             }
+        }
+
+        private void ValidateTerseFlag()
+        {
+            string terse = _flags.terse;
+            if (terse is null || terse == string.Empty)
+                return;
+
+            if (terse.Length != 2)
+                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags start with a single dash followed by a single char.");
+
+            if (terse[0] != '-')
+                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags must start with a single dash.");
+            
+            if (!(char.IsLetterOrDigit(terse[1])))
+                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags start with a dash followed by a single letter or digit.");
         }
         #endregion
     }
@@ -227,7 +249,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal OptionDefinition(string key, string help, Func<string, T> converter, params string[] flags)
+        internal OptionDefinition(string key, string help, Func<string, T> converter, (string terse, string verbose) flags)
                                   : base(key: key, help: help, flags: flags)
         {
             if (converter is null)
@@ -236,12 +258,12 @@ namespace HatTrick.CommandLine
             _converter = converter;
 
             if (typeof(T) == typeof(bool))//bool should never require assignment...should simply default to false
-                base.Constraints.Add(new DefaultConstraint<bool>(key, base.MostVerboseFlag, false));
+                base.Constraints.Add(new DefaultConstraint<bool>(key, base.Flags.verbose, false));
             else
                 this.Constraints.Add(new MustAssignConstraint<T>(this.Flags));
         }
 
-        internal OptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, params string[] flags)
+        internal OptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, (string terse, string verbose) flags)
                                   : base(key: key, help: help, flags: flags)
         {
             if (converter is null)
@@ -249,7 +271,7 @@ namespace HatTrick.CommandLine
 
             _converter = converter;
 
-            base.Constraints.Add(new DefaultConstraint<T>(key, base.MostVerboseFlag, defaultArg));
+            base.Constraints.Add(new DefaultConstraint<T>(key, base.Flags.verbose, defaultArg));
         }
         #endregion
 

@@ -92,8 +92,8 @@ namespace HatTrick.CommandLine.Test
             Assert.Equal(typeof(string), opDef.GenericType);
             Assert.Equal("key", opDef.Key);
             Assert.Equal("help", opDef.Help);
-            Assert.Equal("-k", opDef.Flags[0]);
-            Assert.Equal("--key", opDef.Flags[1]);
+            Assert.Equal("-k", opDef.Flags.terse);
+            Assert.Equal("--key", opDef.Flags.verbose);
             Assert.True(opDef.HasConstraints);
             Assert.False(opDef.HasDefault);
         }
@@ -109,8 +109,8 @@ namespace HatTrick.CommandLine.Test
             Assert.Equal(typeof(string), opDef.GenericType);
             Assert.Equal("key", opDef.Key);
             Assert.Equal("help", opDef.Help);
-            Assert.Equal("-k", opDef.Flags[0]);
-            Assert.Equal("--key", opDef.Flags[1]);
+            Assert.Equal("-k", opDef.Flags.terse);
+            Assert.Equal("--key", opDef.Flags.verbose);
             Assert.True(opDef.HasConstraints);
             Assert.False(opDef.MustAssign);
             Assert.True(opDef.HasDefault);
@@ -127,8 +127,8 @@ namespace HatTrick.CommandLine.Test
             Assert.Equal(typeof(string), opDef.GenericType);
             Assert.Equal("key", opDef.Key);
             Assert.Equal("help", opDef.Help);
-            Assert.Equal("-k", opDef.Flags[0]);
-            Assert.Equal("--key", opDef.Flags[1]);
+            Assert.Equal("-k", opDef.Flags.terse);
+            Assert.Equal("--key", opDef.Flags.verbose);
             Assert.True(opDef.HasConstraints);
             Assert.True(opDef.MustAssign);
             Assert.False(opDef.HasDefault);
@@ -145,8 +145,8 @@ namespace HatTrick.CommandLine.Test
             Assert.Equal(typeof(string), opDef.GenericType);
             Assert.Equal("key", opDef.Key);
             Assert.Equal("help", opDef.Help);
-            Assert.Equal("-k", opDef.Flags[0]);
-            Assert.Equal("--key", opDef.Flags[1]);
+            Assert.Equal("-k", opDef.Flags.terse);
+            Assert.Equal("--key", opDef.Flags.verbose);
             Assert.True(opDef.HasConstraints);
             Assert.False(opDef.MustAssign);
             Assert.True(opDef.HasDefault);
