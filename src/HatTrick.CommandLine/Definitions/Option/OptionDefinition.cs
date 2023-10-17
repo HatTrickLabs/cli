@@ -123,15 +123,7 @@ namespace HatTrick.CommandLine
         #region apply constraint
         public void ApplyConstraint<T>(Func<T, bool> constraint, string name, string description)
         {
-            if (constraint is null)
-                throw new ArgumentNullException(nameof(constraint));
-
-            if (name is null)
-                throw new ArgumentNullException(nameof(name));
-
-            if (description is null)
-                throw new ArgumentNullException(nameof(description));
-
+            //null checks are done in the concrete type, no sense in doing them twice
             try
             {
                 this.Of<T>().ApplyConstraint(constraint, name, description);
@@ -293,7 +285,7 @@ namespace HatTrick.CommandLine
                 throw new ArgumentNullException(nameof(values));
 
             if (values.Length == 0)
-                throw new ArgumentNullException(nameof(values), "Argument must contain at least one value.");
+                throw new ArgumentException(nameof(values), "Argument must contain at least one value.");
 
             if (base.HasConstraints)
             {
@@ -328,7 +320,7 @@ namespace HatTrick.CommandLine
                 throw new ArgumentNullException(nameof(constraint));
 
             if (name is null)
-                throw new ArgumentException(nameof(name));
+                throw new ArgumentNullException(nameof(name));
 
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
