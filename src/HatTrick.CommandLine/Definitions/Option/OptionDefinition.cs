@@ -136,7 +136,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply converted value to
-        internal abstract void ApplyConvertedValueTo(Option option, out string feedback);
+        internal abstract void ApplyConvertedValueTo(Option option);
         #endregion
 
         #region empty instance
@@ -310,11 +310,10 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply converted value to
-        internal override void ApplyConvertedValueTo(Option option, out string feedback)
+        internal override void ApplyConvertedValueTo(Option option)
         {
             try
             {
-                feedback = null;
                 T val = _converter.Invoke(option.Argument);
                 option.SetValue(val);
             }
@@ -323,8 +322,7 @@ namespace HatTrick.CommandLine
                 var flag = option.Flag;
                 var name = this.GetGenericType().Name;
                 var arg = option.Argument;
-                feedback = $"Option '{flag}' requires argument of type '{name}'...invalid value provided: '{arg}'";
-                //throw new CommandArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: '{arg}'");
+                throw new OptionArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: '{arg}'");
             }
         }
         #endregion

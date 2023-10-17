@@ -23,14 +23,10 @@
         #endregion
 
         #region ensure
-        internal override bool Ensure(ref Option option, out string feedback)
+        internal override void Ensure(ref Option option)
         {
-            feedback = null;
-
             if (option is EmptyOption)
-                feedback = $"An expected option [{_flags.Verbose}|{_flags.Terse}] not found...option has a '{MustAssignConstraint<T>.ConstraintName}' constraint.";
-
-            return feedback is null;
+                throw new OptionArgumentException($"An expected option [{_flags.Verbose}|{_flags.Terse}] not found...option has a '{MustAssignConstraint<T>.ConstraintName}' constraint.");
         }
         #endregion
     }

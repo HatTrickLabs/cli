@@ -31,16 +31,14 @@
         #endregion
 
         #region ensure
-        internal override bool Ensure(ref Option option, out string feedback)
-        {//NOTE: This only works because default constraint is the very FIRST constraint added (constructor of opdef)
-            feedback = null;
+        internal override void Ensure(ref Option option)
+        {   //NOTE: This only works because default constraint is the very FIRST constraint added (constructor of opdef)
             if (option is EmptyOption)
             {
                 //type swap...this is WHY ref param is necessary.
                 option = new DefaultOption(_optionKey, _mostVerboseFlag);
                 option.SetValue(_default);
             }
-            return true;
         }
         #endregion
     }

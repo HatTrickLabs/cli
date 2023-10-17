@@ -48,7 +48,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        internal abstract bool Ensure(ref Option option, out string feedback);
+        internal abstract void Ensure(ref Option option);
         #endregion
     }
 
@@ -81,16 +81,13 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        internal override bool Ensure(ref Option option, out string feedback)
+        internal override void Ensure(ref Option option)
         {
-            feedback = null;
             T val = option.HasValue ? option.GetValue<T>() : default(T);
             bool pass = _constraint(val);
 
             if (!pass)
-                feedback = $"Constraint failed...flag: '{option.Flag}'  argument: '{option.Argument}'  {base.Name}: '{base.Description}'";
-
-            return pass;
+                throw new ArgumentException($"Constraint failed...flag: '{option.Flag}'  argument: '{option.Argument}'  {base.Name}: '{base.Description}'");
         }
         #endregion
     }
