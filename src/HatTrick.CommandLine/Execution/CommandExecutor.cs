@@ -48,7 +48,7 @@ namespace HatTrick.CommandLine
             this.EnsureCommandOptions(command, ref feedback);
 
             if (feedback.Length == 0)
-                this.EnsureConstraints(command, ref feedback);
+                this.EnsureCommandConstraints(command, ref feedback);
 
             if (feedback.Length > 0)
                 throw new CommandInputException(feedback.ToArray());
@@ -138,16 +138,16 @@ namespace HatTrick.CommandLine
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
                 var opDef = cmdDef.Options[i];
-                var opUno = cmd.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
+                var opOne = cmd.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
                 for (int j = 0; j < cmd.Options.Length; j++)
                 {
-                    var opDos = cmd.Options[j];
+                    var opTwo = cmd.Options[j];
 
-                    if (opDos == opUno)
+                    if (opTwo == opOne)
                         continue;
 
-                    if (opDef.Flags.Verbose == opDos.Flag || opDef.Flags.Terse == opDos.Flag)
-                        feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opUno.Flag}' and '{opDos.Flag}'");
+                    if (opDef.Flags.Verbose == opTwo.Flag || opDef.Flags.Terse == opTwo.Flag)
+                        feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opOne.Flag}' and '{opTwo.Flag}'");
                 }
             }
         }
@@ -161,16 +161,26 @@ namespace HatTrick.CommandLine
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
                 OptionDefinition opDef = cmdDef.Options[i];
+                if (!opDef.HasConstraints)
+                    continue;
+
                 ref Option op = ref cmd.GetOptionByRef(opDef.Key);
 
-                //If empty op and a default constraint exists, empty op will be swapped for a default...hence the ref param
-                opDef.EnsureConstraints(ref op, ref feedback);
+                foreach (var c in opDef.Constraints)
+                {
+                    //If EMPTY op and a DEFAUL constraint exists, EMPTY op will be swapped for a DEFAULT op...hence the ref param
+                    if (!c.Ensure(ref op, out string fb))
+                    {
+                        feedback.Add(fb);
+                        break;
+                    }
+                }
             }
         }
         #endregion
 
-        #region ensure constraints
-        internal void EnsureConstraints(Command command, ref SetOf<string> feedback)
+        #region ensure command constraints
+        internal void EnsureCommandConstraints(Command command, ref SetOf<string> feedback)
         {
             SetOf<CommandConstraint> constraints = _cmdDef.Constraints;
             if (constraints is null || constraints.Length == 0)

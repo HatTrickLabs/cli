@@ -139,23 +139,6 @@ namespace HatTrick.CommandLine
         internal abstract void ApplyConvertedValueTo(Option option, out string feedback);
         #endregion
 
-        #region ensure custom constraints
-        internal void EnsureConstraints(ref Option option, ref SetOf<string> feedback)
-        {
-            if (!this.HasConstraints)
-                return;
-
-            foreach (var c in this.Constraints)
-            {
-                if (!c.Ensure(ref option, out string fb))
-                {
-                    feedback.Add(fb);
-                    break;//break on first fail
-                }
-            }
-        }
-        #endregion
-
         #region empty instance
         internal EmptyOption EmptyInstance()
         {
