@@ -10,6 +10,15 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
+            User u = new User() { FirstName = "Charlie", LastName = "Brown" };
+
+
+            Mapper.MapCommand(null).To<User>().Then(UserService.SaveUser);
+            Mapper.MapCommand(null).ToSignature<Action<string, string>>().Then(UserService.SaveUser);
+
+
+
+            return;
             var registry = DefinitionRegistry.GetInstance();
 
             RegisterCommands(registry);
@@ -46,5 +55,22 @@ namespace HatTrick.CommandLine.TestHarness
                 Console.WriteLine(Guid.NewGuid().ToString(format));
             }
         }
+    }
+
+    public class UserService
+    {
+        public static void SaveUser(string firstName, string lastName)
+        {
+        }
+
+        public static void SaveUser(User user)
+        {
+        }
+    }
+
+    public class User
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

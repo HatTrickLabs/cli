@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using NuGet.Frameworks;
+using Xunit;
 
 namespace HatTrick.CommandLine.Test
 {
@@ -100,12 +101,12 @@ namespace HatTrick.CommandLine.Test
         }
         #endregion
 
-        #region accepted values
+        #region accepted values (base)
         [Fact]
         public void AcceptedValuesOfT_WhenT_IsCompatibleWith_TOfOption_ShouldHave_AcceptedValuesConstraint_ContainingProvidedAcceptedValues()
         {
             var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xx"));
-            opDef.AcceptedValues(128, 256, 512);
+            (opDef as OptionDefinition).AcceptedValues(128, 256, 512);
 
             Assert.True(opDef.HasConstraints);
             var accepted = opDef.Constraints.Find(c => c is AcceptedValuesConstraint<int>) as AcceptedValuesConstraint<int>;
@@ -120,8 +121,41 @@ namespace HatTrick.CommandLine.Test
         {
             var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xxx"));
             //attempt to add string values to op def of int
-            Action action = () => opDef.AcceptedValues("128", "256", "512");
-            Assert.Throws<CommandDefinitionException>(action);
+            Action action = () => (opDef as OptionDefinition).AcceptedValues("128", "256", "512");
+            Assert.Contains("Cannot set accepted values", Assert.Throws<CommandDefinitionException>(action).Message);
+        }
+
+        [Fact]
+        public void AcceptedValuesOfT_WhenNullProvided_ShouldThrow_ArgumentNullException()
+        {
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xxx"));
+            Action action = () => opDef.AcceptedValues(null);
+            Assert.Throws<ArgumentNullException>(action);
+        }
+
+        [Fact]
+        public void AcceptedValuesOfT_WhenEmptyArrayProvided_ShouldThrow_ArgumentException()
+        {
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xxx"));
+            Action action = () => opDef.AcceptedValues(new int[0]);
+            Assert.Throws<ArgumentException>(action);
+        }
+
+        [Fact]
+        public void AcceptedValuesOfT_WhenOptionDefintion_AlreadyContains_AcceptedValuesConstraint_ShouldThrow_CommandDefinitionException()
+        {
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xxx"));
+            opDef.AcceptedValues(128, 256, 512);
+            Action action = () => opDef.AcceptedValues(1024, 2048, 4096);
+            Assert.Contains("already contains an", Assert.Throws<CommandDefinitionException>(action).Message);
+        }
+
+        [Fact]
+        public void AcceptedValuesOfT_WhenOptionDefintion_ContainsDefaultConstraint_AndAcceptedValues_DoesNotContainDefault_ShouldThrow_CommandDefinitionException()
+        {
+            var opDef = new OptionDefinition<int>(key: "key", 127, help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xxx"));
+            Action action = () => opDef.AcceptedValues(128, 256, 512);
+            Assert.Contains("which is not defined in the accepted values set", Assert.Throws<CommandDefinitionException>(action).Message);
         }
         #endregion
 
@@ -131,8 +165,7 @@ namespace HatTrick.CommandLine.Test
         {
             var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
             //get the abstract implementation
-            OptionDefinition op = opDef as OptionDefinition;
-            Action action = () => op.ApplyConstraint<int>(null, "name", "description");
+            Action action = () => opDef.ApplyConstraint<int>(null, "name", "description");
             Assert.Throws<ArgumentNullException>(action);
         }
 
@@ -141,8 +174,7 @@ namespace HatTrick.CommandLine.Test
         {
             var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
             //get the abstract implementation
-            OptionDefinition op = opDef as OptionDefinition;
-            Action action = () => op.ApplyConstraint<int>((x) => true, null, "description");
+            Action action = () => opDef.ApplyConstraint<int>((x) => true, null, "description");
             Assert.Throws<ArgumentNullException>(action);
         }
 
@@ -151,8 +183,7 @@ namespace HatTrick.CommandLine.Test
         {
             var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
             //get the abstract implementation
-            OptionDefinition op = opDef as OptionDefinition;
-            Action action = () => op.ApplyConstraint<int>((x) => true, "name", null);
+            Action action = () => opDef.ApplyConstraint<int>((x) => true, "name", null);
             Assert.Throws<ArgumentNullException>(action);
         }
 
@@ -161,9 +192,24 @@ namespace HatTrick.CommandLine.Test
         {
             var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
             //get the abstract implementation
-            OptionDefinition op = opDef as OptionDefinition;
-            Action action = () => op.ApplyConstraint<DateTime>((x) => true, "name", "description");
+            Action action = () => opDef.ApplyConstraint<DateTime>((x) => true, "name", "description");
             Assert.Throws<CommandDefinitionException>(action);
+        }
+
+        [Fact]
+        public void ApplyConstraint_WhenArgumentsValid_ShouldResultInValidFunctioningConstraint()
+        {
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
+            opDef.ApplyConstraint((x) => x > 20, "greater than 20", "description");
+            Assert.True(opDef.Constraints.Exists(c => c is ArgumentConstraint && c.Name == "greater than 20"));
+        }
+        #endregion
+
+        #region apply converted value to
+        [Fact]
+        public void ApplyConvertedValueTo_WhenProvidedValue_IsNotCompatibleWith_TofOption_ShouldThrow_CommandInputException()
+        {
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
         }
         #endregion
 
