@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace HatTrick.CommandLine
 {
-    public static class Parser
+    public static class CommandParser
     {
         #region parse
         public static Command Parse(string[] tokens)

@@ -31,7 +31,7 @@ namespace HatTrick.CommandLine
         internal void Go(Command cmd)
         {
             var registry = DefinitionRegistry.GetInstance();
-            var renderer = new RenderEngine();
+            var renderer = new HelpRenderEngine();
 
             if (cmd["help"] is DefaultOption) //no option flag provided at all...
             {

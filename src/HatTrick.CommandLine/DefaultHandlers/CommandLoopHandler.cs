@@ -75,7 +75,7 @@ namespace HatTrick.CommandLine
                     if (this.IsExitCommand(line))
                         break;
 
-                    registry.ExecuteCommand(Parser.Parse(Tokenizer.Tokenize(line)));
+                    registry.ExecuteCommand(CommandParser.Parse(InputTokenizer.Tokenize(line)));
                     Console.WriteLine(string.Empty);
                 }
                 catch (Exception ex)

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace HatTrick.CommandLine
 {
-    public static class Tokenizer
+    public static class InputTokenizer
     {
         #region tokenize
         public static string[] Tokenize(string input, bool keepLiteralQuotes = false)
@@ -45,7 +45,7 @@ namespace HatTrick.CommandLine
             internal Instance(string input, bool keepLiteralQuotes = false)
             {
                 if (input.Length > _maxSrcLength)
-                    throw new RangeOverflowException($"{nameof(Tokenizer)} has a maximum internal buffer length for {nameof(input)} of {_maxSrcLength}.");
+                    throw new RangeOverflowException($"{nameof(InputTokenizer)} has a maximum internal buffer length for {nameof(input)} of {_maxSrcLength}.");
 
                 if (string.IsNullOrWhiteSpace(input))
                 {

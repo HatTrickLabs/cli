@@ -23,7 +23,7 @@ namespace HatTrick.CommandLine.TestHarness
 
             RegisterCommands(registry);
 
-            Command cmd = Parser.Parse(args);
+            Command cmd = CommandParser.Parse(args);
             registry.ExecuteCommand(cmd);
 
             Console.ReadLine();

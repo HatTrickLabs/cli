@@ -7,7 +7,7 @@ using System.IO;
 
 namespace HatTrick.CommandLine
 {
-    internal class RenderEngine
+    internal class HelpRenderEngine
     {
         #region const
         private const int Indent = 2;
@@ -26,7 +26,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal RenderEngine()
+        internal HelpRenderEngine()
         {
             _bufferLen = Console.BufferWidth - 1;
         }
@@ -53,9 +53,9 @@ namespace HatTrick.CommandLine
         private int ResolveBlockStartPosition(int maxLeftContentLength)
         {
             //add the indent and the desired padding
-            int blockStart = RenderEngine.Indent + maxLeftContentLength + RenderEngine.HelpBlockLeftPad;
+            int blockStart = HelpRenderEngine.Indent + maxLeftContentLength + HelpRenderEngine.HelpBlockLeftPad;
 
-            return Math.Max(blockStart, RenderEngine.MinHelpBlockStartPosition);
+            return Math.Max(blockStart, HelpRenderEngine.MinHelpBlockStartPosition);
         }
         #endregion
 
@@ -115,7 +115,7 @@ namespace HatTrick.CommandLine
             string template = TemplateAccessor.GetTemplate("usage-help");
 
             int blockStart = this.ResolveBlockStartPosition(this.ComputeMaxFlagsDescriptorLength(target.Options));
-            string indent = new string(' ', RenderEngine.Indent);
+            string indent = new string(' ', HelpRenderEngine.Indent);
 
             Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {
@@ -150,7 +150,7 @@ namespace HatTrick.CommandLine
             int maxLen = Math.Max(maxNSLen, maxCmdLen);
 
             int blockStart = this.ResolveBlockStartPosition(maxLen);
-            string indent = new string(' ', RenderEngine.Indent);
+            string indent = new string(' ', HelpRenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()
             {
@@ -196,7 +196,7 @@ namespace HatTrick.CommandLine
             int maxLen = Math.Max(target.Name.Length, maxDefLen);
 
             int blockStart = this.ResolveBlockStartPosition(maxLen);
-            string indent = new string(' ', RenderEngine.Indent);
+            string indent = new string(' ', HelpRenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()
             {
@@ -246,7 +246,7 @@ namespace HatTrick.CommandLine
             int maxLen = Math.Max(target.Name.Length, maxCmdLen);
 
             int blockStart = this.ResolveBlockStartPosition(maxLen);
-            string indent = new string(' ', RenderEngine.Indent);
+            string indent = new string(' ', HelpRenderEngine.Indent);
 
             var bindTo = new Dictionary<string, object>()
             {
@@ -282,7 +282,7 @@ namespace HatTrick.CommandLine
 
             int opBlockStart = this.ResolveBlockStartPosition(this.ComputeMaxFlagsDescriptorLength(target.Options));
             int cmdConstBlockStart = this.ResolveBlockStartPosition(target.HasConstraints ? target.Constraints.Max(c => c.Name.Length) : 0);
-            string indent = new string(' ', RenderEngine.Indent);
+            string indent = new string(' ', HelpRenderEngine.Indent);
 
             Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {

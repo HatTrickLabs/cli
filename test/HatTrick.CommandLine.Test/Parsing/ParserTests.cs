@@ -7,7 +7,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Parse_WhenInput_IsNull_ShouldThrow_ArgumentNullException()
         {
-            Action action = () => Parser.Parse(null);
+            Action action = () => CommandParser.Parse(null);
             Assert.Throws<ArgumentNullException>(action);
         }
 
@@ -15,7 +15,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenInput_IsEmpty_ShouldReturn_DefaultCommand()
         {
             string[] input = Array.Empty<string>();
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal(CommandDefinition.DefaultCommandName, result.Name);
         }
 
@@ -23,7 +23,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenInput_IsEmpty_ShouldReturn_Command_WithoutOptions()
         {
             string[] input = Array.Empty<string>();
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal(Array.Empty<Option>(), result.GetOptions());
         }
 
@@ -31,7 +31,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenInput_IsCommandlessWithOptions_ShouldReturn_DefaultCommand_WithOptions()
         {
             string[] input = new string[] { "-a", "-b" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal(CommandDefinition.DefaultCommandName, result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => Assert.Equal("-a", x.Flag),
@@ -43,7 +43,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenInput_HasCommandWithOptions_ShouldReturn_Command_WithOptions()
         {
             string[] input = new string[] { "test", "-a", "-b" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("test", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => Assert.Equal("-a", x.Flag),
@@ -55,7 +55,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenInput_ContainsArgumentTokenStartingWithDash_WithNoExplicitAssign_Should_TreatTokenAsFlag()
         {
             string[] input = new string[] { "add", "-x", "-3", "-y", "3" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("add", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => Assert.Equal("-x", x.Flag),
@@ -68,7 +68,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenInput_ContainsArgumentTokenStartingWithDash_WithExplicitEqualAssign_Should_TreatTokenAsArgument()
         {
             string[] input = new string[] { "add", "-x", "=", "-3", "-y", "3" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("add", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => { Assert.Equal("-x", x.Flag); Assert.Equal("-3", x.Argument); },
@@ -80,7 +80,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenInput_ContainsArgumentTokenStartingWithDash_WithExplicitColonAssign_Should_TreatTokenAsArgument()
         {
             string[] input = new string[] { "add", "-x", ":", "-3", "-y", "3" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("add", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => { Assert.Equal("-x", x.Flag); Assert.Equal("-3", x.Argument); },
@@ -92,7 +92,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenFirstOptionToken_IsExplicitAssignEqualToken_ShouldThrow_CommandInputException()
         {
             string[] input = new string[] { "abc", "=", "-x" };
-            Action action = () => Parser.Parse(input);
+            Action action = () => CommandParser.Parse(input);
             Assert.Throws<CommandInputException>(action);
         }
 
@@ -100,7 +100,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenAnyToken_IsSingleDashOnly_ShouldThrow_CommandInputException()
         {
             string[] input = new string[] { "abc", "=", "-" };
-            Action action = () => Parser.Parse(input);
+            Action action = () => CommandParser.Parse(input);
             Assert.Throws<CommandInputException>(action);
         }
 
@@ -108,7 +108,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenFirstToken_ContainsNoDash_ShouldThrow_CommandInputException()
         {
             string[] input = new string[] { "abc", "xyz" };
-            Action action = () => Parser.Parse(input);
+            Action action = () => CommandParser.Parse(input);
             Assert.Throws<CommandInputException>(action);
         }
 
@@ -116,7 +116,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenAnyOption_HasMultipleArguments_ShouldThrow_CommandInputException()
         {
             string[] input = new string[] { "-a", "a", "-b", "b", "-c", "c", "d" };
-            Action action = () => Parser.Parse(input);
+            Action action = () => CommandParser.Parse(input);
             Assert.Throws<CommandInputException>(action);
         }
 
@@ -124,7 +124,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenAnyOption_HasMultipleArguments_WithExplicitAssigns_ShouldThrow_CommandInputException()
         {
             string[] input = new string[] { "-a", "a", "-b", "b", "-c", "=", "c", "=", "d" };
-            Action action = () => Parser.Parse(input);
+            Action action = () => CommandParser.Parse(input);
             Assert.Throws<CommandInputException>(action);
         }
 
@@ -132,7 +132,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenCompoundFlag_ShouldUnrollCompoundFlag_Into_IndividualOptions()
         {
             string[] input = new string[] { "abc", "-xyz" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("abc", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => Assert.Equal("-x", x.Flag),
@@ -145,7 +145,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenCompoundFlag_And_ArgumentProvided_ShouldUnrollCompoundFlag_Into_IndividualOptions_AndAssign_LastOption_TheArgument()
         {
             string[] input = new string[] { "abc", "-xyz", "1" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("abc", result.Name);
             Assert.Collection<Option>(result.GetOptions(),
                 (x) => { Assert.Equal("-x", x.Flag); Assert.False(x.HasArgument); },
@@ -158,7 +158,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenVerboseOptionFlagProvided_ShouldNotUnroll()
         {
             string[] input = new string[] { "abc", "--silent" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("abc", result.Name);
             Assert.Single(result.GetOptions());
             Assert.Equal("--silent", result.GetOptions()[0].Flag);
@@ -168,7 +168,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenFlag_ContainsExplicitEqualAssign_ShouldTreatEqual_AsPartOfFlag()
         {
             string[] input = new string[] { "abc", "--silent=1" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("abc", result.Name);
             Assert.Equal("--silent=1", result.GetOptions()[0].Flag);
         }
@@ -177,7 +177,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenFlag_ContainsExplicitColonAssign_ShouldTreatColon_AsPartOfFlag()
         {
             string[] input = new string[] { "abc", "--silent:1" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("abc", result.Name);
             Assert.Equal("--silent:1", result.GetOptions()[0].Flag);
         }
@@ -186,7 +186,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenCommandKey_ContainsExplicitEqualAssign_ShouldTreatEqual_AsPartOfCommandKey()
         {
             string[] input = new string[] { "abc=xyz", "--silent" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("abc=xyz", result.Name);
             Assert.Equal("--silent", result.GetOptions()[0].Flag);
         }
@@ -195,7 +195,7 @@ namespace HatTrick.CommandLine.Test
         public void Parser_WhenCommandKey_ContainsExplicitColonAssign_ShouldTreatColon_AsPartOfCommandKey()
         {
             string[] input = new string[] { "abc:xyz", "--silent" };
-            Command result = Parser.Parse(input);
+            Command result = CommandParser.Parse(input);
             Assert.Equal("abc:xyz", result.Name);
             Assert.Equal("--silent", result.GetOptions()[0].Flag);
         }
