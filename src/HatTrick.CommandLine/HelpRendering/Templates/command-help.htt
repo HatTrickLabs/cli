@@ -1,6 +1,6 @@
 
 Usage:
-{() => GetExecutableName} {$.Name} {+#each (false) => GetOptions+}{#if !$.MustAssign}[{/if}{$.MostVerboseFlag} {($.GenericType) => GetFriendlyTypeName}{#if !$.MustAssign}]{/if+} {+/each+}
+{() => GetExecutableName} {$.Name} {+#each (false) => GetOptions+}{#if !$.MustAssign}[{/if}{$.Flags.Verbose} {($.GenericType) => GetFriendlyTypeName}{#if !$.MustAssign}]{/if+} {+/each+}
 
 {#if $.HasOptions}
 Options:

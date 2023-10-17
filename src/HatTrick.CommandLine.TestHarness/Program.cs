@@ -16,6 +16,9 @@ namespace HatTrick.CommandLine.TestHarness
             Command cmd = CommandParser.Parse(args);
             CommandExecutor exe = registry.GetCommandExecutor(cmd.Name);
             exe.ExecuteCommand(cmd);
+#if DEBUG
+            Console.ReadLine();
+#endif
         }
 
         static void RegisterCommands(DefinitionRegistry registry)

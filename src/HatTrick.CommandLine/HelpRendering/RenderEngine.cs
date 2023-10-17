@@ -119,7 +119,9 @@ namespace HatTrick.CommandLine
 
             Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {
-                string flags = string.Join('|', op.Flags);
+                string flags = op.Flags.Terse is null
+                    ? op.Flags.Verbose
+                    : $"{op.Flags.Terse}|{op.Flags.Verbose}";
                 int startAt = indent.Length + flags.Length;
                 return $"{indent}{flags}{this.GetBlockedContent(op.Help, blockStart, startAt)}";
             };
@@ -286,7 +288,9 @@ namespace HatTrick.CommandLine
 
             Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {
-                string flags = string.Join('|', op.Flags);
+                string flags = op.Flags.Terse is null 
+                    ? op.Flags.Verbose 
+                    : $"{op.Flags.Terse}|{op.Flags.Verbose}";
                 int startAt = indent.Length + flags.Length;
                 return $"{indent}{flags}{this.GetBlockedContent(op.Help, opBlockStart, startAt)}";
             };

@@ -11,13 +11,13 @@
         #endregion
 
         #region internals
-        private (string terse, string verbose) _optionFlags;
+        private OptionFlags _flags;
         #endregion
 
         #region constructors
-        internal MustAssignConstraint((string terse, string verbose) optionFlags) : base(MustAssignConstraint<T>.ConstraintName)
+        internal MustAssignConstraint(OptionFlags flags) : base(MustAssignConstraint<T>.ConstraintName)
         {
-            _optionFlags = optionFlags;
+            _flags = flags;
             base.SetDescription("yes");
         }
         #endregion
@@ -28,7 +28,7 @@
             feedback = null;
 
             if (option is EmptyOption)
-                feedback = $"An expected option [{_optionFlags.verbose}|{_optionFlags.terse}] not found...option has a '{MustAssignConstraint<T>.ConstraintName}' constraint.";
+                feedback = $"An expected option [{_flags.Verbose}|{_flags.Terse}] not found...option has a '{MustAssignConstraint<T>.ConstraintName}' constraint.";
 
             return feedback is null;
         }

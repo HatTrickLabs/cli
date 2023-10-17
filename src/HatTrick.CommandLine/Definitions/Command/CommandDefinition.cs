@@ -188,7 +188,7 @@ namespace HatTrick.CommandLine
                 if (opDef.MustAssign)
                     throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(OptionDefinition.MustAssign)}'...'{MustAssignOneOfConstraint.ConstraintName}' constraint cannot be applied.");
 
-                opDefKeys[i] = (optionKeys[i], opDef.Flags.verbose);
+                opDefKeys[i] = (optionKeys[i], opDef.Flags.Verbose);
             }
 
             var constraint = new MustAssignOneOfConstraint(opDefKeys);
@@ -214,7 +214,7 @@ namespace HatTrick.CommandLine
                 if (opDef.MustAssign)
                     throw new CommandDefinitionException($"Option '{opDef.Key}' is marked '{nameof(OptionDefinition.MustAssign)}'...'{MutuallyExclusiveSetConstraint.ConstraintName}' constraint cannot be applied.");
 
-                opDefKeys[i] = (optionKeys[i], opDef.Flags.verbose);
+                opDefKeys[i] = (optionKeys[i], opDef.Flags.Verbose);
             }
 
             var constraint = new MutuallyExclusiveSetConstraint(opDefKeys);

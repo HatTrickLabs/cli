@@ -72,6 +72,7 @@ x harden command parser...handle garbage input eloquently
 x Make Parser work like Tokenizer...static shell with private instance based internals.
 - Add unit tests to SetOf<T> for getting enumerators (specifically if the SetOf<T> is empty with null internal array).
 - CommandArgumentException can we get back to being able to bubble this out from on the OptionDef.Of<T> pattern ?
+x Eliminate the exposed OptionDefinition typle for 'Flags'...(string terse, string verbose) as the typle names are not serializable.  Create a Flags struct.
 
 
 

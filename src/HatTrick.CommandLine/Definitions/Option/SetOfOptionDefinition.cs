@@ -74,15 +74,15 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region throw on duplicate flag
-        private void ThrowOnDuplicateFlag((string terse, string verbose) flags)
+        private void ThrowOnDuplicateFlag(OptionFlags flags)
         {
             for (int i = 0; i < base.Length; i++)
             {
-                if (flags.terse == base[i].Flags.terse)
-                    throw new CommandDefinitionException($"Cannot add {nameof(OptionDefinition)}, duplicate flag found: {flags.terse}");
+                if (flags.Terse == base[i].Flags.Terse)
+                    throw new CommandDefinitionException($"Cannot add {nameof(OptionDefinition)}, duplicate flag found: {flags.Terse}");
 
-                if (flags.verbose == base[i].Flags.verbose)
-                    throw new CommandDefinitionException($"Cannot add {nameof(OptionDefinition)}, duplicate flag found: {flags.verbose}");
+                if (flags.Verbose == base[i].Flags.Verbose)
+                    throw new CommandDefinitionException($"Cannot add {nameof(OptionDefinition)}, duplicate flag found: {flags.Verbose}");
             }
         }
         #endregion

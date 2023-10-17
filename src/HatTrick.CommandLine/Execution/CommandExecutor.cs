@@ -82,7 +82,7 @@ namespace HatTrick.CommandLine
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
                 var opDef = cmdDef.Options[i];
-                var op = cmd.GetOptionByFlag(opDef.Flags.verbose, opDef.Flags.terse);
+                var op = cmd.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
 
                 if (op is null)
                 {
@@ -123,7 +123,7 @@ namespace HatTrick.CommandLine
                 if (op is EmptyOption)
                     continue;
 
-                if (!cmdDef.Options.Exists(o => o.Flags.terse == op.Flag || o.Flags.verbose == op.Flag))
+                if (!cmdDef.Options.Exists(o => o.Flags.Terse == op.Flag || o.Flags.Verbose == op.Flag))
                     feedback.Add($"Undefined option at position: {i + 1} ... option: {op.Flag}");
             }
         }
@@ -138,7 +138,7 @@ namespace HatTrick.CommandLine
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
                 var opDef = cmdDef.Options[i];
-                var opUno = cmd.GetOptionByFlag(opDef.Flags.verbose, opDef.Flags.terse);
+                var opUno = cmd.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
                 for (int j = 0; j < cmd.Options.Length; j++)
                 {
                     var opDos = cmd.Options[j];
@@ -146,7 +146,7 @@ namespace HatTrick.CommandLine
                     if (opDos == opUno)
                         continue;
 
-                    if (opDef.Flags.verbose == opDos.Flag || opDef.Flags.terse == opDos.Flag)
+                    if (opDef.Flags.Verbose == opDos.Flag || opDef.Flags.Terse == opDos.Flag)
                         feedback.Add($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opUno.Flag}' and '{opDos.Flag}'");
                 }
             }

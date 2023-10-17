@@ -15,7 +15,7 @@ namespace HatTrick.CommandLine
         private readonly string _key;
         private readonly string _help;
         private bool _hidden;
-        private readonly (string terse, string verbose) _flags;
+        private readonly OptionFlags _flags;
         private SetOf<ArgumentConstraint> _constraints;
         #endregion
 
@@ -32,11 +32,7 @@ namespace HatTrick.CommandLine
 
         public bool Hidden => _hidden;
 
-        public (string terse, string verbose) Flags => _flags;
-
-        //public string MostVerboseFlag => _flags.MaxBy((f) => f.Length);
-
-        //public string LeastVerboseFlag => _flags.MinBy((f) => f.Length);
+        public OptionFlags Flags => _flags;
 
         public SetOf<ArgumentConstraint> Constraints
         {
@@ -163,7 +159,7 @@ namespace HatTrick.CommandLine
         #region empty instance
         internal EmptyOption EmptyInstance()
         {
-            var op = new EmptyOption(_key, this.Flags.verbose);
+            var op = new EmptyOption(_key, this.Flags.Verbose);
             return op;
         }
         #endregion
@@ -181,7 +177,7 @@ namespace HatTrick.CommandLine
             if (_help == string.Empty)
                 throw new CommandDefinitionException($"Options[{_key}] must contain valid help...Provided value is empty.");
 
-            if (_flags.verbose == string.Empty)
+            if (_flags.Verbose == string.Empty)
                 throw new CommandDefinitionException($"Options[{_key}] must contain at least 1 {nameof(OptionDefinition.Flags)}.");
 
             this.ValidateVerboseFlag();
@@ -190,7 +186,7 @@ namespace HatTrick.CommandLine
 
         private void ValidateVerboseFlag()
         {
-            string verbose = _flags.verbose;
+            string verbose = _flags.Verbose;
 
             if (verbose.Length < 4)//must be two dashes and at least 2 additional chars
                 throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...verbose flag must contain 2 dashes and at least 2 additional chars.");
@@ -212,7 +208,7 @@ namespace HatTrick.CommandLine
 
         private void ValidateTerseFlag()
         {
-            string terse = _flags.terse;
+            string terse = _flags.Terse;
             if (terse is null || terse == string.Empty)
                 return;//terse flag NOT required.
 
@@ -251,7 +247,7 @@ namespace HatTrick.CommandLine
             _converter = converter;
 
             if (typeof(T) == typeof(bool))//bool should never require assignment...should simply default to false
-                base.Constraints.Add(new DefaultConstraint<bool>(key, base.Flags.verbose, false));
+                base.Constraints.Add(new DefaultConstraint<bool>(key, base.Flags.Verbose, false));
             else
                 this.Constraints.Add(new MustAssignConstraint<T>(this.Flags));
         }
@@ -264,7 +260,7 @@ namespace HatTrick.CommandLine
 
             _converter = converter;
 
-            base.Constraints.Add(new DefaultConstraint<T>(key, base.Flags.verbose, defaultArg));
+            base.Constraints.Add(new DefaultConstraint<T>(key, base.Flags.Verbose, defaultArg));
         }
         #endregion
 
