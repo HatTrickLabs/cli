@@ -2,7 +2,7 @@
   "profiles": {
     "HatTrick.CommandLine.TestHarness": {
       "commandName": "Project",
-      "commandLineArgs": "-? htl"
+      "commandLineArgs": "-h htl.guid"
     }
   }
 }

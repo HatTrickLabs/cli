@@ -10,23 +10,12 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
-            User u = new User() { FirstName = "Charlie", LastName = "Brown" };
-
-
-            Mapper.MapCommand(null).To<User>().Then(UserService.SaveUser);
-            Mapper.MapCommand(null).ToSignature<Action<string, string>>().Then(UserService.SaveUser);
-
-
-
-            return;
             var registry = DefinitionRegistry.GetInstance();
-
             RegisterCommands(registry);
 
             Command cmd = CommandParser.Parse(args);
-            registry.ExecuteCommand(cmd);
-
-            Console.ReadLine();
+            CommandExecutor exe = registry.GetCommandExecutor(cmd.Name);
+            exe.ExecuteCommand(cmd);
         }
 
         static void RegisterCommands(DefinitionRegistry registry)
@@ -42,7 +31,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", ("-f", "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
 
-            cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (null, "--count"));
+            cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", ("-c", "--count"));
             cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "arg must be within range 1..100.");
 
             registry.Add(cmdDef);
@@ -55,22 +44,5 @@ namespace HatTrick.CommandLine.TestHarness
                 Console.WriteLine(Guid.NewGuid().ToString(format));
             }
         }
-    }
-
-    public class UserService
-    {
-        public static void SaveUser(string firstName, string lastName)
-        {
-        }
-
-        public static void SaveUser(User user)
-        {
-        }
-    }
-
-    public class User
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
     }
 }

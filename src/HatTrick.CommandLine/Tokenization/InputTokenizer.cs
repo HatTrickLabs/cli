@@ -4,10 +4,10 @@ using System.IO;
 
 namespace HatTrick.CommandLine
 {
-    public static class InputTokenizer
+    internal static class InputTokenizer
     {
         #region tokenize
-        public static string[] Tokenize(string input, bool keepLiteralQuotes = false)
+        internal static string[] Tokenize(string input, bool keepLiteralQuotes = false)
         {
             if (input is null)
                 throw new ArgumentNullException(nameof(input));

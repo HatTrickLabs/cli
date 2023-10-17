@@ -71,11 +71,13 @@ namespace HatTrick.CommandLine
 
                     //TODO: imple local var declaration command
                     
-
                     if (this.IsExitCommand(line))
                         break;
 
-                    registry.ExecuteCommand(CommandParser.Parse(InputTokenizer.Tokenize(line)));
+                    string[] args = InputTokenizer.Tokenize(line);
+                    Command cmd = CommandParser.Parse(args);
+                    CommandExecutor exe = registry.GetCommandExecutor(cmd.Name);
+                    exe.ExecuteCommand(cmd);
                     Console.WriteLine(string.Empty);
                 }
                 catch (Exception ex)

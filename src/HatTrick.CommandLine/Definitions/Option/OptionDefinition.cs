@@ -191,6 +191,7 @@ namespace HatTrick.CommandLine
         private void ValidateVerboseFlag()
         {
             string verbose = _flags.verbose;
+
             if (verbose.Length < 4)//must be two dashes and at least 2 additional chars
                 throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...verbose flag must contain 2 dashes and at least 2 additional chars.");
 
@@ -213,7 +214,7 @@ namespace HatTrick.CommandLine
         {
             string terse = _flags.terse;
             if (terse is null || terse == string.Empty)
-                return;
+                return;//terse flag NOT required.
 
             if (terse.Length != 2)
                 throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags start with a single dash followed by a single char.");

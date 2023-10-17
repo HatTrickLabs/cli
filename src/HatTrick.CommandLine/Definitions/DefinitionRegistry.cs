@@ -154,31 +154,11 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region execute command
-        public void ExecuteCommand(Command command)
+        #region get executor
+        public CommandExecutor GetCommandExecutor(string name)
         {
-            if (command.Name is null || string.IsNullOrEmpty(command.Name))
-                throw new CommandInputException("No command provided.");
-
-            CommandDefinition cmdDef = this.GetCommandDefinition(command.Name);
-
-            cmdDef.EnsureCommand(command);
-
-            cmdDef.Handler(command);
-        }
-        #endregion
-
-        #region execute command async
-        public async Task ExecuteCommandAsync(Command command)
-        {
-            if (command.Name is null || string.IsNullOrEmpty(command.Name))
-                throw new CommandInputException("No command provided.");
-
-            CommandDefinition cmdDef = this.GetCommandDefinition(command.Name);
-
-            cmdDef.EnsureCommand(command);
-
-            await cmdDef.AsyncHandler(command);
+            CommandDefinition cmdDef = this.GetCommandDefinition(name);
+            return new CommandExecutor(cmdDef);
         }
         #endregion
     }
