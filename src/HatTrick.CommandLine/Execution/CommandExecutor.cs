@@ -19,8 +19,8 @@ namespace HatTrick.CommandLine
         #region execute command
         public void ExecuteCommand(Command command)
         {
-            if (command.Name is null || string.IsNullOrEmpty(command.Name))
-                throw new CommandInputException("No command provided.");
+            if (command is null)
+                throw new ArgumentNullException(nameof(command));
 
             this.EnsureCommand(command);
 
@@ -31,8 +31,8 @@ namespace HatTrick.CommandLine
         #region execute command async
         public async Task ExecuteCommandAsync(Command command)
         {
-            if (command.Name is null || string.IsNullOrEmpty(command.Name))
-                throw new CommandInputException("No command provided.");
+            if (command is null)
+                throw new ArgumentNullException(nameof(command));
 
             this.EnsureCommand(command);
 
@@ -43,8 +43,13 @@ namespace HatTrick.CommandLine
         #region ensure command
         private void EnsureCommand(Command command)
         {
-            this.EnsureCommandOptions(command);
+            if (command.Name is null)
+                throw new ArgumentNullException($"{nameof(command)}.{nameof(command.Name)}");
 
+            if (command.Name == string.Empty)
+                throw new ArgumentException("Property must contain a value.", $"{ nameof(command) }.{ nameof(command.Name)}");
+
+            this.EnsureCommandOptions(command);
             this.EnsureCommandConstraints(command);
         }
         #endregion
@@ -53,11 +58,8 @@ namespace HatTrick.CommandLine
         private void EnsureCommandOptions(Command cmd)
         {
             this.EnsureCommandOptionsFullyHydrated(cmd);
-
             this.EnsureAllProvidedOptionsDefined(cmd);
-
             this.EnsureNoDuplicateOptions(cmd);
-
             this.EnsureOptionConstraints(cmd);
         }
         #endregion
@@ -67,23 +69,21 @@ namespace HatTrick.CommandLine
         {
             CommandDefinition cmdDef = _cmdDef;
 
-            for (int i = 0; i < cmdDef.Options.Length; i++)
+            foreach (var opDef in cmdDef.Options)
             {
-                var opDef = cmdDef.Options[i];
                 var op = cmd.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
 
                 if (op is null)
                 {
-                    //empty, just need an empty shell with correct key
+                    //op not provided, just need an empty shell with correct key
                     cmd.AddEmptyOption(opDef.EmptyInstance());
                 }
                 else
                 {
                     //apply the definition key to the option
                     op.ApplyKey(opDef.Key);
-
                     //pass op to opDef to set the value (passing in because only the def knows what T is).
-                    opDef.ApplyConvertedValueTo(op/*, out string error*/);
+                    opDef.ApplyConvertedValueTo(op);
                 }
             }
         }
@@ -160,10 +160,10 @@ namespace HatTrick.CommandLine
         #region ensure command constraints
         internal void EnsureCommandConstraints(Command command)
         {
-            SetOf<CommandConstraint> constraints = _cmdDef.Constraints;
-            if (constraints is null || constraints.Length == 0)
+            if (!_cmdDef.HasConstraints)
                 return;
 
+            SetOf<CommandConstraint> constraints = _cmdDef.Constraints;
             foreach (var c in constraints)
             {
                 c.Ensure(command);

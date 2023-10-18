@@ -74,14 +74,10 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        internal bool Ensure(Command command)
+        internal void Ensure(Command command)
         {
-            bool pass = _constraint(command);
-
-            if (!pass)
+            if (!_constraint(command))
                 throw new CommandInputException($"Constraint Failed...{_name}:  {_description}");
-
-            return pass;
         }
         #endregion
     }
