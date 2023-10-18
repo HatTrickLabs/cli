@@ -118,9 +118,9 @@ namespace HatTrick.CommandLine.Test
         public void ParseOptionArgument_ForBool_ShouldReturn_True_WhenTruthyValueProvided()
         {
             bool result1 = OptionTypeMap.ParseOptionArgument<bool>("true");
-            bool result2 = OptionTypeMap.ParseOptionArgument<bool>("TRUE");
+            bool result2 = OptionTypeMap.ParseOptionArgument<bool>("True");
             bool result3 = OptionTypeMap.ParseOptionArgument<bool>("yes");
-            bool result4 = OptionTypeMap.ParseOptionArgument<bool>("YES");
+            bool result4 = OptionTypeMap.ParseOptionArgument<bool>("Yes");
             bool result5 = OptionTypeMap.ParseOptionArgument<bool>("y");
             bool result6 = OptionTypeMap.ParseOptionArgument<bool>("Y");
             bool result7 = OptionTypeMap.ParseOptionArgument<bool>("1");
@@ -138,9 +138,9 @@ namespace HatTrick.CommandLine.Test
         public void ParseOptionArgument_ForNullableBool_ShouldReturn_True_WhenTruthyValueProvided()
         {
             bool? result1 = OptionTypeMap.ParseOptionArgument<bool?>("true");
-            bool? result2 = OptionTypeMap.ParseOptionArgument<bool?>("TRUE");
+            bool? result2 = OptionTypeMap.ParseOptionArgument<bool?>("True");
             bool? result3 = OptionTypeMap.ParseOptionArgument<bool?>("yes");
-            bool? result4 = OptionTypeMap.ParseOptionArgument<bool?>("YES");
+            bool? result4 = OptionTypeMap.ParseOptionArgument<bool?>("Yes");
             bool? result5 = OptionTypeMap.ParseOptionArgument<bool?>("y");
             bool? result6 = OptionTypeMap.ParseOptionArgument<bool?>("Y");
             bool? result7 = OptionTypeMap.ParseOptionArgument<bool?>("1");
@@ -160,7 +160,7 @@ namespace HatTrick.CommandLine.Test
             bool result1 = OptionTypeMap.ParseOptionArgument<bool>("false");
             bool result2 = OptionTypeMap.ParseOptionArgument<bool>("False");
             bool result3 = OptionTypeMap.ParseOptionArgument<bool>("no");
-            bool result4 = OptionTypeMap.ParseOptionArgument<bool>("NO");
+            bool result4 = OptionTypeMap.ParseOptionArgument<bool>("No");
             bool result5 = OptionTypeMap.ParseOptionArgument<bool>("n");
             bool result6 = OptionTypeMap.ParseOptionArgument<bool>("N");
             bool result7 = OptionTypeMap.ParseOptionArgument<bool>("0");
@@ -180,7 +180,7 @@ namespace HatTrick.CommandLine.Test
             bool? result1 = OptionTypeMap.ParseOptionArgument<bool?>("false");
             bool? result2 = OptionTypeMap.ParseOptionArgument<bool?>("False");
             bool? result3 = OptionTypeMap.ParseOptionArgument<bool?>("no");
-            bool? result4 = OptionTypeMap.ParseOptionArgument<bool?>("NO");
+            bool? result4 = OptionTypeMap.ParseOptionArgument<bool?>("No");
             bool? result5 = OptionTypeMap.ParseOptionArgument<bool?>("n");
             bool? result6 = OptionTypeMap.ParseOptionArgument<bool?>("N");
             bool? result7 = OptionTypeMap.ParseOptionArgument<bool?>("0");
