@@ -70,11 +70,11 @@ x make setof default capacity static readonly
 x harden command parser...handle garbage input eloquently
 - Rework op constraint ... name and description work well for help, but not for the exception thrown.
 x Make Parser work like Tokenizer...static shell with private instance based internals.
-- Add unit tests to SetOf<T> for getting enumerators (specifically if the SetOf<T> is empty with null internal array).
+x Add unit tests to SetOf<T> for getting enumerators (specifically if the SetOf<T> is empty with null internal array).
 x CommandArgumentException can we get back to being able to bubble this out from on the OptionDef.Of<T> pattern ?
 x Eliminate the exposed OptionDefinition typle for 'Flags'...(string terse, string verbose) as the typle names are not serializable.  Create a Flags struct.
 x Refactor command 'Ensure' to eliminate all the feedback output params... just throw concrete exceptions.
-- Toss out the super friendly boolean converter...stick with 0, 1 and case-insensative true/false.
+x Toss out the super friendly boolean converter...stick with 0, 1 and case-insensative true/false.
 - Refactor OptionDefinition<T>.ApplyConvertedValueTo...shouldn't be passing in the op to the opDef.
 
 

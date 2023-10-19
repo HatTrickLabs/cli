@@ -46,19 +46,6 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region apply default option
-        //internal void ApplyDefaultOption(DefaultOption option)
-        //{
-        //    //we swap in default for empty when default constraint exists.
-        //    int idx = _ops.FindIndex((o) => o.Key == option.Key);
-
-        //    if (idx > -1)
-        //        _ops[idx] = option;
-        //    else
-        //        _ops.Add(option);
-        //}
-        #endregion
-
         #region add empty option
         internal void AddEmptyOption(EmptyOption option)
         {
