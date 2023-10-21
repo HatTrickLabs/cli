@@ -81,10 +81,33 @@ namespace HatTrick.CommandLine
                 else
                 {
                     //apply the definition key to the option
-                    op.ApplyKey(opDef.Key);
-                    //pass op to opDef to set the value (passing in because only the def knows what T is).
-                    opDef.ApplyConvertedValueTo(op);
+                    op.SetKey(opDef.Key);
+
+                    //apply the converted argument value to the option
+                    this.EnsureOptionArgumentValue(op, opDef);
                 }
+            }
+        }
+        #endregion
+
+        #region ensure option argument value
+        private void EnsureOptionArgumentValue(Option option, OptionDefinition optionDef)
+        {
+            if (option.Key != optionDef.Key)
+                throw new ArgumentException($"Key of option: {option.Key} does not match key of option definition: {optionDef.Key}");
+
+            try
+            {
+                var converter = optionDef.GetArgumentConverter();
+                var val = converter.Invoke(option.Argument);
+                option.SetValue(val);
+            }
+            catch
+            {
+                var flag = option.Flag;
+                var name = optionDef.GenericType.Name;
+                var arg = option.Argument;
+                throw new OptionArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: '{arg}'");
             }
         }
         #endregion

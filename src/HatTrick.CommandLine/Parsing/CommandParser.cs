@@ -98,7 +98,7 @@ namespace HatTrick.CommandLine
                         if (op.HasArgument)
                             throw new CommandInputException($"{this.ExceptionMessageHelper(token, i)}...multi value arguments not supported.");
 
-                        op.ApplyArgument(token);//apply current arg to the last op in the set
+                        op.SetArgument(token);//set current arg to the last op in the set
                     }
 
                     prev = token;

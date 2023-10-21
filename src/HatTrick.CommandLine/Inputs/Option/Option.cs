@@ -56,8 +56,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region apply key
-        internal void ApplyKey(string key)
+        #region set key
+        internal void SetKey(string key)
         {
             if (key is null)
                 throw new ArgumentNullException(nameof(key));
@@ -69,8 +69,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region apply arg
-        internal void ApplyArgument(string argument)
+        #region set arg
+        internal void SetArgument(string argument)
         {
             if (argument is null)
                 throw new ArgumentNullException(nameof(argument));
@@ -83,13 +83,18 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region set value
-        internal void SetValue<T>(T value)
+        internal void SetValue(object value)
         {
             _value = value;
         }
         #endregion
 
         #region get value
+        internal object GetValue()
+        {
+            return _value;
+        }
+
         internal T GetValue<T>()
         {
             return (T)_value;

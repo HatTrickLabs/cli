@@ -34,54 +34,54 @@ namespace HatTrick.CommandLine.Test
         }
         #endregion
 
-        #region apply key
+        #region set key
         [Fact]
-        public void ApplyKey_WhenNullProvided_ShouldThrow_ArgumentNullException()
+        public void SetKey_WhenNullProvided_ShouldThrow_ArgumentNullException()
         {
             var op = new Option("-x");
-            Action action = () => op.ApplyKey(null);
+            Action action = () => op.SetKey(null);
             Assert.Throws<ArgumentNullException>(action);
         }
 
         [Fact]
-        public void ApplyKey_WhenEmptyProvided_ShouldThrow_ArgumentException()
+        public void SetKey_WhenEmptyProvided_ShouldThrow_ArgumentException()
         {
             var op = new Option("-x");
-            Action action = () => op.ApplyKey(string.Empty);
+            Action action = () => op.SetKey(string.Empty);
             Assert.Throws<ArgumentException>(action);
         }
 
         [Fact]
-        public void ApplyKey_WhenValueProvided_ShouldRetainValue()
+        public void SetKey_WhenValueProvided_ShouldRetainValue()
         {
             var op = new Option("-x");
-            op.ApplyKey("xxx");
+            op.SetKey("xxx");
             Assert.Equal("xxx", op.Key);
         }
         #endregion
 
-        #region apply argument
+        #region set argument
         [Fact]
-        public void ApplyArgument_WhenNullProvided_ShouldThrow_ArgumentNullException()
+        public void SetArgument_WhenNullProvided_ShouldThrow_ArgumentNullException()
         {
             var op = new Option("-x");
-            Action action = () => op.ApplyArgument(null);
+            Action action = () => op.SetArgument(null);
             Assert.Throws<ArgumentNullException>(action);
         }
 
         [Fact]
-        public void ApplyArgument_WhenEmptyProvided_ShouldThrow_ArgumentException()
+        public void SetArgument_WhenEmptyProvided_ShouldThrow_ArgumentException()
         {
             var op = new Option("-x");
-            Action action = () => op.ApplyArgument(string.Empty);
+            Action action = () => op.SetArgument(string.Empty);
             Assert.Throws<ArgumentException>(action);
         }
 
         [Fact]
-        public void ApplyArgument_WhenValueProvided_ShouldRetainValue()
+        public void SetArgument_WhenValueProvided_ShouldRetainValue()
         {
             var op = new Option("-x");
-            op.ApplyArgument("arg");
+            op.SetArgument("arg");
             Assert.Equal("arg", op.Argument);
         }
         #endregion
@@ -91,7 +91,7 @@ namespace HatTrick.CommandLine.Test
         public void SetValue_WhenTypeValueProvided_ShouldRetain_ProvidedValue_AsDynamic()
         {
             var op = new Option("-x");
-            op.SetValue<int>(888);
+            op.SetValue(888);
             Assert.Equal(888, op.Value);
         }
 
@@ -99,7 +99,7 @@ namespace HatTrick.CommandLine.Test
         public void GetValue_WhenTypeValueSet_ShouldReturn_TypedValue()
         {
             var op = new Option("-x");
-            op.SetValue<int>(888);
+            op.SetValue(888);
             int result = op.GetValue<int>();
             Assert.Equal(888, result);
         }

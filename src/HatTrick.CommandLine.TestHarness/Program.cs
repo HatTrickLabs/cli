@@ -25,18 +25,12 @@ namespace HatTrick.CommandLine.TestHarness
         {
             registry.Add(new NamespaceDefinition("htl", "HatTrick Labs"));
 
-            var cmdDef = new CommandDefinition(name: "htl.guid");
-
-            //cmdDef.Handler = (cmd) => GenerateGuids(cmd["count"].Value, cmd["format"].Value);
-
+            var cmdDef = new CommandDefinition(name: "htl.guid");   
             cmdDef.Handler = Mapper.MapCommand(cmdDef).ToSignature<Action<int, string>>().Then(GenerateGuids);
-
-            cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", ("-f", "--format"));
+            cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", (terse: "-f", verbose: "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
-
-            cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", ("-c", "--count"));
+            cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (terse: "-c", verbose: "--count"));
             cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "arg must be within range 1..100.");
-
             registry.Add(cmdDef);
         }
 

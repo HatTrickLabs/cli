@@ -14,6 +14,7 @@ namespace HatTrick.CommandLine
         #region internals
         private readonly string _key;
         private readonly string _help;
+        private Func<string, object> _converter;
         private bool _hidden;
         private readonly OptionFlags _flags;
         private SetOf<ArgumentConstraint> _constraints;
@@ -54,7 +55,7 @@ namespace HatTrick.CommandLine
             MaxFlagLength = 32;
         }
 
-        protected OptionDefinition(string key, string help, (string terse, string verbose) flags)
+        protected OptionDefinition(string key, string help, Func<string, object> converter, (string terse, string verbose) flags)
         {
             if (key is null)
                 throw new ArgumentNullException(nameof(key));
@@ -65,9 +66,13 @@ namespace HatTrick.CommandLine
             if (flags == default)
                  throw new ArgumentNullException(nameof(flags));
 
+            if (converter is null)
+                throw new ArgumentNullException(nameof(converter));
+
             _key = key;
             _help = help;
             _flags = flags;
+            _converter = converter;
             _constraints = new SetOf<ArgumentConstraint>();
         }
         #endregion
@@ -135,8 +140,11 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region apply converted value to
-        internal abstract void ApplyConvertedValueTo(Option option);
+        #region get argument converter
+        public virtual Func<string, object> GetArgumentConverter()
+        {
+            return _converter;
+        }
         #endregion
 
         #region empty instance
@@ -222,7 +230,7 @@ namespace HatTrick.CommandLine
 
         #region constructors
         internal OptionDefinition(string key, string help, Func<string, T> converter, (string terse, string verbose) flags)
-                                  : base(key: key, help: help, flags: flags)
+                           : base(key: key, help: help, converter: (string arg) => converter(arg), flags: flags)
         {
             if (converter is null)
                 throw new ArgumentNullException(nameof(converter));
@@ -236,7 +244,7 @@ namespace HatTrick.CommandLine
         }
 
         internal OptionDefinition(string key, T defaultArg, string help, Func<string, T> converter, (string terse, string verbose) flags)
-                                  : base(key: key, help: help, flags: flags)
+                           : base(key: key, help: help, converter: (string arg) => converter(arg), flags: flags)
         {
             if (converter is null)
                 throw new ArgumentNullException(nameof(converter));
@@ -248,7 +256,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get generic type
-        private Type GetGenericType()
+        protected Type GetGenericType()
         {
             var type = _genericType is null
                 ? _genericType = this.GetType().GetGenericArguments()[0]
@@ -309,21 +317,10 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region apply converted value to
-        internal override void ApplyConvertedValueTo(Option option)
+        #region get argument converter
+        new public Func<string, T> GetArgumentConverter()
         {
-            try
-            {
-                T val = _converter.Invoke(option.Argument);
-                option.SetValue(val);
-            }
-            catch
-            {
-                var flag = option.Flag;
-                var name = this.GetGenericType().Name;
-                var arg = option.Argument;
-                throw new OptionArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: '{arg}'");
-            }
+            return _converter;
         }
         #endregion
 
