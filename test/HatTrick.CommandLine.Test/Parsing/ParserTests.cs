@@ -155,6 +155,32 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
+        public void Parser_WhenCompoundFlag_And_ArgumentProvided_WithExplicitAssignViaColon_ShouldUnrollCompoundFlag_Into_IndividualOptions_AndAssign_LastOption_TheArgument()
+        {
+            string[] input = new string[] { "abc", "-xyz:1" };
+            Command result = CommandParser.Parse(input);
+            Assert.Equal("abc", result.Name);
+            Assert.Collection<Option>(result.GetOptions(),
+                (x) => { Assert.Equal("-x", x.Flag); Assert.False(x.HasArgument); },
+                (x) => { Assert.Equal("-y", x.Flag); Assert.False(x.HasArgument); },
+                (x) => { Assert.Equal("-z", x.Flag); Assert.True(x.HasArgument); Assert.Equal("1", x.Argument); }
+            );
+        }
+
+        [Fact]
+        public void Parser_WhenCompoundFlag_And_ArgumentProvided_WithExplicitAssignViaEqual_ShouldUnrollCompoundFlag_Into_IndividualOptions_AndAssign_LastOption_TheArgument()
+        {
+            string[] input = new string[] { "abc", "-xyz=1" };
+            Command result = CommandParser.Parse(input);
+            Assert.Equal("abc", result.Name);
+            Assert.Collection<Option>(result.GetOptions(),
+                (x) => { Assert.Equal("-x", x.Flag); Assert.False(x.HasArgument); },
+                (x) => { Assert.Equal("-y", x.Flag); Assert.False(x.HasArgument); },
+                (x) => { Assert.Equal("-z", x.Flag); Assert.True(x.HasArgument); Assert.Equal("1", x.Argument); }
+            );
+        }
+
+        [Fact]
         public void Parser_WhenVerboseOptionFlagProvided_ShouldNotUnroll()
         {
             string[] input = new string[] { "abc", "--silent" };
@@ -165,21 +191,23 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Parser_WhenFlag_ContainsExplicitEqualAssign_ShouldTreatEqual_AsPartOfFlag()
+        public void Parser_WhenFlag_ContainsExplicitEqualAssign_ShouldsplitAsFlagAndArg()
         {
             string[] input = new string[] { "abc", "--silent=1" };
             Command result = CommandParser.Parse(input);
             Assert.Equal("abc", result.Name);
-            Assert.Equal("--silent=1", result.GetOptions()[0].Flag);
+            Assert.Equal("--silent", result.GetOptions()[0].Flag);
+            Assert.Equal("1", result.GetOptions()[0].Argument);
         }
 
         [Fact]
-        public void Parser_WhenFlag_ContainsExplicitColonAssign_ShouldTreatColon_AsPartOfFlag()
+        public void Parser_WhenFlag_ContainsExplicitColonAssign_ShouldSplitAsFlagAndArg()
         {
             string[] input = new string[] { "abc", "--silent:1" };
             Command result = CommandParser.Parse(input);
             Assert.Equal("abc", result.Name);
-            Assert.Equal("--silent:1", result.GetOptions()[0].Flag);
+            Assert.Equal("--silent", result.GetOptions()[0].Flag);
+            Assert.Equal("1", result.GetOptions()[0].Argument);
         }
 
         [Fact]

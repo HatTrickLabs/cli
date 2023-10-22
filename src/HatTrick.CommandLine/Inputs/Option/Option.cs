@@ -54,6 +54,25 @@ namespace HatTrick.CommandLine
             _key = key;
             _flag = flag;
         }
+
+        internal Option(string key, string flag, string argument)
+        {
+            if (key is null)
+                throw new ArgumentNullException(nameof(key));
+
+            if (key == string.Empty)
+                throw new ArgumentException("Argument cannot be empty.", nameof(key));
+
+            if (flag is null)
+                throw new ArgumentNullException(nameof(flag));
+
+            if (flag == string.Empty)
+                throw new ArgumentException("Argument cannot be empty.", nameof(flag));
+
+            _key = key;
+            _flag = flag;
+            _arg = argument;
+        }
         #endregion
 
         #region set key

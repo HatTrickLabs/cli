@@ -81,13 +81,13 @@ namespace HatTrick.CommandLine
                             throw new CommandInputException(this.ExceptionMessageHelper(token, i));
 
                         if (token[1] == '-') //verbose option flag
-                            ops.Add(new Option(token));
+                            ops.Add(this.EnsureVerboseFlag(token));
 
                         else if (token.Length == 2) //single terse option flag
                             ops.Add(new Option(token));
 
                         else //must be a compound terse option flag, unroll into individual flags
-                            UnrollCompoundFlag(token, (f) => ops.Add(f));
+                            UnrollCompoundFlag(token, ref ops);
                     }
                     else //no '-' and prev not an explicit assign, must be an option argument
                     {
@@ -108,15 +108,57 @@ namespace HatTrick.CommandLine
             }
             #endregion
 
-            #region unroll compound flag
-            private void UnrollCompoundFlag(string flag, Action<Option> onFlagUnrolled)
+            #region ensure flag
+            private Option EnsureVerboseFlag(string token)
             {
-                //start at idx 1 to skip the '-'
-                for (int i = 1; i < flag.Length; i++)
+                //we are checking for embedded explicit assign ie: --format=N or --format:N
+                int index = 2;//start at 2 to skip the leading --
+                const char eq = '=';
+                const char col = ':';
+
+                do
                 {
-                    var op = new Option(flag: "-" + flag[i]);
-                    onFlagUnrolled(op);
-                }
+                    char c = token[index];
+                    if (c == eq || c == col)
+                    {
+                        string flag = new string(token.AsSpan(0, index));
+                        string arg = new string(token.AsSpan(++index));
+                        Option op = new Option(flag);
+                        op.SetArgument(arg);
+                        return op;
+                    }
+
+                } while (++index < token.Length);
+
+                return new Option(token);
+            }
+            #endregion
+
+            #region unroll compound flag
+            private void UnrollCompoundFlag(string token, ref SetOf<Option> ops)
+            {
+                //we are unrolling compound terse flags with the last flag optinally having an exlicit arg assign
+                //ie:  -fq is two flags -f and -q
+                //ie:  -fql=debug is 3 flags -f -q -l with the arg of -l being debug
+                int index = 1;//start at 1 to skip the leading -
+                const char eq = '=';
+                const char col = ':';
+
+                do
+                {
+                    char c = token[index];
+                    if (c == eq || c == col)
+                    {
+                        string arg = new string(token.AsSpan(++index));
+                        ops[^1].SetArgument(arg);
+                        break;
+                    }
+                    else
+                    {
+                        ops.Add(new Option("-" + token[index]));
+                    }
+
+                } while (++index < token.Length);
             }
             #endregion
 
