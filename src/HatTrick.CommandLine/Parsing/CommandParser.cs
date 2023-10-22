@@ -108,7 +108,7 @@ namespace HatTrick.CommandLine
             }
             #endregion
 
-            #region ensure flag
+            #region ensure verbose flag
             private Option EnsureVerboseFlag(string token)
             {
                 //we are checking for embedded explicit assign ie: --format=N or --format:N
