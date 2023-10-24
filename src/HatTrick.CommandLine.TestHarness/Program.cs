@@ -1,8 +1,4 @@
 ﻿using System;
-using System.CodeDom.Compiler;
-using System.Runtime.InteropServices;
-using System.Security.AccessControl;
-using HatTrick.CommandLine;
 
 namespace HatTrick.CommandLine.TestHarness
 {
