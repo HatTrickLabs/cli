@@ -34,6 +34,9 @@ namespace HatTrick.CommandLine
                 if (i >= _length)
                     throw new ArgumentOutOfRangeException("Provided index is outside the upper bounds of the set.");
 
+                if (i < 0)
+                    throw new ArgumentOutOfRangeException("Index must be greater than 0.");
+
                 return _items[i];
             }
             set
