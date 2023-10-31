@@ -3,13 +3,13 @@ using Xunit;
 
 namespace HatTrick.CommandLine.Test
 {
-    public class TokenizerTests
+    public class ScannerTests
     {
         [Fact]
-        public void Tokenize_ShouldSplit_SingleCharTokens_OnSpace()
+        public void Scan_ShouldSplit_SingleCharTokens_OnSpace()
         {
             string value = "x y z";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result, 
                 (x) => Assert.Equal("x", x), 
                 (y) => Assert.Equal("y", y), 
@@ -18,10 +18,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_MultiCharTokens_OnSpace()
+        public void Scan_ShouldSplit_MultiCharTokens_OnSpace()
         {
             string value = "xxx yyy zzz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("xxx", x),
                 (y) => Assert.Equal("yyy", y),
@@ -30,10 +30,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleCharTokens_OnTab()
+        public void Scan_ShouldSplit_SingleCharTokens_OnTab()
         {
             string value = "x\ty\tz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("x", x),
                 (y) => Assert.Equal("y", y),
@@ -42,10 +42,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_MultiCharTokens_OnTab()
+        public void Scan_ShouldSplit_MultiCharTokens_OnTab()
         {
             string value = "xxx\tyyy\tzzz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("xxx", x),
                 (y) => Assert.Equal("yyy", y),
@@ -54,10 +54,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleCharTokens_OnNewLine()
+        public void Scan_ShouldSplit_SingleCharTokens_OnNewLine()
         {
             string value = "x\ny\nz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("x", x),
                 (y) => Assert.Equal("y", y),
@@ -66,10 +66,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_MultiCharTokens_OnNewLine()
+        public void Scan_ShouldSplit_MultiCharTokens_OnNewLine()
         {
             string value = "xxx\nyyy\nzzz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("xxx", x),
                 (y) => Assert.Equal("yyy", y),
@@ -78,10 +78,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleCharTokens_OnCarriageReturn()
+        public void Scan_ShouldSplit_SingleCharTokens_OnCarriageReturn()
         {
             string value = "x\ry\rz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("x", x),
                 (y) => Assert.Equal("y", y),
@@ -90,10 +90,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_MultiCharTokens_OnCarriageReturn()
+        public void Scan_ShouldSplit_MultiCharTokens_OnCarriageReturn()
         {
             string value = "xxx\ryyy\rzzz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("xxx", x),
                 (y) => Assert.Equal("yyy", y),
@@ -102,10 +102,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleCharTokens_OnCarriageReturnNewLine()
+        public void Scan_ShouldSplit_SingleCharTokens_OnCarriageReturnNewLine()
         {
             string value = "x\r\ny\r\nz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("x", x),
                 (y) => Assert.Equal("y", y),
@@ -114,10 +114,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_MultiCharTokens_OnCarriageReturnNewLine()
+        public void Scan_ShouldSplit_MultiCharTokens_OnCarriageReturnNewLine()
         {
             string value = "xxx\r\nyyy\r\nzzz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("xxx", x),
                 (y) => Assert.Equal("yyy", y),
@@ -126,10 +126,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleCharTokens_OnWhitespace_WhenWhitespace_MoreThanOneSpace()
+        public void Scan_ShouldSplit_SingleCharTokens_OnWhitespace_WhenWhitespace_MoreThanOneSpace()
         {
             string value = "x    y           z";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("x", x),
                 (y) => Assert.Equal("y", y),
@@ -138,10 +138,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_MultiCharTokens_OnWhitespace_WhenWhitespace_MoreThanOneSpace()
+        public void Scan_ShouldSplit_MultiCharTokens_OnWhitespace_WhenWhitespace_MoreThanOneSpace()
         {
             string value = "xxx   yyy       zzz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("xxx", x),
                 (y) => Assert.Equal("yyy", y),
@@ -150,10 +150,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_SingleCharTokens_OnWhitespace_WhenWhitespace_Chaos()
+        public void Scan_ShouldSplit_SingleCharTokens_OnWhitespace_WhenWhitespace_Chaos()
         {
             string value = "x \t\r\n   y  \n         z";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("x", x),
                 (y) => Assert.Equal("y", y),
@@ -162,10 +162,10 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldSplit_MultiCharTokens_OnWhitespace_WhenWhitespace_Chaos()
+        public void Scan_ShouldSplit_MultiCharTokens_OnWhitespace_WhenWhitespace_Chaos()
         {
             string value = "xxx  \r\n\t  yyy    \n   zzz";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("xxx", x),
                 (y) => Assert.Equal("yyy", y),
@@ -174,53 +174,55 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_ShouldMaintain_QuotedWhitespace()
+        public void Scan_ShouldMaintain_QuotedWhitespace()
         {
             string value = "This is unquoted... \"This is quoted\"...";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("This", x),
                 (x) => Assert.Equal("is", x),
                 (x) => Assert.Equal("unquoted...", x),
-                (x) => Assert.Equal("This is quoted...", x)
-            );
+                (x) => Assert.Equal("This is quoted", x),
+                (x) => Assert.Equal("...", x)
+           ) ;
         }
 
         [Fact]
-        public void Tokenize_ShouldMaintain_QuotedWhitespace_AndQuotes_WhenKeepLiteralQuotesOptionEnabled()
+        public void Scan_ShouldMaintain_QuotedWhitespace_AndQuotes_WhenKeepLiteralQuotesOptionEnabled()
         {
             string value = "This is unquoted... \"This is quoted\"...";
-            string[] result = InputTokenizer.Tokenize(value, true);
+            string[] result = Scanner.Scan(value, true);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("This", x),
                 (x) => Assert.Equal("is", x),
                 (x) => Assert.Equal("unquoted...", x),
-                (x) => Assert.Equal("\"This is quoted\"...", x)
-            );
+                (x) => Assert.Equal("\"This is quoted\"", x),
+                (x) => Assert.Equal("...", x)
+            ); ;
         }
 
         [Fact]
-        public void Tokenize_ShouldTreat_QuoteAsLiteral_WhenEscaped_WhenKeepLiteralQuotesOptionDisabled()
+        public void Scan_ShouldTreat_QuoteAsLiteral_WhenEscaped_WhenKeepLiteralQuotesOptionDisabled()
         {
             string value = "\"This is \\\"quoted\\\".\"";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Equal("This is \"quoted\".", result[0]);
         }
 
         [Fact]
-        public void Tokenize_ShouldTreat_QuoteAsLiteral_WhenEscaped_WhenKeepLiteralQuotesOptionEnabled()
+        public void Scan_ShouldTreat_QuoteAsLiteral_WhenEscaped_WhenKeepLiteralQuotesOptionEnabled()
         {
             string value = "\"This is \\\"quoted\\\".\"";
-            string[] result = InputTokenizer.Tokenize(value, true);
+            string[] result = Scanner.Scan(value, true);
             Assert.Equal("\"This is \"quoted\".\"", result[0]);
         }
 
         [Fact]
-        public void Tokenize_ShouldHandle_Inputs_LargerThan_MaxStackAllocLength()
+        public void Scan_ShouldHandle_Inputs_LargerThan_MaxStackAllocLength()
         {
             string part = new string('x', 500);
             string whole = part + " " + part + " " + part + " " + part;//2003 chars
-            string[] result = InputTokenizer.Tokenize(whole);
+            string[] result = Scanner.Scan(whole);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal(part, x),
                 (x) => Assert.Equal(part, x),
@@ -230,39 +232,44 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_IfInput_IsNull_ShouldThrow_ArgumentNullException()
+        public void Scan_IfInput_IsNull_ShouldThrow_ArgumentNullException()
         {
-            Action action = () => InputTokenizer.Tokenize(null);
+            Action action = () => Scanner.Scan(null);
             Assert.Throws<ArgumentNullException>(action);
         }
 
         [Fact]
-        public void Tokenize_IfInput_IsEmpty_ShouldReturn_EmptyArrayOfString()
+        public void Scan_IfInput_IsEmpty_ShouldReturn_EmptyArrayOfString()
         {
-            string[] result = InputTokenizer.Tokenize(string.Empty);
+            string[] result = Scanner.Scan(string.Empty);
             Assert.Equal(Array.Empty<string>(), result);
         }
 
         [Fact]
-        public void Tokenize_IfInput_GreaterThan_MaxSourceLength_ShouldThrow_RangeOverflowException()
+        public void Scan_IfInput_GreaterThan_MaxSourceLength_ShouldThrow_RangeOverflowException()
         {
             string part = new string('x', 500);
             string whole = part + " " + part + " " + part + " " + part + " " + part;//2504 chars
 
-            Action action = () => InputTokenizer.Tokenize(whole);
+            Action action = () => Scanner.Scan(whole);
             Assert.Throws<RangeOverflowException>(action);
         }
 
         [Fact]
-        public void Tokenize_IfInput_ContainsEscapeChar_ShouldTreat_EscapeAsLiteral_IfNotFollowedBy_DoubleQuotes()
+        public void Scan_IfInput_ContainsEscapeChar_ShouldTreat_EscapeAsLiteral_IfNotFollowedBy_DoubleQuotes()
         {
             string value = "x \\escape\\ x";
-            string[] result = InputTokenizer.Tokenize(value);
+            string[] result = Scanner.Scan(value);
             Assert.Collection<string>(result,
                 (x) => Assert.Equal("x", x),
                 (x) => Assert.Equal("\\escape\\", x),
                 (x) => Assert.Equal("x", x)
             );
+        }
+
+        [Fact]
+        public void Scan_()
+        {
         }
     }
 }

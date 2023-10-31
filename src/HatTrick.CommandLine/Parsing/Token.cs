@@ -9,10 +9,21 @@ namespace HatTrick.CommandLine
         private string _value;
         #endregion
 
+        #region interface
+        public string Value => _value;
+        #endregion
+
         #region constructor
         public Token(string value)
         {
             _value = value;
+        }
+        #endregion
+
+        #region to string
+        public override string ToString()
+        {
+            return _value;
         }
         #endregion
     }

@@ -154,11 +154,36 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get executor
-        public CommandExecutor GetCommandExecutor(string name)
+        #region build command
+        private Command BuildCommand(string input)
         {
-            CommandDefinition cmdDef = this.GetCommandDefinition(name);
-            return new CommandExecutor(cmdDef);
+            string[] args = Scanner.Scan(input);
+            return this.BuildCommand(args);
+        }
+
+        private Command BuildCommand(string[] args)
+        {
+            Token[] tokens = Tokenizer.Tokenize(args);
+            Command cmd = CommandParser.Parse(tokens);
+            return cmd;
+        }
+        #endregion
+
+        #region get executor
+        public CommandExecutor GetCommandExecutor(string input)
+        {
+            Command cmd = this.BuildCommand(input);
+            CommandDefinition cmdDef = this.GetCommandDefinition(cmd.Name);
+            var executor = new CommandExecutor(cmdDef, cmd);
+            return executor;
+        }
+
+        public CommandExecutor GetCommandExecutor(string[] args)
+        {
+            Command cmd = this.BuildCommand(args);
+            CommandDefinition cmdDef = this.GetCommandDefinition(cmd.Name);
+            var executor = new CommandExecutor(cmdDef, cmd);
+            return executor;
         }
         #endregion
     }

@@ -74,10 +74,8 @@ namespace HatTrick.CommandLine
                     if (this.IsExitCommand(line))
                         break;
 
-                    string[] args = InputTokenizer.Tokenize(line);
-                    Command cmd = CommandParser.Parse(args);
-                    CommandExecutor exe = registry.GetCommandExecutor(cmd.Name);
-                    exe.ExecuteCommand(cmd);
+                    CommandExecutor exe = registry.GetCommandExecutor(line);
+                    exe.Execute();
                     Console.WriteLine(string.Empty);
                 }
                 catch (Exception ex)

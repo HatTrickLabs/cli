@@ -4,18 +4,18 @@ using System.IO;
 
 namespace HatTrick.CommandLine
 {
-    internal static class InputTokenizer
+    public static class Scanner
     {
-        #region tokenize
-        internal static string[] Tokenize(string input, bool keepLiteralQuotes = false)
+        #region scan
+        public static string[] Scan(string input, bool keepLiteralQuotes = false)
         {
             if (input is null)
                 throw new ArgumentNullException(nameof(input));
 
-            //no sense in holding a tokenizer for multi-generations of GC...just use and release.
+            //no sense in holding a scanner for multi-generations of GC...just use and release.
             var instance = new Instance(input, keepLiteralQuotes);
 
-            return instance.Tokenize();
+            return instance.Scan();
         }
         #endregion
 
@@ -45,18 +45,10 @@ namespace HatTrick.CommandLine
             internal Instance(string input, bool keepLiteralQuotes = false)
             {
                 if (input.Length > _maxSrcLength)
-                    throw new RangeOverflowException($"{nameof(InputTokenizer)} has a maximum internal buffer length for {nameof(input)} of {_maxSrcLength}.");
+                    throw new RangeOverflowException($"{nameof(Scanner)} has a maximum internal buffer length for {nameof(input)} of {_maxSrcLength}.");
 
-                if (string.IsNullOrWhiteSpace(input))
-                {
-                    _src = string.Empty;
-                    _srcLength = 0;
-                }
-                else
-                {
-                    _src = input;
-                    _srcLength = input.Length;
-                }
+                _src = input;
+                _srcLength = input.Length;
 
                 _keepLitQuotes = keepLiteralQuotes;
                 _index = 0;
@@ -85,8 +77,8 @@ namespace HatTrick.CommandLine
             }
             #endregion
 
-            #region tokenize
-            public string[] Tokenize()
+            #region scan
+            public string[] Scan()
             {
                 if (_srcLength == 0)
                     return _empty;
@@ -104,8 +96,8 @@ namespace HatTrick.CommandLine
 
                 bool inDblQuote = false;
 
-                Span<char> token = _srcLength > _maxStackallocLength ? new char[_srcLength] : stackalloc char[_srcLength];
-                SetOf<string> args = new SetOf<string>();
+                Span<char> argument = _srcLength > _maxStackallocLength ? new char[_srcLength] : stackalloc char[_srcLength];
+                SetOf<string> arguments = new SetOf<string>();
 
                 int at = 0;
                 char c;
@@ -116,14 +108,19 @@ namespace HatTrick.CommandLine
                         inDblQuote = !inDblQuote;
                         if (keepLitQuotes)
                         {
-                            token[at++] = c;
+                            argument[at++] = c;
+                        }
+                        if (at > 1)//the 1 could be the open double quote we just added in 'keepLitQuotes'
+                        {
+                            arguments.Add(new string(argument.Slice(0, at)));
+                            at = 0;
                         }
                     }
                     else if (isWhitespace(c) && !inDblQuote)
                     {
                         if (at > 0)
                         {
-                            args.Add(new string(token.Slice(0, at)));
+                            arguments.Add(new string(argument.Slice(0, at)));
                             at = 0;
                         }
                     }
@@ -131,22 +128,22 @@ namespace HatTrick.CommandLine
                     {
                         if (Peek() != '"')
                         {
-                            token[at++] = c;
+                            argument[at++] = c;
                         }
                     }
                     else
                     {
-                        token[at++] = c;
+                        argument[at++] = c;
                     }
                     previous = c;
                 }
 
                 if (at > 0)
                 {
-                    args.Add(new string(token.Slice(0, at)));
+                    arguments.Add(new string(argument.Slice(0, at)));
                 }
 
-                return args.ToArray();
+                return arguments.ToArray();
             }
             #endregion
         }

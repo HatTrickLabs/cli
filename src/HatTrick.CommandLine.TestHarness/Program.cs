@@ -6,15 +6,23 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
+            string input = "htl.guid -u \"100 00\" --format X --silent:true    -abc=\"d:\\tmp\"  -xyz=abc -efg:-b   --quiet=true --force:true -p \"d:\tmp\abcdefg xyz\" ";
             var registry = DefinitionRegistry.GetInstance();
             RegisterCommands(registry);
 
-            Command cmd = CommandParser.Parse(args);
-            CommandExecutor exe = registry.GetCommandExecutor(cmd.Name);
-            exe.ExecuteCommand(cmd);
+            CommandExecutor exe = registry.GetCommandExecutor(args);
+            exe.Execute();
 #if DEBUG
             Console.ReadLine();
 #endif
+        }
+
+        static Command Test(string input)
+        {
+            string[] args = Scanner.Scan(input);
+            Token[] tokens = Tokenizer.Tokenize(args);
+            Command cmd = CommandParser.Parse(tokens);
+            return cmd;
         }
 
         static void RegisterCommands(DefinitionRegistry registry)

@@ -7,24 +7,28 @@ namespace HatTrick.CommandLine
     {
         #region internals
         private CommandDefinition _cmdDef;
+        private Command _cmd;
         #endregion
 
         #region constructors
-        internal CommandExecutor(CommandDefinition commandDefinition)
+        internal CommandExecutor(CommandDefinition commandDefinition, Command command)
         {
             _cmdDef = commandDefinition ?? throw new ArgumentNullException(nameof(commandDefinition));
+            _cmd = command ?? throw new ArgumentNullException(nameof(command));
+
+            if (command.Name is null)
+                throw new ArgumentNullException($"{nameof(command)}.{nameof(command.Name)}");
+
+            if (command.Name == string.Empty)
+                throw new ArgumentException("Property must contain a value.", $"{nameof(command)}.{nameof(command.Name)}");
         }
         #endregion
 
-        #region execute command
-        public void ExecuteCommand(Command command)
+        #region execute
+        public void Execute()
         {
-            if (command is null)
-                throw new ArgumentNullException(nameof(command));
-
-            this.EnsureCommand(command);
-
-            _cmdDef.Handler(command);
+            this.EnsureCommand(_cmd);
+            _cmdDef.Handler(_cmd);
         }
         #endregion
 
@@ -43,40 +47,34 @@ namespace HatTrick.CommandLine
         #region ensure command
         private void EnsureCommand(Command command)
         {
-            if (command.Name is null)
-                throw new ArgumentNullException($"{nameof(command)}.{nameof(command.Name)}");
-
-            if (command.Name == string.Empty)
-                throw new ArgumentException("Property must contain a value.", $"{ nameof(command) }.{ nameof(command.Name)}");
-
             this.EnsureCommandOptions(command);
             this.EnsureCommandConstraints(command);
         }
         #endregion
 
         #region ensure command options
-        private void EnsureCommandOptions(Command cmd)
+        private void EnsureCommandOptions(Command command)
         {
-            this.EnsureCommandOptionsFullyHydrated(cmd);
-            this.EnsureAllProvidedOptionsDefined(cmd);
-            this.EnsureNoDuplicateOptions(cmd);
-            this.EnsureOptionConstraints(cmd);
+            this.EnsureCommandOptionsFullyHydrated(command);
+            this.EnsureAllProvidedOptionsDefined(command);
+            this.EnsureNoDuplicateOptions(command);
+            this.EnsureOptionConstraints(command);
         }
         #endregion
 
         #region ensure options fully hydrated
-        private void EnsureCommandOptionsFullyHydrated(Command cmd)
+        private void EnsureCommandOptionsFullyHydrated(Command command)
         {
             CommandDefinition cmdDef = _cmdDef;
 
             foreach (var opDef in cmdDef.Options)
             {
-                var op = cmd.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
+                var op = command.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
 
                 if (op is null)
                 {
                     //op not provided, just need an empty shell with correct key
-                    cmd.AddEmptyOption(opDef.EmptyInstance());
+                    command.AddEmptyOption(opDef.EmptyInstance());
                 }
                 else
                 {
@@ -113,17 +111,17 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure all provided options defined
-        private void EnsureAllProvidedOptionsDefined(Command cmd)
+        private void EnsureAllProvidedOptionsDefined(Command command)
         {
             CommandDefinition cmdDef = _cmdDef;
 
-            if (cmd.Options.Length > 0 && !cmdDef.HasOptions)
+            if (command.Options.Length > 0 && !cmdDef.HasOptions)
                 throw new CommandInputException($"The '{cmdDef.Name}' command does not accept any options...provided options are invalid.");
 
             //if any options are defined for the command, confirm each option provided is valid
-            for (int i = 0; i < cmd.Options.Length; i++)
+            for (int i = 0; i < command.Options.Length; i++)
             {
-                var op = cmd.Options[i];
+                var op = command.Options[i];
 
                 //empty ops can always be assumed to be valid...because they were injected not provided
                 if (op is EmptyOption)
@@ -136,17 +134,17 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure no duplicate options
-        private void EnsureNoDuplicateOptions(Command cmd)
+        private void EnsureNoDuplicateOptions(Command command)
         {
             CommandDefinition cmdDef = _cmdDef;
 
             for (int i = 0; i < cmdDef.Options.Length; i++)
             {
                 var opDef = cmdDef.Options[i];
-                var opOne = cmd.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
-                for (int j = 0; j < cmd.Options.Length; j++)
+                var opOne = command.GetOptionByFlag(opDef.Flags.Verbose, opDef.Flags.Terse);
+                for (int j = 0; j < command.Options.Length; j++)
                 {
-                    var opTwo = cmd.Options[j];
+                    var opTwo = command.Options[j];
 
                     if (opTwo == opOne)
                         continue;
@@ -159,7 +157,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure option constraints
-        private void EnsureOptionConstraints(Command cmd)
+        private void EnsureOptionConstraints(Command command)
         {
             CommandDefinition cmdDef = _cmdDef;
 
@@ -169,7 +167,7 @@ namespace HatTrick.CommandLine
                 if (!opDef.HasConstraints)
                     continue;
 
-                ref Option op = ref cmd.GetOptionByRef(opDef.Key);
+                ref Option op = ref command.GetOptionByRef(opDef.Key);
 
                 foreach (var c in opDef.Constraints)
                 {
