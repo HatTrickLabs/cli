@@ -164,7 +164,7 @@ namespace HatTrick.CommandLine
         private Command BuildCommand(string[] args)
         {
             Token[] tokens = Tokenizer.Tokenize(args);
-            Command cmd = CommandParser.Parse(tokens);
+            Command cmd = Parser.Parse(tokens);
             return cmd;
         }
         #endregion

@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
-    public static class CommandParser
+    public static class Parser
     {
         #region parse
         public static Command Parse(Token[] tokens)

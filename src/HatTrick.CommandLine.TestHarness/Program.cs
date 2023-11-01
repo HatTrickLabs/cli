@@ -21,7 +21,7 @@ namespace HatTrick.CommandLine.TestHarness
         {
             string[] args = Scanner.Scan(input);
             Token[] tokens = Tokenizer.Tokenize(args);
-            Command cmd = CommandParser.Parse(tokens);
+            Command cmd = Parser.Parse(tokens);
             return cmd;
         }
 
