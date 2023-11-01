@@ -312,9 +312,9 @@ namespace HatTrick.CommandLine
         private void ToggleMask()
         {
             if (_isMasked)
-                UnMaskOutput();
+                this.UnMaskOutput();
             else
-                ReMaskOutput();
+                this.ReMaskOutput();
         }
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace HatTrick.CommandLine.TestHarness
 {
@@ -17,14 +18,6 @@ namespace HatTrick.CommandLine.TestHarness
 #endif
         }
 
-        static Command Test(string input)
-        {
-            string[] args = Scanner.Scan(input);
-            Token[] tokens = Tokenizer.Tokenize(args);
-            Command cmd = Parser.Parse(tokens);
-            return cmd;
-        }
-
         static void RegisterCommands(DefinitionRegistry registry)
         {
             registry.Add(new NamespaceDefinition("htl", "HatTrick Labs"));
@@ -36,6 +29,20 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (terse: "-c", verbose: "--count"));
             cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "arg must be within range 1..100.");
             registry.Add(cmdDef);
+
+            cmdDef = new CommandDefinition(name: "htl.base64");
+            cmdDef.Handler = (cmd) => 
+            {
+                string result = cmd["reverse"].Value == true
+                ? Encoding.UTF8.GetString(Convert.FromBase64String(cmd["value"].Value))
+                : Convert.ToBase64String(Encoding.UTF8.GetBytes(cmd["value"].Value));
+
+                Console.WriteLine(result); 
+            };
+            cmdDef.AddOption<string>(key: "value", help: "The value to base 64 encode or decode", (terse: "-v", verbose: "--verbose"));
+            cmdDef.AddOption<bool>(key: "reverse", defaultArg: false, help: "Reverse the base 64 encoding (decode).", (terse: "-r", verbose: "--reverse"));
+            registry.Add(cmdDef);
+
         }
 
         static void GenerateGuids(int count, string format)
