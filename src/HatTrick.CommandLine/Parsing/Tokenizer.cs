@@ -72,7 +72,7 @@ namespace HatTrick.CommandLine
                     {
                         tokens.Add(new ExplicitAssignToken(arg));
                     }
-                    else if (arg[0] != '-')//def not a flag
+                    else if (arg[0] != '-')//not a flag
                     {
                         if (tokens.Length == 0)//arg[0] is not a - and no other tokens, must assume arg is the command
                             tokens.Add(new CommandToken(arg));
@@ -80,7 +80,7 @@ namespace HatTrick.CommandLine
                         else//already have a token in the set, arg must be an op argument
                             tokens.Add(new ArgumentToken(arg));
                     }
-                    else if (arg.Length < 2)
+                    else if (arg.Length < 2)//not arg, explicit assign or command...required to be at LEAST 2 chars.
                     {
                         throw new CommandInputException(this.ExceptionMessageHelper(arg));
                     }
@@ -90,6 +90,10 @@ namespace HatTrick.CommandLine
                     }
                     else if (arg[0] == '-')//must be a flag
                     {
+                        //if (arg[1] == '-')
+                        //{
+                        //    throw new CommandInputException(this.ExceptionMessageHelper(arg));
+                        //}
                         if (arg.Length == 2)//must be single terse a flag
                         {
                             tokens.Add(new TerseFlagToken(arg));
@@ -107,10 +111,13 @@ namespace HatTrick.CommandLine
                                 {
                                     string left = new string(arg.AsSpan(0, i));
                                     tokens.Add(new VerboseFlagToken(left));
+
                                     string assign = new string(arg[i], 1);
                                     tokens.Add(new ExplicitAssignToken(assign));
+
                                     string right = new string(arg.AsSpan(++i));
                                     tokens.Add(new ArgumentToken(right));
+
                                     complete = true;
                                 }
                             }

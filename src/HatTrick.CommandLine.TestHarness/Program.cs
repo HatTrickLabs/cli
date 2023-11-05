@@ -7,7 +7,13 @@ namespace HatTrick.CommandLine.TestHarness
     {
         static void Main(string[] args)
         {
-            string input = "htl.guid -u \"100 00\" --format X --silent:true    -abc=\"d:\\tmp\"  -xyz=abc -efg:-b   --quiet=true --force:true -p \"d:\tmp\abcdefg xyz\" ";
+            //string input = "htl.guid -u \"100 00\" --format X --silent:true    -abc=\"d:\\tmp\"  -xyz=abc -efg:-b   --quiet=true --force:true -p \"d:\tmp\abcdefg xyz\" ";
+
+            string input = "";
+            string[] arguments = Scanner.Scan(input);
+            Token[] tokens = Tokenizer.Tokenize(arguments);
+            Command cmd = Parser.Parse(tokens);
+            return;
             var registry = DefinitionRegistry.GetInstance();
             RegisterCommands(registry);
 

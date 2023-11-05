@@ -19,114 +19,37 @@ namespace HatTrick.CommandLine.Test
             Assert.Empty(result);
         }
 
-        //[Fact]
-        //public void Tokenize_WhenInput_IsEmpty_ShouldReturn_Command_WithoutOptions()
-        //{
-        //    string[] input = Array.Empty<string>();
-        //    Command result = Tokenizer.Tokenize(input);
-        //    Assert.Equal(Array.Empty<Option>(), result.GetOptions());
-        //}
-
-        //[Fact]
-        //public void Tokenize_WhenInput_IsCommandlessWithOptions_ShouldReturn_DefaultCommand_WithOptions()
-        //{
-        //    string[] input = new string[] { "-a", "-b" };
-        //    Command result = Tokenizer.Tokenize(input);
-        //    Assert.Equal(CommandDefinition.DefaultCommandName, result.Name);
-        //    Assert.Collection<Option>(result.GetOptions(),
-        //        (x) => Assert.Equal("-a", x.Flag),
-        //        (x) => Assert.Equal("-b", x.Flag)
-        //    );
-        //}
-
-        //[Fact]
-        //public void Tokenize_WhenInput_HasCommandWithOptions_ShouldReturn_Command_WithOptions()
-        //{
-        //    string[] input = new string[] { "test", "-a", "-b" };
-        //    Command result = Tokenizer.Tokenize(input);
-        //    Assert.Equal("test", result.Name);
-        //    Assert.Collection<Option>(result.GetOptions(),
-        //        (x) => Assert.Equal("-a", x.Flag),
-        //        (x) => Assert.Equal("-b", x.Flag)
-        //    );
-        //}
-
-        //[Fact]
-        //public void Tokenize_WhenInput_ContainsArgumentTokenStartingWithDash_WithNoExplicitAssign_Should_TreatTokenAsFlag()
-        //{
-        //    string[] input = new string[] { "add", "-x", "-3", "-y", "3" };
-        //    Command result = Tokenizer.Tokenize(input);
-        //    Assert.Equal("add", result.Name);
-        //    Assert.Collection<Option>(result.GetOptions(),
-        //        (x) => Assert.Equal("-x", x.Flag),
-        //        (x) => Assert.Equal("-3", x.Flag),
-        //        (x) => Assert.Equal("-y", x.Flag)
-        //    );
-        //}
-
-        //[Fact]
-        //public void Tokenize_WhenInput_ContainsArgumentTokenStartingWithDash_WithExplicitEqualAssign_Should_TreatTokenAsArgument()
-        //{
-        //    string[] input = new string[] { "add", "-x", "=", "-3", "-y", "3" };
-        //    Command result = Tokenizer.Tokenize(input);
-        //    Assert.Equal("add", result.Name);
-        //    Assert.Collection<Option>(result.GetOptions(),
-        //        (x) => { Assert.Equal("-x", x.Flag); Assert.Equal("-3", x.Argument); },
-        //        (x) => Assert.Equal("-y", x.Flag)
-        //    );
-        //}
-
-        //[Fact]
-        //public void Tokenize_WhenInput_ContainsArgumentTokenStartingWithDash_WithExplicitColonAssign_Should_TreatTokenAsArgument()
-        //{
-        //    string[] input = new string[] { "add", "-x", ":", "-3", "-y", "3" };
-        //    Command result = Tokenizer.Tokenize(input);
-        //    Assert.Equal("add", result.Name);
-        //    Assert.Collection<Option>(result.GetOptions(),
-        //        (x) => { Assert.Equal("-x", x.Flag); Assert.Equal("-3", x.Argument); },
-        //        (x) => { Assert.Equal("-y", x.Flag); Assert.Equal("3", x.Argument); }
-        //    );
-        //}
-
-        //[Fact]
-        //public void Tokenize_WhenFirstOptionToken_IsExplicitAssignEqualToken_ShouldThrow_CommandInputException()
-        //{
-        //    string[] input = new string[] { "abc", "=", "-x" };
-        //    Action action = () => Tokenizer.Tokenize(input);
-        //    Assert.Throws<CommandInputException>(action);
-        //}
-
         [Fact]
-        public void Tokenize_WhenAnyToken_IsSingleDashOnly_ShouldThrow_CommandInputException()
+        public void Tokenize_WhenAnyArg_IsSignleDash_ShouldThrow_CommandInputException()
         {
             string[] input = new string[] { "abc", "=", "-" };
             Action action = () => Tokenizer.Tokenize(input);
             Assert.Throws<CommandInputException>(action);
         }
 
-        //[Fact]
-        //public void Tokenize_WhenFirstToken_ContainsNoDash_ShouldThrow_CommandInputException()
-        //{
-        //    string[] input = new string[] { "abc", "xyz" };
-        //    Action action = () => Tokenizer.Tokenize(input);
-        //    Assert.Throws<CommandInputException>(action);
-        //}
+        [Fact]
+        public void Tokenize_WhenArgAtIndexZero_DoesNot_StartWithDash_ShouldTokenize_AsCommandToken()
+        {
+            string[] input = new string[] { "abc" };
+            Token[] tokens = Tokenizer.Tokenize(input);
+            Assert.IsAssignableFrom<CommandToken>(tokens[0]);
+        }
 
-        //[Fact]
-        //public void Tokenize_WhenAnyOption_HasMultipleArguments_ShouldThrow_CommandInputException()
-        //{
-        //    string[] input = new string[] { "-a", "a", "-b", "b", "-c", "c", "d" };
-        //    Action action = () => Tokenizer.Tokenize(input);
-        //    Assert.Throws<CommandInputException>(action);
-        //}
+        [Fact]
+        public void Tokenize_WhenArgAtIndex_GreaterThan_Zero_DoesNot_StartWithDash_ShouldTokenize_AsArgument()
+        {
+            string[] input = new string[] { "abc", "-f", "xyz" };
+            Token[] tokens = Tokenizer.Tokenize(input);
+            Assert.IsAssignableFrom<ArgumentToken>(tokens[2]);
+        }
 
-        //[Fact]
-        //public void Tokenize_WhenAnyOption_HasMultipleArguments_WithExplicitAssigns_ShouldThrow_CommandInputException()
-        //{
-        //    string[] input = new string[] { "-a", "a", "-b", "b", "-c", "=", "c", "=", "d" };
-        //    Action action = () => Tokenizer.Tokenize(input);
-        //    Assert.Throws<CommandInputException>(action);
-        //}
+        [Fact]
+        public void Tokenize_WhenArg_IsLength2_AndOnlyContainsDashes_ShouldThrow_CommandInputException()
+        {
+            string[] input = new string[] { "abc", "--", "y" };
+            Action action = () => Tokenizer.Tokenize(input);
+            Assert.Throws<CommandInputException>(action);
+        }
 
         [Fact]
         public void Tokenize_WhenCompoundFlag_ShouldUnrollCompoundFlag_Into_IndividualTokens()

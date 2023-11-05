@@ -39,6 +39,17 @@ namespace HatTrick.CommandLine
     }
     #endregion
 
+    #region namespace token
+    public class NamespaceToken : Token
+    {
+        #region constructor
+        public NamespaceToken(string value) : base(value)
+        {
+        }
+        #endregion
+    }
+    #endregion
+
     #region explicit assign token
     public class ExplicitAssignToken : Token
     {
