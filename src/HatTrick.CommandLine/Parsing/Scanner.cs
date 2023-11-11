@@ -7,13 +7,13 @@ namespace HatTrick.CommandLine
     public static class Scanner
     {
         #region scan
-        public static string[] Scan(string input, bool keepLiteralQuotes = false)
+        public static string[] Scan(string input)
         {
             if (input is null)
                 throw new ArgumentNullException(nameof(input));
 
             //no sense in holding a scanner for multi-generations of GC...just use and release.
-            var instance = new Instance(input, keepLiteralQuotes);
+            var instance = new Instance(input);
 
             return instance.Scan();
         }
@@ -28,7 +28,6 @@ namespace HatTrick.CommandLine
             private static readonly int _maxStackallocLength;
             private static readonly string[] _empty;
             private string _src;
-            private bool _keepLitQuotes;
             private int _srcLength;
             private int _index;
             #endregion
@@ -42,7 +41,7 @@ namespace HatTrick.CommandLine
                 _empty = Array.Empty<string>();
             }
 
-            internal Instance(string input, bool keepLiteralQuotes = false)
+            internal Instance(string input)
             {
                 if (input.Length > _maxSrcLength)
                     throw new RangeOverflowException($"{nameof(Scanner)} has a maximum internal buffer length for {nameof(input)} of {_maxSrcLength}.");
@@ -50,7 +49,6 @@ namespace HatTrick.CommandLine
                 _src = input;
                 _srcLength = input.Length;
 
-                _keepLitQuotes = keepLiteralQuotes;
                 _index = 0;
             }
             #endregion
@@ -83,7 +81,6 @@ namespace HatTrick.CommandLine
                 if (_srcLength == 0)
                     return _empty;
 
-                bool keepLitQuotes = _keepLitQuotes;
                 const char dblQuote = '\"';
                 const char space = ' ';
                 const char tab = '\t';
@@ -106,11 +103,7 @@ namespace HatTrick.CommandLine
                     if (c == dblQuote && previous != escape)
                     {
                         inDblQuote = !inDblQuote;
-                        if (keepLitQuotes)
-                        {
-                            argument[at++] = c;
-                        }
-                        if (at > 1)//the 1 could be the open double quote we just added in 'keepLitQuotes'
+                        if (at > 1 || !inDblQuote)// "-f""true" || ""
                         {
                             arguments.Add(new string(argument.Slice(0, at)));
                             at = 0;

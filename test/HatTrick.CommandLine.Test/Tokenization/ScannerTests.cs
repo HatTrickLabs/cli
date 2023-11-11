@@ -188,33 +188,11 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Scan_ShouldMaintain_QuotedWhitespace_AndQuotes_WhenKeepLiteralQuotesOptionEnabled()
-        {
-            string value = "This is unquoted... \"This is quoted\"...";
-            string[] result = Scanner.Scan(value, true);
-            Assert.Collection<string>(result,
-                (x) => Assert.Equal("This", x),
-                (x) => Assert.Equal("is", x),
-                (x) => Assert.Equal("unquoted...", x),
-                (x) => Assert.Equal("\"This is quoted\"", x),
-                (x) => Assert.Equal("...", x)
-            ); ;
-        }
-
-        [Fact]
         public void Scan_ShouldTreat_QuoteAsLiteral_WhenEscaped_WhenKeepLiteralQuotesOptionDisabled()
         {
             string value = "\"This is \\\"quoted\\\".\"";
             string[] result = Scanner.Scan(value);
             Assert.Equal("This is \"quoted\".", result[0]);
-        }
-
-        [Fact]
-        public void Scan_ShouldTreat_QuoteAsLiteral_WhenEscaped_WhenKeepLiteralQuotesOptionEnabled()
-        {
-            string value = "\"This is \\\"quoted\\\".\"";
-            string[] result = Scanner.Scan(value, true);
-            Assert.Equal("\"This is \"quoted\".\"", result[0]);
         }
 
         [Fact]

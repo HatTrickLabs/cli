@@ -169,7 +169,7 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get executor
+        #region get command executor
         public CommandExecutor GetCommandExecutor(string input)
         {
             Command cmd = this.BuildCommand(input);

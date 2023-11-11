@@ -65,92 +65,45 @@ namespace HatTrick.CommandLine
             {
                 var tokens = new SetOf<Token>();
                 Token prev = null;
-
+                Token tkn = null;
                 while (this.Read(out string arg))
                 {
-                    if (arg.Length == 1 && (arg[0] == '=' || arg[0] == ':'))//must be explicit assign
+                    if (prev is null)
                     {
-                        tokens.Add(new ExplicitAssignToken(arg));
-                    }
-                    else if (arg[0] != '-')//not a flag
-                    {
-                        if (tokens.Length == 0)//arg[0] is not a - and no other tokens, must assume arg is the command
-                            tokens.Add(new CommandToken(arg));
+                        //must be command or flag
+                        if (CommandToken.IsValid(arg))
+                            tkn = new CommandToken(arg);
 
-                        else//already have a token in the set, arg must be an op argument
-                            tokens.Add(new ArgumentToken(arg));
-                    }
-                    else if (arg.Length < 2)//not arg, explicit assign or command...required to be at LEAST 2 chars.
-                    {
-                        throw new CommandInputException(this.ExceptionMessageHelper(arg));
-                    }
-                    else if (prev is ExplicitAssignToken)//must be arg
-                    {
-                        tokens.Add(new ArgumentToken(arg));
-                    }
-                    else if (arg[0] == '-')//must be a flag
-                    {
-                        //if (arg[1] == '-')
-                        //{
-                        //    throw new CommandInputException(this.ExceptionMessageHelper(arg));
-                        //}
-                        if (arg.Length == 2)//must be single terse a flag
-                        {
-                            tokens.Add(new TerseFlagToken(arg));
-                        }
-                        else if (arg[1] == '-')//must be verbose flag
-                        {
-                            if (arg.Length == 3) //not verbose if only 3 chars.... --x NOPE
-                                throw new CommandInputException(this.ExceptionMessageHelper(arg));
+                        else if (TerseFlagToken.IsValid(arg))
+                            tkn = new TerseFlagToken(arg);
 
-                            bool complete = false;
-                            for (int i = 2; i < arg.Length; i++)
-                            {
-                                char c = arg[i];
-                                if (c == '=' || c == ':')//explicit assign char
-                                {
-                                    string left = new string(arg.AsSpan(0, i));
-                                    tokens.Add(new VerboseFlagToken(left));
+                        else if (VerboseFlagToken.IsValid(arg))
+                            tkn = new VerboseFlagToken(arg);
 
-                                    string assign = new string(arg[i], 1);
-                                    tokens.Add(new ExplicitAssignToken(assign));
+                        else if (CompoundTerseFlagToken.IsValid(arg))
+                            tkn = new CompoundTerseFlagToken(arg);
 
-                                    string right = new string(arg.AsSpan(++i));
-                                    tokens.Add(new ArgumentToken(right));
-
-                                    complete = true;
-                                }
-                            }
-
-                            if (!complete)
-                                tokens.Add(new VerboseFlagToken(arg));
-                        }
                         else
+                            throw new CommandInputException(this.ExceptionMessageHelper(arg));
+                    }
+                    else
+                    {
+                        if (prev is CommandToken || prev is ArgumentToken)
                         {
-                            //unroll compound terse flags
-                            for (int i = 1; i < arg.Length; i++)
-                            {
-                                if (arg[i] == '=' || arg[i] == ':')
-                                {
-                                    string assign = new string(arg[i], 1);
-                                    tokens.Add(new ExplicitAssignToken(assign));
-                                    if (++i < arg.Length)
-                                    {
-                                        string right = new string(arg.AsSpan(i));
-                                        tokens.Add(new ArgumentToken(right));
-                                    }
-                                    break;
-                                }
-                                else
-                                {
-                                    string flag = "-" + arg[i];
-                                    tokens.Add(new TerseFlagToken(flag));
-                                }
-                            }
+                            //must be flag
+                            if (TerseFlagToken.IsValid(arg))
+                                tkn = new TerseFlagToken(arg);
+
+                            else if (VerboseFlagToken.IsValid(arg))
+                                tkn = new VerboseFlagToken(arg);
+
+                            else
+                                throw new CommandInputException(this.ExceptionMessageHelper(arg));
                         }
                     }
 
-                    prev = tokens[^1];
+                    tokens.Add(tkn);
+                    prev = tkn;
                 }
 
                 return tokens;
