@@ -73,13 +73,27 @@ namespace HatTrick.CommandLine
                         case CommandToken cmd:
                             cmdToken = cmd;
                             break;
+
                         case ExplicitAssignToken _:
-                            if (options.Length == 0 || options[^1].HasArgument)
+                            if (options.Length == 0 || this.Peek() is not ArgumentToken)
                                 throw new CommandParseException(this.ExceptionHelper("Unexpected explicit assignment", token));
                             break;
-                        case FlagToken _:
+
+                        case VerboseFlagToken _:
                             options.Add(new Option(token.Value));
                             break;
+
+                        case TerseFlagToken _:
+                            options.Add(new Option(token.Value));
+                            break;
+
+                        case CompoundTerseFlagToken compoundFlag:
+                            foreach (TerseFlagToken flag in compoundFlag.Unroll())
+                            {
+                                options.Add(new Option(flag.Value));
+                            }
+                            break;
+
                         case ArgumentToken _:
                             if (options.Length == 0)
                                 throw new CommandParseException(this.ExceptionHelper("Unexpected argument, positional arguments not supported", token));
@@ -90,6 +104,7 @@ namespace HatTrick.CommandLine
 
                             op.SetArgument(token.Value);
                             break;
+
                         default:
                             throw new CommandParseException($"Encountered unknown token type: {token.GetType().Name}");
                     }

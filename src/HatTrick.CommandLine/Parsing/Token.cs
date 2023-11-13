@@ -14,7 +14,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructor
-        public Token(string value)
+        protected Token(string value)
         {
             _value = value;
         }
@@ -50,7 +50,7 @@ namespace HatTrick.CommandLine
     public class CommandToken : Token
     {
         #region constructor
-        public CommandToken(string value) : base(value)
+        internal CommandToken(string value) : base(value)
         { }
         #endregion
 
@@ -60,46 +60,20 @@ namespace HatTrick.CommandLine
             if (!Token.IsValid(value))
                 return false;
 
-            for (int i = 0; i < value.Length; i++)
-            {
-                char c = value[i];
-                if (i == 0 && (c == '.' || c == '-'))
-                        return false;
-
-                if (!(char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-'))
-                    return false;
-            }
-
-            return true;
-        }
-        #endregion
-    }
-    #endregion
-
-    #region namespace token
-    public class NamespaceToken : Token
-    {
-        #region constructor
-        public NamespaceToken(string value) : base(value)
-        {
-        }
-        #endregion
-
-        #region is valid
-        public new static bool IsValid(string value)
-        {
-            if (!Token.IsValid(value))
+            char c = value[0];
+            if (c == '.' || c == '-')
                 return false;
 
-            for (int i = 0; i < value.Length; i++)
+            for (int i = 1; i < value.Length - 1; i++)
             {
-                char c = value[i];
-                if (i == 0 && (c == '.' || c == '-'))
-                    return false;
-
+                c = value[i];
                 if (!(char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-'))
                     return false;
             }
+
+            c = value[^1];
+            if (c == '.' || c == '-')
+                return false;
 
             return true;
         }
@@ -111,7 +85,7 @@ namespace HatTrick.CommandLine
     public class ExplicitAssignToken : Token
     {
         #region constructor
-        public ExplicitAssignToken(string value) : base(value)
+        internal ExplicitAssignToken(string value) : base(value)
         { }
         #endregion
 
@@ -139,7 +113,7 @@ namespace HatTrick.CommandLine
     public abstract class FlagToken : Token
     {
         #region constructor
-        public FlagToken(string value) : base(value)
+        internal FlagToken(string value) : base(value)
         { }
         #endregion
 
@@ -152,11 +126,40 @@ namespace HatTrick.CommandLine
     }
     #endregion
 
+    #region terse flag token
+    public class TerseFlagToken : FlagToken
+    {
+        #region constructor
+        internal TerseFlagToken(string value) : base(value)
+        { }
+        #endregion
+
+        #region is valid
+        public new static bool IsValid(string value)
+        {
+            if (!FlagToken.IsValid(value))
+                return false;
+
+            if (value.Length != 2)
+                return false;
+
+            if (value[1] == '-')
+                return false;
+
+            if (!char.IsLetter(value[1]))
+                return false;
+
+            return true;
+        }
+        #endregion
+    }
+    #endregion
+
     #region compound terse flag token
     public class CompoundTerseFlagToken : FlagToken
     {
         #region constructors
-        public CompoundTerseFlagToken(string value) : base(value)
+        internal CompoundTerseFlagToken(string value) : base(value)
         { }
         #endregion
 
@@ -183,33 +186,17 @@ namespace HatTrick.CommandLine
             return true;
         }
         #endregion
-    }
-    #endregion
 
-    #region terse flag token
-    public class TerseFlagToken : FlagToken
-    {
-        #region constructor
-        public TerseFlagToken(string value) : base(value)
-        { }
-        #endregion
-
-        #region is valid
-        public new static bool IsValid(string value)
+        #region unroll
+        internal TerseFlagToken[] Unroll()
         {
-            if (!FlagToken.IsValid(value))
-                return false;
-
-            if (value.Length != 2)
-                return false;
-
-            if (value[1] == '-')
-                return false;
-
-            if (!char.IsLetter(value[1]))
-                return false;
-
-            return true;
+            SetOf<TerseFlagToken> flags = new SetOf<TerseFlagToken>();
+            string compound = base.Value;
+            for (int i = 1; i < compound.Length; i++)
+            {
+                flags.Add(new TerseFlagToken("-" + compound[i]));
+            }
+            return flags.ToArray();
         }
         #endregion
     }
@@ -219,7 +206,7 @@ namespace HatTrick.CommandLine
     public class VerboseFlagToken : FlagToken
     {
         #region constructor
-        public VerboseFlagToken(string value) : base(value)
+        internal VerboseFlagToken(string value) : base(value)
         { }
         #endregion
 
@@ -255,7 +242,7 @@ namespace HatTrick.CommandLine
     public class ArgumentToken : Token
     {
         #region constructor
-        public ArgumentToken(string value) : base(value)
+        internal ArgumentToken(string value) : base(value)
         { }
         #endregion
 

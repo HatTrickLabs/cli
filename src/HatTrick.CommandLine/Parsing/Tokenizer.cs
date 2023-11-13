@@ -64,46 +64,34 @@ namespace HatTrick.CommandLine
             internal SetOf<Token> Tokenize()
             {
                 var tokens = new SetOf<Token>();
-                Token prev = null;
                 Token tkn = null;
                 while (this.Read(out string arg))
                 {
-                    if (prev is null)
-                    {
-                        //must be command or flag
-                        if (CommandToken.IsValid(arg))
-                            tkn = new CommandToken(arg);
+                    if (ExplicitAssignToken.IsValid(arg))
+                        tkn = new ExplicitAssignToken(arg);
 
-                        else if (TerseFlagToken.IsValid(arg))
-                            tkn = new TerseFlagToken(arg);
+                    else if (CommandToken.IsValid(arg) && tokens.Length == 0)//command must be first
+                        tkn = new CommandToken(arg);
 
-                        else if (VerboseFlagToken.IsValid(arg))
-                            tkn = new VerboseFlagToken(arg);
+                    else if (TerseFlagToken.IsValid(arg))
+                        tkn = new TerseFlagToken(arg);
 
-                        else if (CompoundTerseFlagToken.IsValid(arg))
-                            tkn = new CompoundTerseFlagToken(arg);
+                    else if (VerboseFlagToken.IsValid(arg))
+                        tkn = new VerboseFlagToken(arg);
 
-                        else
-                            throw new CommandInputException(this.ExceptionMessageHelper(arg));
-                    }
+                    else if (CompoundTerseFlagToken.IsValid(arg))
+                        tkn = new CompoundTerseFlagToken(arg);
+
+                    else if (VerboseFlagToken.IsValid(arg))
+                        tkn = new VerboseFlagToken(arg);
+
+                    else if (ArgumentToken.IsValid(arg))
+                        tkn = new ArgumentToken(arg);
+
                     else
-                    {
-                        if (prev is CommandToken || prev is ArgumentToken)
-                        {
-                            //must be flag
-                            if (TerseFlagToken.IsValid(arg))
-                                tkn = new TerseFlagToken(arg);
-
-                            else if (VerboseFlagToken.IsValid(arg))
-                                tkn = new VerboseFlagToken(arg);
-
-                            else
-                                throw new CommandInputException(this.ExceptionMessageHelper(arg));
-                        }
-                    }
+                        throw new CommandInputException(this.ExceptionMessageHelper(arg));
 
                     tokens.Add(tkn);
-                    prev = tkn;
                 }
 
                 return tokens;

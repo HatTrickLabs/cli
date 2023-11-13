@@ -87,9 +87,12 @@ namespace HatTrick.CommandLine
                 const char nl = '\n';
                 const char cr = '\r';
                 const char escape = '\\';
+                const char eq = '=';
+                const char colon = ':';
                 char previous = '\0';
 
                 Func<char, bool> isWhitespace = (c) => c == space || c == tab || c == nl || c == cr;
+                Func<char, bool> isExplicitAssign = (c) => c == eq || c == colon;
 
                 bool inDblQuote = false;
 
@@ -103,26 +106,31 @@ namespace HatTrick.CommandLine
                     if (c == dblQuote && previous != escape)
                     {
                         inDblQuote = !inDblQuote;
-                        if (at > 1 || !inDblQuote)// "-f""true" || ""
-                        {
+                        if (at > 1 || !inDblQuote)// "-f""true" or ""
                             arguments.Add(new string(argument.Slice(0, at)));
-                            at = 0;
-                        }
+
+                        at = 0;
                     }
                     else if (isWhitespace(c) && !inDblQuote)
                     {
                         if (at > 0)
-                        {
                             arguments.Add(new string(argument.Slice(0, at)));
-                            at = 0;
-                        }
+
+                        at = 0;
+                    }
+                    else if (isExplicitAssign(c) && !inDblQuote)
+                    {
+                        if (at > 0)
+                            arguments.Add(new string(argument.Slice(0, at)));
+
+                        arguments.Add(new string(c, 1));
+
+                        at = 0;
                     }
                     else if (c == escape)
                     {
                         if (Peek() != '"')
-                        {
                             argument[at++] = c;
-                        }
                     }
                     else
                     {
@@ -132,9 +140,7 @@ namespace HatTrick.CommandLine
                 }
 
                 if (at > 0)
-                {
                     arguments.Add(new string(argument.Slice(0, at)));
-                }
 
                 return arguments.ToArray();
             }

@@ -11,7 +11,6 @@ namespace HatTrick.CommandLine.TestHarness
         {
             var registry = DefinitionRegistry.GetInstance();
             RegisterCommands(registry);
-
             CommandExecutor exe = registry.GetCommandExecutor(args);
             exe.Execute();
 #if DEBUG
@@ -21,14 +20,15 @@ namespace HatTrick.CommandLine.TestHarness
 
         static void RegisterCommands(DefinitionRegistry registry)
         {
-            registry.Add(new NamespaceDefinition("htl", "HatTrick Labs"));
+            registry.Add(new NamespaceDefinition("htl", "HatTrick Labs namespace"));
 
-            var cmdDef = new CommandDefinition(name: "htl.guid");   
+            var cmdDef = new CommandDefinition(name: "htl.guid");
+            cmdDef.Help = "Generate one or many GUID values.";
             cmdDef.Handler = Mapper.MapCommand(cmdDef).ToSignature<Action<int, string>>().Then(GenerateGuids);
             cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", (terse: "-f", verbose: "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
             cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (terse: "-c", verbose: "--count"));
-            cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "arg must be within range 1..100.");
+            cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "1..100.");
             registry.Add(cmdDef);
 
             cmdDef = new CommandDefinition(name: "htl.base64");

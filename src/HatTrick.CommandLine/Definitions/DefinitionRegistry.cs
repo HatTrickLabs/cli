@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Reflection.Metadata.Ecma335;
+using System.Text;
 
 namespace HatTrick.CommandLine
 {
@@ -172,6 +173,9 @@ namespace HatTrick.CommandLine
         #region get command executor
         public CommandExecutor GetCommandExecutor(string input)
         {
+            if (input is null)
+                throw new ArgumentNullException(nameof(input));
+
             Command cmd = this.BuildCommand(input);
             CommandDefinition cmdDef = this.GetCommandDefinition(cmd.Name);
             var executor = new CommandExecutor(cmdDef, cmd);
@@ -180,10 +184,31 @@ namespace HatTrick.CommandLine
 
         public CommandExecutor GetCommandExecutor(string[] args)
         {
-            Command cmd = this.BuildCommand(args);
-            CommandDefinition cmdDef = this.GetCommandDefinition(cmd.Name);
-            var executor = new CommandExecutor(cmdDef, cmd);
-            return executor;
+            if (args is null)
+                throw new ArgumentNullException(nameof(args));
+
+            if (args.Length == 0)
+                return this.GetCommandExecutor(string.Empty);
+
+            //length of each arg + spaces + possible quotes around each arg
+            int maxCapacity = args.Sum(a => a.Length) + args.Length + (args.Length * 2);
+            var sb = new StringBuilder(maxCapacity);
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                string arg = args[i];
+
+                if (i > 0)
+                    sb.Append(' ');
+
+                if (arg.Contains(' '))
+                    sb.Append("\"").Append(arg).Append("\"");
+                else
+                    sb.Append(arg);
+            }
+
+            string input = sb.ToString();
+            return this.GetCommandExecutor(input);
         }
         #endregion
     }
