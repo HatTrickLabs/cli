@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace HatTrick.CommandLine.TestHarness
@@ -9,49 +8,58 @@ namespace HatTrick.CommandLine.TestHarness
         //string input = "htl.guid -u \"100 00\" --format X --silent:true    -abc=\"d:\\tmp\"  -xyz=abc -efg:-b   --quiet=true --force:true -p \"d:\tmp\abcdefg xyz\" ";
         static void Main(string[] args)
         {
-            var registry = DefinitionRegistry.GetInstance();
-            RegisterCommands(registry);
-            CommandExecutor exe = registry.GetCommandExecutor(args);
+            RegisterCommandDefinitions();
+
+            CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(args);
             exe.Execute();
+
 #if DEBUG
             Console.ReadLine();
 #endif
         }
 
-        static void RegisterCommands(DefinitionRegistry registry)
+        static void RegisterCommandDefinitions()
         {
-            registry.Add(new NamespaceDefinition("htl", "HatTrick Labs namespace"));
+            RegisterNamespaces();
+            RegisterGuidCommand();
+            RegisterBase64Command();
+        }
 
+        static void RegisterNamespaces()
+        {
+            DefinitionRegistry.GetInstance().Add(new NamespaceDefinition("htl", "HatTrick Labs namespace"));
+        }
+
+        static void RegisterGuidCommand()
+        {
             var cmdDef = new CommandDefinition(name: "htl.guid");
             cmdDef.Help = "Generate one or many GUID values.";
-            cmdDef.Handler = Mapper.MapCommand(cmdDef).ToSignature<Action<int, string>>().Then(GenerateGuids);
+            cmdDef.Handler = (cmd) =>
+            {
+                for (int i = 0; i < cmd["count"].Value; i++)
+                    Console.WriteLine(Guid.NewGuid().ToString(cmd["format"].Value));
+            };
             cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", (terse: "-f", verbose: "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
             cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (terse: "-c", verbose: "--count"));
             cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "1..100.");
-            registry.Add(cmdDef);
+            DefinitionRegistry.GetInstance().Add(cmdDef);
+        }
 
-            cmdDef = new CommandDefinition(name: "htl.base64");
-            cmdDef.Handler = (cmd) => 
+        static void RegisterBase64Command()
+        {
+            var cmdDef = new CommandDefinition(name: "htl.base64");
+            cmdDef.Handler = (cmd) =>
             {
                 string result = cmd["reverse"].Value == true
                 ? Encoding.UTF8.GetString(Convert.FromBase64String(cmd["value"].Value))
                 : Convert.ToBase64String(Encoding.UTF8.GetBytes(cmd["value"].Value));
 
-                Console.WriteLine(result); 
+                Console.WriteLine(result);
             };
             cmdDef.AddOption<string>(key: "value", help: "The value to base 64 encode or decode", (terse: "-v", verbose: "--verbose"));
             cmdDef.AddOption<bool>(key: "reverse", defaultArg: false, help: "Reverse the base 64 encoding (decode).", (terse: "-r", verbose: "--reverse"));
-            registry.Add(cmdDef);
-
-        }
-
-        static void GenerateGuids(int count, string format)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                Console.WriteLine(Guid.NewGuid().ToString(format));
-            }
+            DefinitionRegistry.GetInstance().Add(cmdDef);
         }
     }
 }

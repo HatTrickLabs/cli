@@ -101,7 +101,7 @@ namespace HatTrick.CommandLine
 
                 int at = 0;
                 char c;
-                while (Read(out c))
+                while (this.Read(out c))
                 {
                     if (c == dblQuote && previous != escape)
                     {
@@ -129,7 +129,7 @@ namespace HatTrick.CommandLine
                     }
                     else if (c == escape)
                     {
-                        if (Peek() != '"')
+                        if (this.Peek() != '"')
                             argument[at++] = c;
                     }
                     else
