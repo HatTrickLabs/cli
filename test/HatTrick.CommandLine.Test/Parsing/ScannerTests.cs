@@ -6,6 +6,20 @@ namespace HatTrick.CommandLine.Test
     public class ScannerTests
     {
         [Fact]
+        public void Scan_IfInput_IsNull_ShouldThrow_ArgumentNullException()
+        {
+            Action action = () => Scanner.Scan(null);
+            Assert.Throws<ArgumentNullException>(action);
+        }
+
+        [Fact]
+        public void Scan_IfInput_IsEmpty_ShouldReturn_EmptyArrayOfString()
+        {
+            string[] result = Scanner.Scan(string.Empty);
+            Assert.Equal(Array.Empty<string>(), result);
+        }
+
+        [Fact]
         public void Scan_ShouldSplit_SingleCharTokens_OnSpace()
         {
             string value = "x y z";
@@ -184,11 +198,53 @@ namespace HatTrick.CommandLine.Test
                 (x) => Assert.Equal("unquoted...", x),
                 (x) => Assert.Equal("This is quoted", x),
                 (x) => Assert.Equal("...", x)
-           ) ;
+           );
         }
 
         [Fact]
-        public void Scan_ShouldTreat_QuoteAsLiteral_WhenEscaped_WhenKeepLiteralQuotesOptionDisabled()
+        public void Scan_ShouldSplit_OnEqual_ExplicitAssign()
+        {
+            string value = "abc=123 abc =123 abc= 123 abc = 123";
+            string[] result = Scanner.Scan(value);
+            Assert.Collection<string>(result,
+                 (x) => Assert.Equal("abc", x),
+                (x) => Assert.Equal("=", x),
+                (x) => Assert.Equal("123", x),
+                (x) => Assert.Equal("abc", x),
+                (x) => Assert.Equal("=", x),
+                (x) => Assert.Equal("123", x),
+                (x) => Assert.Equal("abc", x),
+                (x) => Assert.Equal("=", x),
+                (x) => Assert.Equal("123", x),
+                (x) => Assert.Equal("abc", x),
+                (x) => Assert.Equal("=", x),
+                (x) => Assert.Equal("123", x)
+            );
+        }
+
+        [Fact]
+        public void Scan_ShouldSplit_OnColon_ExplicitAssign()
+        {
+            string value = "abc:123 abc :123 abc: 123 abc : 123";
+            string[] result = Scanner.Scan(value);
+            Assert.Collection<string>(result,
+                (x) => Assert.Equal("abc", x),
+                (x) => Assert.Equal(":", x),
+                (x) => Assert.Equal("123", x),
+                (x) => Assert.Equal("abc", x),
+                (x) => Assert.Equal(":", x),
+                (x) => Assert.Equal("123", x),
+                (x) => Assert.Equal("abc", x),
+                (x) => Assert.Equal(":", x),
+                (x) => Assert.Equal("123", x),
+                (x) => Assert.Equal("abc", x),
+                (x) => Assert.Equal(":", x),
+                (x) => Assert.Equal("123", x)
+            );
+        }
+
+        [Fact]
+        public void Scan_ShouldTreat_QuoteAsLiteral_WhenEscaped()
         {
             string value = "\"This is \\\"quoted\\\".\"";
             string[] result = Scanner.Scan(value);
@@ -207,20 +263,6 @@ namespace HatTrick.CommandLine.Test
                 (x) => Assert.Equal(part, x),
                 (x) => Assert.Equal(part, x)
             );
-        }
-
-        [Fact]
-        public void Scan_IfInput_IsNull_ShouldThrow_ArgumentNullException()
-        {
-            Action action = () => Scanner.Scan(null);
-            Assert.Throws<ArgumentNullException>(action);
-        }
-
-        [Fact]
-        public void Scan_IfInput_IsEmpty_ShouldReturn_EmptyArrayOfString()
-        {
-            string[] result = Scanner.Scan(string.Empty);
-            Assert.Equal(Array.Empty<string>(), result);
         }
 
         [Fact]
@@ -243,11 +285,6 @@ namespace HatTrick.CommandLine.Test
                 (x) => Assert.Equal("\\escape\\", x),
                 (x) => Assert.Equal("x", x)
             );
-        }
-
-        [Fact]
-        public void Scan_()
-        {
         }
     }
 }

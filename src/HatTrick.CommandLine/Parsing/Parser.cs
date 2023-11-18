@@ -75,7 +75,7 @@ namespace HatTrick.CommandLine
                             break;
 
                         case ExplicitAssignToken _:
-                            if (options.Length == 0 || this.Peek() is not ArgumentToken)
+                            if (options.Length == 0 || this.Peek() is not ArgumentToken || options[^1].HasArgument)
                                 throw new CommandParseException(this.ExceptionHelper("Unexpected explicit assignment", token));
                             break;
 
