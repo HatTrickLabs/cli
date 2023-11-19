@@ -101,7 +101,7 @@ namespace HatTrick.CommandLine.Test
         }
         #endregion
 
-        #region accepted values (base)
+        #region accepted values
         [Fact]
         public void AcceptedValuesOfT_WhenT_IsCompatibleWith_TOfOption_ShouldHave_AcceptedValuesConstraint_ContainingProvidedAcceptedValues()
         {
@@ -205,14 +205,6 @@ namespace HatTrick.CommandLine.Test
         }
         #endregion
 
-        #region apply converted value to
-        [Fact]
-        public void ApplyConvertedValueTo_WhenProvidedValue_IsNotCompatibleWith_TofOption_ShouldThrow_CommandInputException()
-        {
-            var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-x", "--xx"));
-        }
-        #endregion
-
         #region empty instance
         [Fact]
         public void EmptyInstance_MapsCorrectly()
@@ -220,7 +212,7 @@ namespace HatTrick.CommandLine.Test
             var opDef = new OptionDefinition<int>(key: "key", help: "help", (arg) => int.Parse(arg), ("-k", "--key"));
             EmptyOption empty = opDef.EmptyInstance();
             Assert.Equal("key", empty.Key);
-            Assert.Equal("--key", empty.Flag);
+            Assert.Equal("--key", empty.Flag);//VERBOSE FLAG
         }
         #endregion
 

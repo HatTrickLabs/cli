@@ -4,7 +4,7 @@ namespace HatTrick.CommandLine.Test
 {
     public class SetOfNamespaceDefinitionTests
     {
-        #region namespace indexer this[string key]
+        #region indexer this[string key]
         [Fact]
         public void IndexerOnKeyString_WhenKeyExists_ShouldReturn_IndexedNamespace()
         {

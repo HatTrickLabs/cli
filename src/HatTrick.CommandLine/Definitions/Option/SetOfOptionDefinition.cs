@@ -69,7 +69,7 @@ namespace HatTrick.CommandLine
         private void ThrowOnDuplicateKey(string key)
         {
             if (this.ContainsKey(key))
-                throw new ArgumentException($"Cannot insert {nameof(OptionDefinition)}, duplicate key found: '{key}'");
+                throw new CommandDefinitionException($"Cannot insert {nameof(OptionDefinition)}, duplicate key found: '{key}'");
         }
         #endregion
 
