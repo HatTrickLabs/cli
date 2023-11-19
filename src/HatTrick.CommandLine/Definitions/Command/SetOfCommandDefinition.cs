@@ -80,7 +80,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get descendents
-        internal CommandDefinition[] GetDescendents(string ofNamespace, bool includeHidden)
+        internal CommandDefinition[] GetDescendents(string ofNamespace, bool includeHidden = false)
         {
             if (ofNamespace is null)
                 throw new ArgumentNullException(nameof(ofNamespace));

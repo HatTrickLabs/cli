@@ -97,6 +97,23 @@ namespace HatTrick.CommandLine.Test
             Assert.Throws<NamespaceDefinitionException>(action);
             return;
         }
+
+        [Fact]
+        public void Add_WhenArgumentIsValid_ShouldResultIn_AddedNamespaceDefinition()
+        {
+            var set = new SetOfNamespaceDefinition();
+            set.Add(new NamespaceDefinition("name1", "help"));
+            set.Add(new NamespaceDefinition("name2", "help"));
+            set.Add(new NamespaceDefinition("name3", "help"));
+            set.Add(new NamespaceDefinition("name4", "help"));
+
+            Assert.Collection<NamespaceDefinition>(set,
+                (x) => Assert.Equal("name1", x.Name),
+                (x) => Assert.Equal("name2", x.Name),
+                (x) => Assert.Equal("name3", x.Name),
+                (x) => Assert.Equal("name4", x.Name)
+            );
+        }
         #endregion
 
         #region try get
