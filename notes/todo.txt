@@ -77,6 +77,7 @@ x Refactor command 'Ensure' to eliminate all the feedback output params... just 
 x Toss out the super friendly boolean converter...stick with 0, 1 and case-insensative true/false.
 x Refactor OptionDefinition<T>.ApplyConvertedValueTo...shouldn't be passing in the op to the opDef.
 - Impl standard nix flag and arg seperated by = or : concept to be back compat.   i.e.   --format=X   --format:X   -f:x  -f=X
+= Imple ICommand and IOptions and pass it to Handle/HandleAsync in lue of actual command and ops. 
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

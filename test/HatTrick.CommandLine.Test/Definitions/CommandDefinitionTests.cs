@@ -1,5 +1,4 @@
-﻿using NuGet.Frameworks;
-using Xunit;
+﻿using Xunit;
 
 namespace HatTrick.CommandLine.Test
 {
@@ -415,13 +414,5 @@ namespace HatTrick.CommandLine.Test
             Assert.Throws<CommandDefinitionException>(action);
         }
         #endregion
-
-        //TODO: I see no value in attempting to unit test any of the following (need much broader test cases):
-        //EnsureCommand
-        //EnsureCommandOptions
-        //EnsureOptionsFullyHydrated
-        //EnsureAllProvidedOptionsDefined
-        //EnsureNoDuplicateOptions
-        //EnsureOptionConstraints
     }
 }

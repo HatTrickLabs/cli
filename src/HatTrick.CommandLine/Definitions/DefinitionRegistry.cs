@@ -45,20 +45,6 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get command definitions
-        public CommandDefinition[] GetCommandDefinitions(Predicate<CommandDefinition> where = null)
-        {
-            return _commands.FindAll(where is null ? (cmd) => true : where);
-        }
-        #endregion
-
-        #region get namespace definitions
-        public NamespaceDefinition[] GetNamespaceDefinitions(Predicate<NamespaceDefinition> where = null)
-        {
-            return _namespaces.FindAll(where);
-        }
-        #endregion
-
         #region add
         public void Add(NamespaceDefinition namespaceDef)
         {
@@ -76,6 +62,20 @@ namespace HatTrick.CommandLine
                 throw new NamespaceDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
 
             _commands.Add(commandDef);
+        }
+        #endregion
+
+        #region get command definitions
+        public CommandDefinition[] GetCommandDefinitions(Predicate<CommandDefinition> where = null)
+        {
+            return _commands.FindAll(where is null ? (cmd) => true : where);
+        }
+        #endregion
+
+        #region get namespace definitions
+        public NamespaceDefinition[] GetNamespaceDefinitions(Predicate<NamespaceDefinition> where = null)
+        {
+            return _namespaces.FindAll(where);
         }
         #endregion
 
@@ -102,7 +102,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get child namespace definitions
-        internal NamespaceDefinition[] GetChildNamespaceDefinitions(NamespaceDefinition parent, bool includeHidden)
+        internal NamespaceDefinition[] GetChildNamespaceDefinitions(NamespaceDefinition parent, bool includeHidden = false)
         {
             var children = _namespaces.GetChildren(parent, includeHidden);
             return children;
@@ -126,7 +126,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get child command definitions
-        internal CommandDefinition[] GetChildCommandDefinitions(NamespaceDefinition parent, bool includeHidden)
+        internal CommandDefinition[] GetChildCommandDefinitions(NamespaceDefinition parent, bool includeHidden = false)
         {
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));

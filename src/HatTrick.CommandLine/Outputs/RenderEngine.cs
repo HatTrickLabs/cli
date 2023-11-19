@@ -189,8 +189,8 @@ namespace HatTrick.CommandLine
             string template = TemplateAccessor.GetTemplate("namespace-help");
             var registry = DefinitionRegistry.GetInstance();
 
-            NamespaceDefinition[] namespaces = registry.GetChildNamespaceDefinitions(target, false);
-            CommandDefinition[] commands = registry.GetChildCommandDefinitions(target, false);
+            NamespaceDefinition[] namespaces = registry.GetChildNamespaceDefinitions(target);
+            CommandDefinition[] commands = registry.GetChildCommandDefinitions(target);
 
             int maxNSLen = namespaces.Length > 0 ? namespaces.Max(ns => ns.Name.Length) : 0;
             int maxCmdLen = commands.Length > 0 ? commands.Max(cmd => cmd.Name.Length) : 0;
