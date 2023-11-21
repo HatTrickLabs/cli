@@ -45,6 +45,16 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
+        #region clear
+        internal static void Clear()// complete garbage...for unit testing only!!!
+        {
+            lock (_lock)
+            {
+                _instance = null;
+            }
+        }
+        #endregion
+
         #region add
         public void Add(NamespaceDefinition namespaceDef)
         {
@@ -59,9 +69,17 @@ namespace HatTrick.CommandLine
         {
             //ensure no namespace name collisions
             if (_namespaces.ContainsName(commandDef.Name))
-                throw new NamespaceDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
+                throw new CommandDefinitionException($"Naming collision between command definition and namespace: {commandDef.Name}");
 
             _commands.Add(commandDef);
+        }
+        #endregion
+
+        #region get command definition
+        public CommandDefinition GetCommandDefinition(string name)
+        {
+            CommandDefinition cmdDef = _commands[name];
+            return cmdDef;
         }
         #endregion
 
@@ -75,7 +93,7 @@ namespace HatTrick.CommandLine
         #region get namespace definitions
         public NamespaceDefinition[] GetNamespaceDefinitions(Predicate<NamespaceDefinition> where = null)
         {
-            return _namespaces.FindAll(where);
+            return _namespaces.FindAll(where is null ? (ns) => true : where);
         }
         #endregion
 
@@ -93,35 +111,11 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get namespace definition
-        public NamespaceDefinition GetNamespaceDefinition(string name)
-        {
-            NamespaceDefinition namespaceDef = _namespaces[name];
-            return namespaceDef;
-        }
-        #endregion
-
         #region get child namespace definitions
         internal NamespaceDefinition[] GetChildNamespaceDefinitions(NamespaceDefinition parent, bool includeHidden = false)
         {
             var children = _namespaces.GetChildren(parent, includeHidden);
             return children;
-        }
-        #endregion
-
-        #region get descendent namespaces definitions
-        internal NamespaceDefinition[] GetDescendentNamespaceDefinitions(NamespaceDefinition parent, bool includeHidden)
-        {
-            var descendents = _namespaces.GetDescendents(parent, includeHidden);
-            return descendents;
-        }
-        #endregion
-
-        #region get command definition
-        public CommandDefinition GetCommandDefinition(string name)
-        {
-            CommandDefinition cmdDef =  _commands[name];
-            return cmdDef;
         }
         #endregion
 
@@ -131,7 +125,7 @@ namespace HatTrick.CommandLine
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
 
-            NamespaceDefinition[] descendentNamespaces = this.GetDescendentNamespaceDefinitions(parent, includeHidden);
+            NamespaceDefinition[] descendentNamespaces = _namespaces.GetDescendents(parent, includeHidden);
 
             CommandDefinition[] descendents = _commands.GetDescendents(parent.Name, includeHidden);
 
@@ -144,7 +138,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region get descendent command definitions
-        internal CommandDefinition[] GetDescendentCommandDefinitions(NamespaceDefinition parent, bool includeHidden)
+        internal CommandDefinition[] GetDescendentCommandDefinitions(NamespaceDefinition parent, bool includeHidden = false)
         {
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
@@ -155,60 +149,12 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region build command
-        private Command BuildCommand(string input)
-        {
-            string[] args = Scanner.Scan(input);
-            return this.BuildCommand(args);
-        }
-
-        private Command BuildCommand(string[] args)
-        {
-            Token[] tokens = Tokenizer.Tokenize(args);
-            Command cmd = Parser.Parse(tokens);
-            return cmd;
-        }
-        #endregion
-
         #region get command executor
-        public CommandExecutor GetCommandExecutor(string input)
+        public CommandExecutor GetCommandExecutor(Command command)
         {
-            if (input is null)
-                throw new ArgumentNullException(nameof(input));
-
-            Command cmd = this.BuildCommand(input);
-            CommandDefinition cmdDef = this.GetCommandDefinition(cmd.Name);
-            var executor = new CommandExecutor(cmdDef, cmd);
+            CommandDefinition cmdDef = this.GetCommandDefinition(command.Name);
+            var executor = new CommandExecutor(cmdDef, command);
             return executor;
-        }
-
-        public CommandExecutor GetCommandExecutor(string[] args)
-        {
-            if (args is null)
-                throw new ArgumentNullException(nameof(args));
-
-            if (args.Length == 0)
-                return this.GetCommandExecutor(string.Empty);
-
-            //length of each arg + spaces + possible quotes around each arg
-            int maxCapacity = args.Sum(a => a.Length) + args.Length + (args.Length * 2);
-            var sb = new StringBuilder(maxCapacity);
-
-            for (int i = 0; i < args.Length; i++)
-            {
-                string arg = args[i];
-
-                if (i > 0)
-                    sb.Append(' ');
-
-                if (arg.Contains(' '))
-                    sb.Append("\"").Append(arg).Append("\"");
-                else
-                    sb.Append(arg);
-            }
-
-            string input = sb.ToString();
-            return this.GetCommandExecutor(input);
         }
         #endregion
     }

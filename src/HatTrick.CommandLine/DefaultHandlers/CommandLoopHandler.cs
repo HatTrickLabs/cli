@@ -61,9 +61,9 @@ namespace HatTrick.CommandLine
                     this.EnsureCarriageReturn();
 
                     Console.Write(prompt);
-                    string line = Console.ReadLine();
+                    string input = Console.ReadLine();
 
-                    if (IsClearScreenCommand(line))
+                    if (IsClearScreenCommand(input))
                     {
                         Console.Clear();
                         continue;
@@ -71,10 +71,11 @@ namespace HatTrick.CommandLine
 
                     //TODO: imple local var declaration command
                     
-                    if (this.IsExitCommand(line))
+                    if (this.IsExitCommand(input))
                         break;
 
-                    CommandExecutor exe = registry.GetCommandExecutor(line);
+                    Command cmd = CommandBuilder.BuildCommand(input);
+                    CommandExecutor exe = registry.GetCommandExecutor(cmd);
                     exe.Execute();
                     Console.WriteLine(string.Empty);
                 }
