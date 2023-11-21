@@ -8,6 +8,7 @@ namespace HatTrick.CommandLine
         #region internals
         private CommandDefinition _cmdDef;
         private Command _cmd;
+        private bool _ensured;
         #endregion
 
         #region constructors
@@ -27,7 +28,9 @@ namespace HatTrick.CommandLine
         #region execute
         public void Execute()
         {
-            this.EnsureCommand(_cmd);
+            if (!_ensured)
+                this.EnsureCommand(_cmd);
+
             _cmdDef.Handler(_cmd);
         }
         #endregion
@@ -49,6 +52,7 @@ namespace HatTrick.CommandLine
         {
             this.EnsureCommandOptions(command);
             this.EnsureCommandConstraints(command);
+            _ensured = true;
         }
         #endregion
 

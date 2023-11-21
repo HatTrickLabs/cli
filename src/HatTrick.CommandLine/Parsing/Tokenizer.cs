@@ -2,10 +2,10 @@
 
 namespace HatTrick.CommandLine
 {
-    public static class Tokenizer
+    internal static class Tokenizer
     {
         #region tokenize
-        public static Token[] Tokenize(string[] args)
+        internal static Token[] Tokenize(string[] args)
         {
             if (args is null)
                 throw new ArgumentNullException(nameof(args));

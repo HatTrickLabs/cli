@@ -7,7 +7,7 @@ namespace HatTrick.CommandLine
     public static class CommandBuilder
     {
         #region build command
-        public static Command BuildCommand(string input)
+        public static Command Build(string input)
         {
             if (input is null)
                 throw new ArgumentNullException(nameof(input));
@@ -18,7 +18,7 @@ namespace HatTrick.CommandLine
             return cmd;
         }
 
-        public static Command BuildCommand(string[] args)
+        public static Command Build(string[] args)
         {
             //WHY???
             //"abc""xyz""aaa" should tokenize as [ "abc", "xyz", "aaa" ]
@@ -29,12 +29,12 @@ namespace HatTrick.CommandLine
             //abc :123
             //abc : 123
             //abc:123 
-            //all 4 of the above should tokenize equally
+            //all 4 of the above should tokenize equally into [ flag, expl_assign, arg ]
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
 
             if (args.Length == 0)
-                return CommandBuilder.BuildCommand(string.Empty);
+                return CommandBuilder.Build(string.Empty);
 
             //length of each arg + spaces + possible quotes around each arg
             int maxCapacity = args.Sum(a => a.Length) + args.Length + (args.Length * 2);
@@ -54,7 +54,7 @@ namespace HatTrick.CommandLine
             }
 
             string input = sb.ToString();
-            return CommandBuilder.BuildCommand(input);
+            return CommandBuilder.Build(input);
         }
         #endregion
     }

@@ -74,7 +74,7 @@ namespace HatTrick.CommandLine
                     if (this.IsExitCommand(input))
                         break;
 
-                    Command cmd = CommandBuilder.BuildCommand(input);
+                    Command cmd = CommandBuilder.Build(input);
                     CommandExecutor exe = registry.GetCommandExecutor(cmd);
                     exe.Execute();
                     Console.WriteLine(string.Empty);

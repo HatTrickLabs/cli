@@ -10,7 +10,7 @@ namespace HatTrick.CommandLine.TestHarness
         {
             RegisterCommandDefinitions();
 
-            Command cmd = CommandBuilder.BuildCommand(args);
+            Command cmd = CommandBuilder.Build(args);
             CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(cmd);
             exe.Execute();
 

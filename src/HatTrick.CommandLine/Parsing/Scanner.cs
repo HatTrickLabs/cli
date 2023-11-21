@@ -4,10 +4,10 @@ using System.IO;
 
 namespace HatTrick.CommandLine
 {
-    public static class Scanner
+    internal static class Scanner
     {
         #region scan
-        public static string[] Scan(string input)
+        internal static string[] Scan(string input)
         {
             if (input is null)
                 throw new ArgumentNullException(nameof(input));

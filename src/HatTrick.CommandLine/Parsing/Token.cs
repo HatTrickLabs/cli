@@ -40,7 +40,7 @@ namespace HatTrick.CommandLine
         #region to string
         public override string ToString()
         {
-            return _value;
+            return this.GetType().Name + " " + _value;
         }
         #endregion
     }

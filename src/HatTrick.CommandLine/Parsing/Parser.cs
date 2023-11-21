@@ -2,10 +2,10 @@
 
 namespace HatTrick.CommandLine
 {
-    public static class Parser
+    internal static class Parser
     {
         #region parse
-        public static Command Parse(Token[] tokens)
+        internal static Command Parse(Token[] tokens)
         {
             if (tokens is null)
                 throw new ArgumentNullException(nameof(tokens));
