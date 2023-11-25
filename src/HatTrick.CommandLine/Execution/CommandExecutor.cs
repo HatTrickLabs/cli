@@ -11,6 +11,12 @@ namespace HatTrick.CommandLine
         private bool _ensured;
         #endregion
 
+        #region interface
+        public bool HasHandler => _cmdDef.Handler is not null;
+
+        public bool HasAsyncHandler => _cmdDef.AsyncHandler is not null;
+        #endregion
+
         #region constructors
         internal CommandExecutor(CommandDefinition commandDefinition, Command command)
         {
@@ -31,19 +37,27 @@ namespace HatTrick.CommandLine
             if (!_ensured)
                 this.EnsureCommand(_cmd);
 
+            Action<Command> handler = _cmdDef.Handler;
+
+            if (handler is null)
+                throw new CommandExecutionException($"Command definition '{_cmdDef.Name}' ... {_cmdDef.GetType().Name}.{nameof(CommandDefinition.Handler)} is null.");
+
             _cmdDef.Handler(_cmd);
         }
         #endregion
 
-        #region execute command async
-        public async Task ExecuteCommandAsync(Command command)
+        #region execute async
+        public async Task ExecuteAsync()
         {
-            if (command is null)
-                throw new ArgumentNullException(nameof(command));
+            if (!_ensured)
+                this.EnsureCommand(_cmd);
 
-            this.EnsureCommand(command);
+            Func<Command, Task> function = _cmdDef.AsyncHandler;
 
-            await _cmdDef.AsyncHandler(command);
+            if (function is null)
+                throw new CommandExecutionException($"For command definition '{_cmdDef.Name}' ... {nameof(CommandDefinition)}.{nameof(CommandDefinition.AsyncHandler)} is null.");
+
+            await _cmdDef.AsyncHandler(_cmd);
         }
         #endregion
 

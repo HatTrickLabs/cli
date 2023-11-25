@@ -19,7 +19,7 @@ namespace HatTrick.CommandLine
         private string _help;
         private int _depth;
         private bool _hidden;
-        private Action _mappedHanderValidators;
+        private Action _registeredValidators;
         private Action<Command> _handler;
         private Func<Command, Task> _asyncHandler;
         private SetOfOptionDefinition _options;
@@ -247,10 +247,10 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region register mapped handler validator
-        internal void RegisterMappedHandlerValidator(Action validator)
+        #region register validator
+        internal void RegisterValidator(Action validator)
         {
-            _mappedHanderValidators += validator;
+            _registeredValidators += validator;
         }
         #endregion
 
@@ -285,7 +285,7 @@ namespace HatTrick.CommandLine
 
             _depth = depth;
 
-            _mappedHanderValidators?.Invoke();
+            _registeredValidators?.Invoke();
         }
         #endregion
     }
