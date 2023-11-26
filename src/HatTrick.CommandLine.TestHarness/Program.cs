@@ -13,7 +13,7 @@ namespace HatTrick.CommandLine.TestHarness
             RegisterCommandDefinitions();
             Command cmd = CommandBuilder.Build(args);
             CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(cmd);
-            exe.Execute();
+            //exe.Execute();
             await exe.ExecuteAsync();
 
 #if DEBUG
@@ -87,12 +87,15 @@ namespace HatTrick.CommandLine.TestHarness
                 ("age", "Age")
             ).ThenAsync(Person.SavePersonAsync);
 
+            cmdDef.MapToSignature<Func<string, string, int, System.Threading.Tasks.Task>>(
+                ("first", "firstName"), 
+                ("last", "lastName")
+            ).ThenAsync(Person.SavePersonAsync);
+
             cmdDef.MapToSignature<Action<string, string, int>>(
                 ("first", "firstName"),
                 ("last", "lastName")
             ).Then(Person.SavePerson);
-
-            //cmdDef.MapToSignature(Person.SavePerson, ("first", "firstName"), ("last", "lastName"));
 
             cmdDef.Handler += (cmd) =>
             {
@@ -121,6 +124,11 @@ namespace HatTrick.CommandLine.TestHarness
         public static void SavePerson(Person p)
         {
             Console.WriteLine(p.FirstName + " " + p.LastName + " " + p.Age);
+        }
+
+        public static async System.Threading.Tasks.Task SavePersonAsync(string firstName, string lastName, int age)
+        {
+            await System.Threading.Tasks.Task.Run(() => Console.WriteLine(firstName + " " + lastName + " " + age));
         }
 
         public static void SavePerson(string firstName, string lastName, int age)

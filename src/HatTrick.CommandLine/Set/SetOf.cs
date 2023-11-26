@@ -44,6 +44,9 @@ namespace HatTrick.CommandLine
                 if (i >= _length)
                     throw new ArgumentOutOfRangeException("Provided index is outside the upper bounds of the set.");
 
+                if (i < 0)
+                    throw new ArgumentOutOfRangeException("Index must be greater than 0.");
+
                 _items[i] = value;
             }
         }
@@ -58,8 +61,8 @@ namespace HatTrick.CommandLine
             
             _allowedCapacities = new[] 
             { 
-                0,4,8,16,32,64,128,256,512,1024,2048,4096,
-                8192,16384,32768,65536,131072,262144,524288,589824,
+                0,4,8,16,32,64,128,256,512,1024,2048,4096,8192,
+                16384,32768,65536,131072,262144,524288,589824,
                 655360,720896,786432,851968,917504,983040,1048576 
             };
         }
@@ -93,7 +96,7 @@ namespace HatTrick.CommandLine
 
         #region get pointer to
         internal ref T GetPointerTo(int index)
-        {
+        {//risky ... any mutation of internal array could cause problems
             if (_items is null)
                 throw new ArgumentOutOfRangeException("Set is currently empty.");
 
@@ -107,9 +110,6 @@ namespace HatTrick.CommandLine
         #region add
         public virtual void Add(T item)
         {
-            if (item is null)
-                throw new ArgumentNullException(nameof(item));
-
             if (_items is null)
             {
                 _capacity = _initialCapacity;

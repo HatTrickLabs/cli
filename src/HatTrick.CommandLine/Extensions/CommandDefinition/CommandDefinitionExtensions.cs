@@ -7,26 +7,26 @@ namespace HatTrick.CommandLine.Extensions
     public static class CommandDefinitionExtensions
     {
         #region map to
-        public static Continuation<T> MapTo<T>(this CommandDefinition commandDefinition) where T : new()
+        public static Continuation<T> MapTo<T>(this CommandDefinition cmdDef) where T : new()
         {
-            return new Continuation<T>(new MapOf<T>(commandDefinition));
+            return new Continuation<T>(new MapOf<T>(cmdDef));
         }
 
-        public static Continuation<T> MapTo<T>(this CommandDefinition commandDefinition, params (string optionKey, string propertyName)[] correlationMap) where T : new()
+        public static Continuation<T> MapTo<T>(this CommandDefinition cmdDef, params (string optionKey, string propertyName)[] correlations) where T : new()
         {
-            return new Continuation<T>(new MapOf<T>(commandDefinition, correlationMap));
+            return new Continuation<T>(new MapOf<T>(cmdDef, correlations));
         }
         #endregion
 
         #region map to signature
-        public static SignatureContinuation<T> MapToSignature<T>(this CommandDefinition commandDefinition) where T : Delegate
+        public static SignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef) where T : Delegate
         {
-            return new SignatureContinuation<T>(new SignatureMapOf<T>(commandDefinition));
+            return new SignatureContinuation<T>(new SignatureMapOf<T>(cmdDef));
         }
 
-        public static SignatureContinuation<T> MapToSignature<T>(this CommandDefinition commandDefinition, params (string optionKey, string parameterName)[] correlationMap) where T : Delegate
+        public static SignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef, params (string optionKey, string parameterName)[] correlations) where T : Delegate
         {
-            return new SignatureContinuation<T>(new SignatureMapOf<T>(commandDefinition, correlationMap));
+            return new SignatureContinuation<T>(new SignatureMapOf<T>(cmdDef, correlations));
         }
         #endregion
 
@@ -92,7 +92,7 @@ namespace HatTrick.CommandLine.Extensions
                 Action<Command> action = (cmd) =>
                 {
                     _signatureMapOf.Map(cmd, out object[] parameters);
-                    target.DynamicInvoke(parameters);
+                    _signatureMapOf.GetTarget().DynamicInvoke(parameters);
                 };
                 _signatureMapOf.CommandDefinition.Handler += action;
             }
@@ -106,7 +106,7 @@ namespace HatTrick.CommandLine.Extensions
                 Func<Command, Task> function = async (cmd) =>
                 {
                     _signatureMapOf.Map(cmd, out object[] parameters);
-                    await (Task)_signatureMapOf.Target.DynamicInvoke(parameters);
+                    await (Task)_signatureMapOf.GetTarget().DynamicInvoke(parameters);
                 };
                 _signatureMapOf.CommandDefinition.AsyncHandler += function;
             }
@@ -133,14 +133,15 @@ namespace HatTrick.CommandLine.Extensions
             #endregion
 
             #region constructors
-            public Map(CommandDefinition commandDef) : this(commandDef, null)
+            public Map(CommandDefinition cmdDef) : this(cmdDef, null)
             {
             }
 
-            public Map(CommandDefinition commandDef, (string optionKey, string to)[] correlations)
+            public Map(CommandDefinition cmdDef, (string optionKey, string to)[] correlations)
             {
-                _cmdDef = commandDef ?? throw new ArgumentNullException(nameof(commandDef));
+                _cmdDef = cmdDef ?? throw new ArgumentNullException(nameof(cmdDef));
                 _correlations = correlations;
+                this.RegisterValidator(this.Validate);
             }
             #endregion
 
@@ -204,11 +205,11 @@ namespace HatTrick.CommandLine.Extensions
         public class MapOf<T> : Map where T : new()
         {
             #region constructors
-            public MapOf(CommandDefinition commandDef) : this(commandDef, null)
+            public MapOf(CommandDefinition cmdDef) : this(cmdDef, null)
             {
             }
 
-            public MapOf(CommandDefinition commandDef, (string optionKey, string propertyName)[] correlations) : base(commandDef, correlations)
+            public MapOf(CommandDefinition cmdDef, (string optionKey, string propertyName)[] correlations) : base(cmdDef, correlations)
             {
                 base.RegisterValidator(this.Validate);
             }
@@ -295,16 +296,12 @@ namespace HatTrick.CommandLine.Extensions
             private T _target;
             #endregion
 
-            #region interface
-            internal T Target => _target;
-            #endregion
-
             #region constructors
-            public SignatureMapOf(CommandDefinition commandDef) : this(commandDef, null)
+            public SignatureMapOf(CommandDefinition cmdDef) : this(cmdDef, null)
             {
             }
 
-            public SignatureMapOf(CommandDefinition commandDef, (string optionKey, string parameterName)[] correlations) : base(commandDef, correlations)
+            public SignatureMapOf(CommandDefinition cmdDef, (string optionKey, string parameterName)[] correlations) : base(cmdDef, correlations)
             {
                 base.RegisterValidator(this.Validate);
             }
@@ -314,6 +311,13 @@ namespace HatTrick.CommandLine.Extensions
             internal void SetTarget(T target)
             {
                 _target = target;
+            }
+            #endregion
+
+            #region get target
+            internal T GetTarget()
+            {
+                return _target;
             }
             #endregion
 
