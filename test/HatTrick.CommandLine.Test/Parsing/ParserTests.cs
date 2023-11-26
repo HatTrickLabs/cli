@@ -17,7 +17,7 @@ namespace HatTrick.CommandLine.Test
         public void Parse_WhenInput_IsEmpty_ShouldThrow_ArgumentNullException()
         {
             Command cmd = Parser.Parse(Array.Empty<Token>());
-            Assert.Equal(DefaultCommandDefinition.DefaultCommandName, cmd.Name);
+            Assert.Equal(DefaultCommandDefinition.CommandName, cmd.Name);
         }
 
         [Fact]

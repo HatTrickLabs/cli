@@ -10,9 +10,9 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
-            CommandDefinition cmdDef = registry.GetCommandDefinition(CommandDefinition.DefaultCommandName);
+            CommandDefinition cmdDef = registry.GetCommandDefinition(DefaultCommandDefinition.CommandName);
             Assert.NotNull(cmdDef);
-            Assert.Equal(DefaultCommandDefinition.DefaultCommandName, cmdDef.Name);
+            Assert.Equal(DefaultCommandDefinition.CommandName, cmdDef.Name);
         }
         #endregion
 
@@ -54,7 +54,7 @@ namespace HatTrick.CommandLine.Test
             Assert.Equal(5, result.Length);
 
             Assert.Collection<CommandDefinition>(result,
-                (x) => Assert.Equal(CommandDefinition.DefaultCommandName, x.Name),
+                (x) => Assert.Equal(DefaultCommandDefinition.CommandName, x.Name),
                 (x) => Assert.Equal("name1", x.Name),
                 (x) => Assert.Equal("name2", x.Name),
                 (x) => Assert.Equal("name3", x.Name),

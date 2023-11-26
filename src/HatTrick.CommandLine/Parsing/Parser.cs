@@ -62,7 +62,7 @@ namespace HatTrick.CommandLine
                 Token[] tokens = _tokens;
 
                 if (tokens.Length == 0)//optionless default command...
-                    return new Command(CommandDefinition.DefaultCommandName);
+                    return new Command(DefaultCommandDefinition.CommandName);
 
                 CommandToken cmdToken = null;
                 SetOf<Option> options = new SetOf<Option>();
@@ -110,7 +110,7 @@ namespace HatTrick.CommandLine
                     }
                 }
 
-                return new Command(cmdToken?.Value ?? CommandDefinition.DefaultCommandName, options);
+                return new Command(cmdToken?.Value ?? DefaultCommandDefinition.CommandName, options);
             }
             #endregion
 
