@@ -7,115 +7,47 @@ namespace HatTrick.CommandLine.Extensions
     public static class CommandDefinitionExtensions
     {
         #region map to
-        public static Continuation<T> MapTo<T>(this CommandDefinition cmdDef) where T : new()
+        public static IContinuation<T> MapTo<T>(this CommandDefinition cmdDef) where T : new()
         {
-            return new Continuation<T>(new MapOf<T>(cmdDef));
+            return new MapOf<T>(cmdDef);
         }
 
-        public static Continuation<T> MapTo<T>(this CommandDefinition cmdDef, params (string optionKey, string propertyName)[] correlations) where T : new()
+        public static IContinuation<T> MapTo<T>(this CommandDefinition cmdDef, params (string optionKey, string propertyName)[] correlations) where T : new()
         {
-            return new Continuation<T>(new MapOf<T>(cmdDef, correlations));
+            return new MapOf<T>(cmdDef, correlations);
         }
         #endregion
 
         #region map to signature
-        public static SignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef) where T : Delegate
+        public static ISignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef) where T : Delegate
         {
-            return new SignatureContinuation<T>(new SignatureMapOf<T>(cmdDef));
+            return new SignatureMapOf<T>(cmdDef);
         }
 
-        public static SignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef, params (string optionKey, string parameterName)[] correlations) where T : Delegate
+        public static ISignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef, params (string optionKey, string parameterName)[] correlations) where T : Delegate
         {
-            return new SignatureContinuation<T>(new SignatureMapOf<T>(cmdDef, correlations));
-        }
-        #endregion
-
-        #region continuation of T [class]
-        public class Continuation<T> where T : new()
-        {
-            #region internals
-            private MapOf<T> _mapOf;
-            #endregion
-
-            #region constructors
-            public Continuation(MapOf<T> mapOf)
-            {
-                _mapOf = mapOf ?? throw new ArgumentNullException(nameof(mapOf));
-            }
-            #endregion
-
-            #region then
-            public void Then(Action<T> handler)
-            {
-                Action<Command> action = (cmd) =>
-                {
-                    _mapOf.Map(cmd, out T instance);
-                    handler(instance);
-                };
-                _mapOf.CommandDefinition.Handler += action;
-            }
-            #endregion
-
-            #region then async
-            public void ThenAsync(Func<T, Task> handler)
-            {
-                Func<Command, Task> function = async (cmd) =>
-                {
-                    _mapOf.Map(cmd, out T instance);
-                    await handler(instance);
-                };
-                _mapOf.CommandDefinition.AsyncHandler = function;
-            }
-            #endregion
+            return new SignatureMapOf<T>(cmdDef, correlations);
         }
         #endregion
 
-        #region signature continuation of T [class]
-        public class SignatureContinuation<T> where T : Delegate
+        #region i continuation of T
+        public interface IContinuation<T>
         {
-            #region internals
-            private SignatureMapOf<T> _signatureMapOf;
-            #endregion
-
-            #region constructors
-            public SignatureContinuation(SignatureMapOf<T> signatureMapOf)
-            {
-                _signatureMapOf = signatureMapOf ?? throw new ArgumentNullException(nameof(signatureMapOf));
-            }
-            #endregion
-
-            #region then
-            public void Then(T target)
-            {
-                _signatureMapOf.SetTarget(target);
-
-                Action<Command> action = (cmd) =>
-                {
-                    _signatureMapOf.Map(cmd, out object[] parameters);
-                    _signatureMapOf.GetTarget().DynamicInvoke(parameters);
-                };
-                _signatureMapOf.CommandDefinition.Handler += action;
-            }
-            #endregion
-
-            #region then async
-            public void ThenAsync(T target)
-            {
-                _signatureMapOf.SetTarget(target);
-
-                Func<Command, Task> function = async (cmd) =>
-                {
-                    _signatureMapOf.Map(cmd, out object[] parameters);
-                    await (Task)_signatureMapOf.GetTarget().DynamicInvoke(parameters);
-                };
-                _signatureMapOf.CommandDefinition.AsyncHandler += function;
-            }
-            #endregion
+            public void Then(Action<T> handler);
+            public void ThenAsync(Func<T, Task> handler);
         }
         #endregion
 
-        #region map [class]
-        public abstract class Map
+        #region i signature continuation of T
+        public interface ISignatureContinuation<T>
+        {
+            public void Then(T target);
+            public void ThenAsync(T target);
+        }
+        #endregion
+
+        #region mapper [class]
+        public abstract class Mapper
         {
             #region internals
             private CommandDefinition _cmdDef;
@@ -133,11 +65,11 @@ namespace HatTrick.CommandLine.Extensions
             #endregion
 
             #region constructors
-            public Map(CommandDefinition cmdDef) : this(cmdDef, null)
+            public Mapper(CommandDefinition cmdDef) : this(cmdDef, null)
             {
             }
 
-            public Map(CommandDefinition cmdDef, (string optionKey, string to)[] correlations)
+            public Mapper(CommandDefinition cmdDef, (string optionKey, string to)[] correlations)
             {
                 _cmdDef = cmdDef ?? throw new ArgumentNullException(nameof(cmdDef));
                 _correlations = correlations;
@@ -202,7 +134,7 @@ namespace HatTrick.CommandLine.Extensions
         #endregion
 
         #region map of [class]
-        public class MapOf<T> : Map where T : new()
+        public class MapOf<T> : Mapper, IContinuation<T> where T : new()
         {
             #region constructors
             public MapOf(CommandDefinition cmdDef) : this(cmdDef, null)
@@ -218,7 +150,7 @@ namespace HatTrick.CommandLine.Extensions
             #region validate
             public void Validate()
             {
-                SetOf<OptionDefinition> options = CommandDefinition.Options;
+                SetOf<OptionDefinition> options = base.CommandDefinition.Options;
 
                 Type t = typeof(T);
                 PropertyInfo[] props = t.GetProperties();
@@ -226,11 +158,11 @@ namespace HatTrick.CommandLine.Extensions
                 for (int i = 0; i < options.Length; i++)
                 {
                     var op = options[i];
-                    bool isCorrelated = CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
+                    bool isCorrelated = base.CorrelationExistsForOptionKey(op.Key, out (string opKey, string property) correlation);
                     string propName = isCorrelated ? correlation.property : op.Key;
 
                     //if correlation map specifies the 'ignore map' token for the property, it means DO NOT attempt to map.
-                    if (propName == MapOf<T>.IgnoreMapToken)
+                    if (propName == Mapper.IgnoreMapToken)
                         continue;
 
                     var prop = Array.Find(props, (p) => p.Name == propName);
@@ -274,7 +206,7 @@ namespace HatTrick.CommandLine.Extensions
                     string propName = isCorrelated ? correlation.property : op.Key;
 
                     //if correlation map specifies the 'ignore map' token for the property, it means DO NOT attempt to map.
-                    if (propName == MapOf<T>.IgnoreMapToken)
+                    if (propName == Mapper.IgnoreMapToken)
                         continue;
 
                     var prop = Array.Find(props, (p) => p.Name == propName);
@@ -286,11 +218,35 @@ namespace HatTrick.CommandLine.Extensions
                 }
             }
             #endregion
+
+            #region then
+            public void Then(Action<T> handler)
+            {
+                Action<Command> action = (cmd) =>
+                {
+                    this.Map(cmd, out T instance);
+                    handler(instance);
+                };
+                base.CommandDefinition.Handler += action;
+            }
+            #endregion
+
+            #region then async
+            public void ThenAsync(Func<T, Task> handler)
+            {
+                Func<Command, Task> function = async (cmd) =>
+                {
+                    this.Map(cmd, out T instance);
+                    await handler(instance);
+                };
+                base.CommandDefinition.AsyncHandler = function;
+            }
+            #endregion
         }
         #endregion
 
         #region signature map of [class]
-        public class SignatureMapOf<T> : Map where T : Delegate
+        public class SignatureMapOf<T> : Mapper, ISignatureContinuation<T> where T : Delegate
         {
             #region internals
             private T _target;
@@ -370,7 +326,7 @@ namespace HatTrick.CommandLine.Extensions
                         var op = options[i];
                         bool isCorrelated = base.CorrelationExistsForOptionKey(op.Key, out (string opKey, string to) correlation);
 
-                        if (isCorrelated && correlation.to == SignatureMapOf<T>.IgnoreMapToken)
+                        if (isCorrelated && correlation.to == Mapper.IgnoreMapToken)
                             continue;
 
                         string msg = $"No parameter found on signature for option '{op.Key}'";
@@ -405,6 +361,34 @@ namespace HatTrick.CommandLine.Extensions
 
                     parameters[i] = command[opKey].GetValue<object>();
                 }
+            }
+            #endregion
+
+            #region then
+            public void Then(T target)
+            {
+                this.SetTarget(target);
+
+                Action<Command> action = (cmd) =>
+                {
+                    this.Map(cmd, out object[] parameters);
+                    this.GetTarget().DynamicInvoke(parameters);
+                };
+                base.CommandDefinition.Handler += action;
+            }
+            #endregion
+
+            #region then async
+            public void ThenAsync(T target)
+            {
+                this.SetTarget(target);
+
+                Func<Command, Task> function = async (cmd) =>
+                {
+                    this.Map(cmd, out object[] parameters);
+                    await (Task)this.GetTarget().DynamicInvoke(parameters);
+                };
+                base.CommandDefinition.AsyncHandler += function;
             }
             #endregion
         }

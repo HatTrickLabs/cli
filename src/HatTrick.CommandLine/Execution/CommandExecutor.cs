@@ -55,7 +55,7 @@ namespace HatTrick.CommandLine
             Func<Command, Task> function = _cmdDef.AsyncHandler;
 
             if (function is null)
-                throw new CommandExecutionException($"For command definition '{_cmdDef.Name}' ... {nameof(CommandDefinition)}.{nameof(CommandDefinition.AsyncHandler)} is null.");
+                throw new CommandExecutionException($"{nameof(CommandDefinition)}.{nameof(CommandDefinition.AsyncHandler)} is null for command definition '{_cmdDef.Name}'.");
 
             await _cmdDef.AsyncHandler(_cmd);
         }
