@@ -14,12 +14,24 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal AcceptedValuesConstraint(T[] values) : base(AcceptedValuesConstraint<T>.ConstraintName)
+        internal AcceptedValuesConstraint(T[] values)
+            : base(
+                  ConstraintName, 
+                  values is null 
+                    ? throw new ArgumentNullException(nameof(values))
+                    : string.Join("|", values)
+        )
         {
             _accepted = values ?? throw new ArgumentNullException(nameof(values));
+        }
+        #endregion
 
-            base.SetConstraint(this.IsInAcceptedSet);
-            base.SetDescription(string.Join("|", values));
+        #region ensure
+        internal override void Ensure(ref Option option)
+        {
+            T val = option.HasValue ? option.GetValue<T>() : default(T);
+            if (!this.IsInAcceptedSet(val))
+                throw new OptionArgumentException($"Constraint failed...flag: '{option.Flag}'  argument: '{option.Argument}'  {base.Name}: '{base.Description}'");
         }
         #endregion
 

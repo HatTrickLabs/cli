@@ -15,10 +15,9 @@
         #endregion
 
         #region constructors
-        internal MustAssignConstraint(OptionFlags flags) : base(MustAssignConstraint<T>.ConstraintName)
+        internal MustAssignConstraint(OptionFlags flags) : base(ConstraintName, "yes")
         {
             _flags = flags;
-            base.SetDescription("yes");
         }
         #endregion
 

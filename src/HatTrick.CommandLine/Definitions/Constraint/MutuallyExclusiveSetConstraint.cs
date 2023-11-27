@@ -18,13 +18,20 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal MutuallyExclusiveSetConstraint((string key, string flag)[] opDefKeys) : base(MutuallyExclusiveSetConstraint.ConstraintName)
+        internal MutuallyExclusiveSetConstraint((string key, string flag)[] opDefKeys)
+            : base(MustAssignOneOfConstraint.ConstraintName,
+                  opDefKeys is null
+                    ? throw new ArgumentNullException(nameof(opDefKeys))
+                    : string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag))
+            )
+        { }
+        #endregion
+
+        #region ensure
+        public override void Ensure(Command command)
         {
-            _opDefKeys = opDefKeys ?? throw new ArgumentNullException(nameof(opDefKeys));
-
-            base.SetConstraint(this.ZeroOrOneAssigned);
-
-            base.SetDescription(string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag)));
+            if (!this.ZeroOrOneAssigned(command))
+                throw new CommandInputException($"Constraint Failed...{base.Name}:  {base.Description}");
         }
         #endregion
 

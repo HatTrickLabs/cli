@@ -313,7 +313,7 @@ namespace HatTrick.CommandLine
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
 
-            base.Constraints.Add(new ArgumentConstraint<T>(constraint, name, description));
+            base.Constraints.Add(new CustomArgumentConstraint<T>(constraint, name, description));
         }
         #endregion
 

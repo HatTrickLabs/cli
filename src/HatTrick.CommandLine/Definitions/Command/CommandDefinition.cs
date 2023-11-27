@@ -237,7 +237,7 @@ namespace HatTrick.CommandLine
             if (description == string.Empty)
                 throw new ArgumentException("Argument must contain a value.", nameof(description));
 
-            var customConstraint = new CommandConstraint(constraint, name, description);
+            var customConstraint = new CustomCommandConstraint(constraint, name, description);
 
             this.Constraints.Add(customConstraint);
         }

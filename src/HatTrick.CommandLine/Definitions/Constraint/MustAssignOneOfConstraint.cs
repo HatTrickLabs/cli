@@ -17,13 +17,20 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal MustAssignOneOfConstraint((string key, string flag)[] opDefKeys) : base(MustAssignOneOfConstraint.ConstraintName)
+        internal MustAssignOneOfConstraint((string key, string flag)[] opDefKeys) 
+            : base(MustAssignOneOfConstraint.ConstraintName, 
+                  opDefKeys is null 
+                    ? throw new ArgumentNullException(nameof(opDefKeys))
+                    : string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag))
+            )
+        { }
+        #endregion
+
+        #region ensure
+        public override void Ensure(Command command)
         {
-            _opDefKeys = opDefKeys ?? throw new ArgumentNullException(nameof(opDefKeys));
-
-            base.SetConstraint(this.AtLeastOneAssigned);
-
-            base.SetDescription(string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag)));
+            if (!this.AtLeastOneAssigned(command))
+                throw new CommandInputException($"Constraint Failed...{base.Name}:  {base.Description}");
         }
         #endregion
 

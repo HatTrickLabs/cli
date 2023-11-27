@@ -21,12 +21,12 @@
         #endregion
 
         #region constructors
-        public DefaultConstraint(string optionKey, string verboseFlag, T defaultValue) : base(DefaultConstraint<T>.ConstraintName)
+        public DefaultConstraint(string optionKey, string verboseFlag, T defaultValue) 
+            : base(ConstraintName, defaultValue is null ? "null" : defaultValue.ToString())
         {
             _optionKey = optionKey;
             _verboseFlag = verboseFlag;
             _default = defaultValue;
-            base.SetDescription(defaultValue is null ? "null" : defaultValue.ToString());
         }
         #endregion
 
