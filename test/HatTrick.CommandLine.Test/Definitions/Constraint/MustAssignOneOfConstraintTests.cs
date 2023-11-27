@@ -44,7 +44,6 @@ namespace HatTrick.CommandLine.Test
             Action action = () => constraint.Ensure(cmd);
 
             Assert.Throws<CommandInputException>(action);
-
         }
 
         [Fact]
