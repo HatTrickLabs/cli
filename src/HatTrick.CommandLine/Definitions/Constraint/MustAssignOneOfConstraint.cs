@@ -17,13 +17,15 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal MustAssignOneOfConstraint((string key, string flag)[] opDefKeys) 
+        internal MustAssignOneOfConstraint(params (string key, string flag)[] opDefKeys) 
             : base(MustAssignOneOfConstraint.ConstraintName, 
                   opDefKeys is null 
                     ? throw new ArgumentNullException(nameof(opDefKeys))
                     : string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag))
             )
-        { }
+        {
+            _opDefKeys = opDefKeys;
+        }
         #endregion
 
         #region ensure

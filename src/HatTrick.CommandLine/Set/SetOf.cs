@@ -72,7 +72,7 @@ namespace HatTrick.CommandLine
             _capacity = 0;
         }
 
-        public SetOf(T[] items) : this(items is null ? 0 : items.Length)
+        public SetOf(params T[] items) : this(items is null ? 0 : items.Length)
         {
             if (items is not null && items.Length > 0)
             {

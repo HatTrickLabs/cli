@@ -24,7 +24,9 @@ namespace HatTrick.CommandLine
                     ? throw new ArgumentNullException(nameof(opDefKeys))
                     : string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag))
             )
-        { }
+        {
+            _opDefKeys = opDefKeys;
+        }
         #endregion
 
         #region ensure

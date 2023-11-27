@@ -81,14 +81,14 @@ namespace HatTrick.CommandLine.TestHarness
             //    ).Then(Person.SavePerson);
 
 
-            //cmdDef.Handler += (cmd) =>
-            //{
-            //    string first = cmd["first"].Value;
-            //    string last = cmd["last"].Value;
-            //    int age = cmd["age"].Value;
+            cmdDef.Handler += (cmd) =>
+            {
+                string first = cmd["first"].Value;
+                string last = cmd["last"].Value;
+                int age = cmd["age"].Value;
 
-            //    Person.SavePerson(new Person() { FirstName = first, LastName = last, Age = age });
-            //};
+                Person.SavePerson(new Person() { FirstName = first, LastName = last, Age = age });
+            };
 
             reg.Add(cmdDef);
         }
