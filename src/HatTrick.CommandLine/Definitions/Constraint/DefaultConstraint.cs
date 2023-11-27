@@ -12,7 +12,7 @@
 
         #region internals
         private string _optionKey;
-        private string _mostVerboseFlag;
+        private string _verboseFlag;
         private T _default;
         #endregion
 
@@ -21,10 +21,10 @@
         #endregion
 
         #region constructors
-        public DefaultConstraint(string optionKey, string mostVerboseFlag, T defaultValue) : base(DefaultConstraint<T>.ConstraintName)
+        public DefaultConstraint(string optionKey, string verboseFlag, T defaultValue) : base(DefaultConstraint<T>.ConstraintName)
         {
             _optionKey = optionKey;
-            _mostVerboseFlag = mostVerboseFlag;
+            _verboseFlag = verboseFlag;
             _default = defaultValue;
             base.SetDescription(defaultValue is null ? "null" : defaultValue.ToString());
         }
@@ -36,7 +36,7 @@
             if (option is EmptyOption)
             {
                 //type swap...this is WHY ref param is necessary.
-                option = new DefaultOption(_optionKey, _mostVerboseFlag);
+                option = new DefaultOption(_optionKey, _verboseFlag);
                 option.SetValue(_default);
             }
         }
