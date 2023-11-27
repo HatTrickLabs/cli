@@ -17,13 +17,13 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal MustAssignOneOfConstraint((string key, string flag)[] optionDefinitionKeys) : base(MustAssignOneOfConstraint.ConstraintName)
+        internal MustAssignOneOfConstraint((string key, string flag)[] opDefKeys) : base(MustAssignOneOfConstraint.ConstraintName)
         {
-            _opDefKeys = optionDefinitionKeys ?? throw new ArgumentNullException(nameof(optionDefinitionKeys));
+            _opDefKeys = opDefKeys ?? throw new ArgumentNullException(nameof(opDefKeys));
 
             base.SetConstraint(this.AtLeastOneAssigned);
 
-            base.SetDescription(string.Join("|", Array.ConvertAll(optionDefinitionKeys, o => o.flag)));
+            base.SetDescription(string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag)));
         }
         #endregion
 

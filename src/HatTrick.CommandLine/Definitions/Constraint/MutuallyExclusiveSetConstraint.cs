@@ -18,13 +18,13 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal MutuallyExclusiveSetConstraint((string key, string flag)[] optionDefinitionKeys) : base(MutuallyExclusiveSetConstraint.ConstraintName)
+        internal MutuallyExclusiveSetConstraint((string key, string flag)[] opDefKeys) : base(MutuallyExclusiveSetConstraint.ConstraintName)
         {
-            _opDefKeys = optionDefinitionKeys ?? throw new ArgumentNullException(nameof(optionDefinitionKeys));
+            _opDefKeys = opDefKeys ?? throw new ArgumentNullException(nameof(opDefKeys));
 
             base.SetConstraint(this.ZeroOrOneAssigned);
 
-            base.SetDescription(string.Join("|", Array.ConvertAll(optionDefinitionKeys, o => o.flag)));
+            base.SetDescription(string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag)));
         }
         #endregion
 

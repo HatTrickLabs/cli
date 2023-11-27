@@ -53,15 +53,15 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region resolve assignment result
-        protected bool[] ResolveAssignmentResults(Func<string, Option> getOptionByKey, string[] optionDefinitionKeys)
+        protected bool[] ResolveAssignmentResults(Func<string, Option> getOptionByKey, string[] opDefKeys)
         {
-            bool[] results = new bool[optionDefinitionKeys.Length];
+            bool[] results = new bool[opDefKeys.Length];
 
             Func<Option, bool> wasAssigned = (op) => !(op is DefaultOption || op is EmptyOption);
 
-            for (int i = 0; i < optionDefinitionKeys.Length; i++)
+            for (int i = 0; i < opDefKeys.Length; i++)
             {
-                string key = optionDefinitionKeys[i];
+                string key = opDefKeys[i];
 
                 //we don't need to tip tow around op keys existing or not... its enforced, they will be there...
                 var op = getOptionByKey(key);
