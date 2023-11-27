@@ -71,14 +71,14 @@ namespace HatTrick.CommandLine.TestHarness
         static void RegisterFakePersonCommand()
         {
             var reg = DefinitionRegistry.GetInstance();
-            var cmdDef = new CommandDefinition("add-person");
+            var cmdDef = new CommandDefinition("htl.add-person");
             cmdDef.AddOption<string>(key: "first", help: "Person's first name.", ("-f", "--first"));
             cmdDef.AddOption<string>(key: "last", help: "Person's first name.", ("-l", "--last"));
             cmdDef.AddOption<int>(key: "age", help: "Person's first name.", ("-a", "--age"));
-            //cmdDef.MapToSignature<Action<string, string, int>>(
-            //    ("first", "firstName"),
-            //    ("last", "lastName")
-            //    ).Then(Person.SavePerson);
+            cmdDef.MapToSignature<Action<string, string, int>>(
+                ("first", "firstName"),
+                ("last", "lastName")
+                ).Then(Person.SavePerson);
 
 
             cmdDef.Handler += (cmd) =>
@@ -100,7 +100,7 @@ namespace HatTrick.CommandLine.TestHarness
         public string LastName { get; set; }
         public int Age { get; set; }
 
-        public static async System.Threading.Tasks.Task SavePersonAsync(Person p)
+        public static async Task SavePersonAsync(Person p)
         {
             await System.Threading.Tasks.Task.Run(() => Console.WriteLine(p.FirstName + " " + p.LastName + " " + p.Age));
         }
@@ -110,7 +110,7 @@ namespace HatTrick.CommandLine.TestHarness
             Console.WriteLine(p.FirstName + " " + p.LastName + " " + p.Age);
         }
 
-        public static async System.Threading.Tasks.Task SavePersonAsync(string firstName, string lastName, int age)
+        public static async Task SavePersonAsync(string firstName, string lastName, int age)
         {
             await System.Threading.Tasks.Task.Run(() => Console.WriteLine(firstName + " " + lastName + " " + age));
         }

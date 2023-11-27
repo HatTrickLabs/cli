@@ -188,7 +188,7 @@ namespace HatTrick.CommandLine
             if (verbose.Length > OptionDefinition.MaxFlagLength)
                 throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...flag length '{verbose.Length}' is greater than max allowed '{OptionDefinition.MaxFlagLength}'. ");
 
-            //Not sure we really need to be this strict with verbose flags
+            //TODO: this should share logic with VerboseFlagToken.IsValid
             for (int i = 2; i < verbose.Length; i++)
             {
                 char c = verbose[i];
@@ -208,7 +208,8 @@ namespace HatTrick.CommandLine
 
             if (terse[0] != '-')
                 throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags must start with a single dash.");
-            
+
+            //TODO: this should share logic with TerseFlagToken.IsValid
             if (!(char.IsLetterOrDigit(terse[1])))
                 throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags start with a dash followed by a single letter or digit.");
         }

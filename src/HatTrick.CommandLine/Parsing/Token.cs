@@ -146,7 +146,7 @@ namespace HatTrick.CommandLine
             if (value[1] == '-')
                 return false;
 
-            if (!char.IsLetter(value[1]))
+            if (!char.IsLetterOrDigit(value[1]))
                 return false;
 
             return true;
@@ -228,7 +228,7 @@ namespace HatTrick.CommandLine
                 if (i == 2 && c == '-')//no third dash '---'
                     return false;
 
-                if (!(c == '-' || char.IsLetter(c)))
+                if (!(c == '-' || char.IsLetterOrDigit(c)))
                     return false;
             }
 

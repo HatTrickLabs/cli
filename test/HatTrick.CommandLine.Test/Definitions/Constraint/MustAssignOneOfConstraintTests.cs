@@ -68,5 +68,69 @@ namespace HatTrick.CommandLine.Test
             constraint.Ensure(cmd);
         }
         #endregion
+
+        #region usage
+        [Fact]
+        public void Usage_NothingAssigned_ShouldThrow_CommandInputException()
+        {
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.Handler = (cmd) => { };
+            cmdDef.Help = "help";
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1" ));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2" ));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3" ));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4" ));
+            cmdDef.MustAssignOneOf("op3", "op4");
+            var reg = DefinitionRegistry.GetInstance();
+            reg.Add(cmdDef);
+
+            string input = "go";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = reg.GetCommandExecutor(cmd);
+            Action action = () => exe.Execute();
+            Assert.Contains(MustAssignOneOfConstraint.ConstraintName, Assert.Throws<CommandInputException>(action).Message);
+        }
+
+        [Fact]
+        public void Usage_NoTargetAssigned_ShouldThrow_CommandInputException()
+        {
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.Handler = (cmd) => { };
+            cmdDef.Help = "help";
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.MustAssignOneOf("op3", "op4");
+            var reg = DefinitionRegistry.GetInstance();
+            reg.Add(cmdDef);
+
+            string input = "go -2:yes -1:no";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = reg.GetCommandExecutor(cmd);
+            Action action = () => exe.Execute();
+            Assert.Contains(MustAssignOneOfConstraint.ConstraintName, Assert.Throws<CommandInputException>(action).Message);
+        }
+
+        [Fact]
+        public void Usage_TargetAssigned_ShouldPass()
+        {
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.Handler = (cmd) => { };
+            cmdDef.Help = "help";
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.MustAssignOneOf("op3", "op4");
+            var reg = DefinitionRegistry.GetInstance();
+            reg.Add(cmdDef);
+
+            string input = "go -2:yes -1:no --op4:yes";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = reg.GetCommandExecutor(cmd);
+            exe.Execute();
+        }
+        #endregion
     }
 }

@@ -1,3 +1,22 @@
+Constraint:
+-- CommandConstraint
+   x MustAssignOneOfConstraint
+   x MutuallyExclusiveConstraint
+--ArgumentConstraint
+  -- AcceptedValuesConstraint
+  -- DefaultConstraint
+  -- MustAssignConstraint
+
+Execution:
+-- CommandExecutor
+
+Extensions
+-- CommandDefinition
+   -- MapTo
+   -- MapToSignature
+
+
+
 TODO:
 -----
 x. Refactor shell command to expose values in a more succinct form...add option indexer, expose value as dynamic, eliminate need to call GetOption.GetValue 
