@@ -76,9 +76,6 @@ namespace HatTrick.CommandLine
                     else if (TerseFlagToken.IsValid(arg))
                         tkn = new TerseFlagToken(arg);
 
-                    else if (VerboseFlagToken.IsValid(arg))
-                        tkn = new VerboseFlagToken(arg);
-
                     else if (CompoundTerseFlagToken.IsValid(arg))
                         tkn = new CompoundTerseFlagToken(arg);
 

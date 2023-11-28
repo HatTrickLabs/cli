@@ -74,9 +74,11 @@ namespace HatTrick.CommandLine
 
         public SetOf(params T[] items) : this(items is null ? 0 : items.Length)
         {
-            if (items is not null && items.Length > 0)
+            if (items is not null)
             {
-                Array.Copy(items, _items, items.Length);
+                if (items.Length > 0)
+                    Array.Copy(items, _items, items.Length);
+
                 _length = items.Length;
             }
         }
@@ -89,8 +91,11 @@ namespace HatTrick.CommandLine
             if (minimumCapacity > _maxCapacity)
                 throw new RangeOverflowException($"{nameof(SetOf<T>)} has a maximum internal buffer capacity of {_maxCapacity}.");
 
-            _capacity = Array.Find(_allowedCapacities, c => c >= minimumCapacity);
-            _items = new T[_capacity];
+            if (minimumCapacity > 0)
+            {
+                _capacity = Array.Find(_allowedCapacities, c => c >= minimumCapacity);
+                _items = new T[_capacity];
+            }
         }
         #endregion
 

@@ -253,7 +253,7 @@ namespace HatTrick.CommandLine.Test
             var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), (terse: "-x", verbose: "--x")) ;
             Action action = () => opDef.Validate();
             Assert.Contains(
-                "verbose flag must contain 2 dashes and at least 2 additional chars.",
+                "verbose flags must be at least 4 chars in length",
                 Assert.Throws<CommandDefinitionException>(action).Message
             );
         }
@@ -265,6 +265,17 @@ namespace HatTrick.CommandLine.Test
             Action action = () => opDef.Validate();
             Assert.Contains(
                 "verbose flags must start with 2 dashes.",
+                Assert.Throws<CommandDefinitionException>(action).Message
+            );
+        }
+
+        [Fact]
+        public void Validate_WhenVerboseFlags_StartsWith_3Dashses_ShouldThrow_CommandDefinitionException()
+        {
+            var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), (terse: "-x", verbose: "---xx"));
+            Action action = () => opDef.Validate();
+            Assert.Contains(
+                "verbose flags cannot start with 3 dashes",
                 Assert.Throws<CommandDefinitionException>(action).Message
             );
         }

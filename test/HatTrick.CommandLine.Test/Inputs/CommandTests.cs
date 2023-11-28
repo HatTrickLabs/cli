@@ -55,7 +55,7 @@ namespace HatTrick.CommandLine.Test
         public void AddEmptyOption_WhenOptionWithKeyAlreadyExists_ShouldThrow_ArgumentException()
         {
             var op1 = new Option("xyz", "--xyz");
-            var cmd = new Command("abc", new SetOf<Option>() { op1 });
+            var cmd = new Command("abc", op1);
             var op2 = new EmptyOption("xyz", "-x");
             Action action = () => cmd.AddEmptyOption(op2);
             Assert.Throws<ArgumentException>(action);
@@ -66,14 +66,12 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptions_WhenWherePredicateIsNull_ShouldReturn_AllOptions_InOrderOptionsOriginallyAdded()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                    new Option("xxx1", "--xxx"),
-                    new Option("key4", "--flag4"),
-                    new Option("key5", "--flag5"),
-                }
+            var cmd = new Command("abc", 
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2"),
+                new Option("xxx1", "--xxx"),
+                new Option("key4", "--flag4"),
+                new Option("key5", "--flag5")
             );
 
             var ops = cmd.GetOptions(null);
@@ -90,14 +88,12 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptions_WhenPredicateProvided_ShouldReturn_MatchedOptions_InOrderOptionsOriginallyAdded()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                    new Option("xxx1", "--xxx"),
-                    new Option("key4", "--flag4"),
-                    new Option("key5", "--flag5"),
-                }
+            var cmd = new Command("abc",
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2"),
+                new Option("xxx1", "--xxx"),
+                new Option("key4", "--flag4"),
+                new Option("key5", "--flag5")
             );
 
             var ops = cmd.GetOptions((o) => o.Flag.StartsWith("--f"));
@@ -115,14 +111,12 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptionByFlag_WhenNullArgumentProvided_ShouldThrow_ArgumentNullException()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                    new Option("xxx1", "--xxx"),
-                    new Option("key4", "--flag4"),
-                    new Option("key5", "--flag5"),
-                }
+            var cmd = new Command("abc",
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2"),
+                new Option("xxx1", "--xxx"),
+                new Option("key4", "--flag4"),
+                new Option("key5", "--flag5")
             );
 
 
@@ -133,16 +127,13 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptionByFlag_WhenEmptyAarrayProvided_ShouldThrow_ArgumentException()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                    new Option("xxx1", "--xxx"),
-                    new Option("key4", "--flag4"),
-                    new Option("key5", "--flag5"),
-                }
+            var cmd = new Command("abc",
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2"),
+                new Option("xxx1", "--xxx"),
+                new Option("key4", "--flag4"),
+                new Option("key5", "--flag5")
             );
-
 
             Action action = () => cmd.GetOptionByFlag(new string[] { });
             Assert.Throws<ArgumentException>(action);
@@ -151,14 +142,12 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptionByFlag_ShouldReturn_Null_IfNoOptionFlagsMatch()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                    new Option("xxx1", "--xxx"),
-                    new Option("key4", "--flag4"),
-                    new Option("key5", "--flag5"),
-                }
+            var cmd = new Command("abc",
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2"),
+                new Option("xxx1", "--xxx"),
+                new Option("key4", "--flag4"),
+                new Option("key5", "--flag5")
             );
 
             Option o = cmd.GetOptionByFlag("--abc", "-a");
@@ -168,14 +157,12 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptionByFlag_ShouldReturn_MatchedOption_WhenOptionFlagMatches()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                    new Option("xxx1", "--xxx"),
-                    new Option("key4", "--flag4"),
-                    new Option("key5", "--flag5"),
-                }
+            var cmd = new Command("abc",
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2"),
+                new Option("xxx1", "--xxx"),
+                new Option("key4", "--flag4"),
+                new Option("key5", "--flag5")
             );
 
             Option o = cmd.GetOptionByFlag("--abc", "-a", "--xxx");
@@ -187,11 +174,9 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptionByRef_WhenNullKeyProvided_ShouldThrow_ArgumentNullException()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                }
+            var cmd = new Command("abc",
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2")
             );
 
             Action action = () =>
@@ -205,11 +190,9 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptionByRef_WhenEmptyKeyProvided_ShouldThrow_ArgumentException()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                }
+            var cmd = new Command("abc",
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2")
             );
 
             Action action = () =>
@@ -223,12 +206,10 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void GetOptionByRef_WhenKeyMatch_ShouldReturn_PointerToInternalOption()
         {
-            var cmd = new Command("abc", new SetOf<Option>()
-                {
-                    new Option("key1", "--flag1"),
-                    new Option("key2", "--flag2"),
-                    new Option("key3", "--flag3"),
-                }
+            var cmd = new Command("abc",
+                new Option("key1", "--flag1"),
+                new Option("key2", "--flag2"),
+                new Option("key3", "--flag3")
             );
 
             //get a pointer to index 2 of the cmd options internal array

@@ -110,7 +110,7 @@ namespace HatTrick.CommandLine
                     }
                 }
 
-                return new Command(cmdToken?.Value ?? DefaultCommandDefinition.CommandName, options);
+                return new Command(cmdToken?.Value ?? DefaultCommandDefinition.CommandName, options.ToArray());
             }
             #endregion
 

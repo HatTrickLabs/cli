@@ -2,6 +2,7 @@
 
 namespace HatTrick.CommandLine.Test
 {
+    [Collection("Sequential")]
     public class MustAssignOneOfConstraintTests
     {
         #region constructor
@@ -37,7 +38,7 @@ namespace HatTrick.CommandLine.Test
             Option op4 = new EmptyOption("key4", "-f4");
             Option op5 = new EmptyOption("key5", "-f5");
 
-            Command cmd = new Command("go", new SetOf<Option>(op1,op2,op3,op4,op5));
+            Command cmd = new Command("go", op1, op2, op3, op4, op5);
 
             var constraint = new MustAssignOneOfConstraint(("key2", "-f2"), ("key4", "op4"));
 
@@ -57,7 +58,7 @@ namespace HatTrick.CommandLine.Test
             Option op5 = new EmptyOption("key5", "-f5");
             Option op6 = new Option("key6", "-f6", "6");
 
-            Command cmd = new Command("go", new SetOf<Option>(op1, op2, op3, op4, op5, op6));
+            Command cmd = new Command("go", op1, op2, op3, op4, op5, op6);
 
             var constraint = new MustAssignOneOfConstraint(
                 ("key2", "-f2"),
@@ -73,6 +74,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Usage_NothingAssigned_ShouldThrow_CommandInputException()
         {
+            DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("go");
             cmdDef.Handler = (cmd) => { };
             cmdDef.Help = "help";
@@ -94,6 +96,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Usage_NoTargetAssigned_ShouldThrow_CommandInputException()
         {
+            DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("go");
             cmdDef.Handler = (cmd) => { };
             cmdDef.Help = "help";
@@ -115,6 +118,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Usage_TargetAssigned_ShouldPass()
         {
+            DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("go");
             cmdDef.Handler = (cmd) => { };
             cmdDef.Help = "help";

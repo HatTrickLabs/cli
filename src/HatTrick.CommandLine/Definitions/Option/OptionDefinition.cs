@@ -177,41 +177,46 @@ namespace HatTrick.CommandLine
 
         private void ValidateVerboseFlag()
         {
+            //TODO: this should share logic with VerboseFlagToken.IsValid
+
             string verbose = _flags.Verbose;
 
             if (verbose.Length < 4)//must be two dashes and at least 2 additional chars
-                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...verbose flag must contain 2 dashes and at least 2 additional chars.");
+                throw new CommandDefinitionException($"Option '{_key}' contains an invalid flag...verbose flags must be at least 4 chars in length.");
 
             if (!(verbose[0] == '-' && verbose[1] == '-'))
-                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...verbose flags must start with 2 dashes.");
+                throw new CommandDefinitionException($"Option '{_key}' contains an invalid flag...verbose flags must start with 2 dashes.");
+
+            if (verbose[2] == '-')
+                throw new CommandDefinitionException($"Option '{_key} contains an invalid flag...verbose flags cannot start with 3 dashes.");
 
             if (verbose.Length > OptionDefinition.MaxFlagLength)
-                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...flag length '{verbose.Length}' is greater than max allowed '{OptionDefinition.MaxFlagLength}'. ");
+                throw new CommandDefinitionException($"Option '{_key}' contains an invalid flag...flag length '{verbose.Length}' is greater than max allowed '{OptionDefinition.MaxFlagLength}'. ");
 
-            //TODO: this should share logic with VerboseFlagToken.IsValid
             for (int i = 2; i < verbose.Length; i++)
             {
                 char c = verbose[i];
-                if (!(char.IsLetter(c) || char.IsDigit(c) || c == '-'))
+                if (!(char.IsLetterOrDigit(c) || c == '-'))
                     throw new CommandDefinitionException($"Option '{_key}' contains an invalid flag...char '{c}' at index '{i}'...verbose flags can contain letters, digits and dashes.");
             }
         }
 
         private void ValidateTerseFlag()
         {
+            //TODO: this should share logic with TerseFlagToken.IsValid
+
             string terse = _flags.Terse;
             if (terse is null || terse == string.Empty)
                 return;//terse flag NOT required.
 
             if (terse.Length != 2)
-                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags start with a single dash followed by a single char.");
+                throw new CommandDefinitionException($"Option '{_key}' contains an invalid flag...terse flags start with a single dash followed by a single char.");
 
             if (terse[0] != '-')
-                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags must start with a single dash.");
+                throw new CommandDefinitionException($"Option '{_key}' contains an invalid flag...terse flags must start with a single dash.");
 
-            //TODO: this should share logic with TerseFlagToken.IsValid
             if (!(char.IsLetterOrDigit(terse[1])))
-                throw new CommandDefinitionException($"Option '{_key}' contains a invalid flag...terse flags start with a dash followed by a single letter or digit.");
+                throw new CommandDefinitionException($"Option '{_key}' contains an invalid flag...terse flags start with a dash followed by a single letter or digit.");
         }
         #endregion
     }

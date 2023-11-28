@@ -2,6 +2,7 @@
 
 namespace HatTrick.CommandLine.Test
 {
+    [Collection("Sequential")]
     public class MutuallyExclusiveConstraintTests
     {
         #region constructor
@@ -37,7 +38,7 @@ namespace HatTrick.CommandLine.Test
             Option op4 = new EmptyOption("key4", "-f4");
             Option op5 = new EmptyOption("key5", "-f5");
 
-            Command cmd = new Command("go", new SetOf<Option>(op1, op2, op3, op4, op5));
+            Command cmd = new Command("go", op1, op2, op3, op4, op5);
 
             var constraint = new MutuallyExclusiveSetConstraint(("key2", "-f2"), ("key4", "op4"));
 
@@ -55,7 +56,7 @@ namespace HatTrick.CommandLine.Test
             Option op5 = new EmptyOption("key5", "-f5");
             Option op6 = new Option("key6", "-f6", "6");
 
-            Command cmd = new Command("go", new SetOf<Option>(op1, op2, op3, op4, op5, op6));
+            Command cmd = new Command("go", op1, op2, op3, op4, op5, op6);
 
             var constraint = new MutuallyExclusiveSetConstraint(("key2", "-f2"), ("key4", "op4"));
 
@@ -72,7 +73,7 @@ namespace HatTrick.CommandLine.Test
             Option op4 = new EmptyOption("key4", "-f4");
             Option op5 = new EmptyOption("key5", "-f5");
 
-            Command cmd = new Command("go", new SetOf<Option>(op1, op2, op3, op4, op5));
+            Command cmd = new Command("go", op1, op2, op3, op4, op5);
 
             var constraint = new MutuallyExclusiveSetConstraint(("key2", "-f2"), ("key4", "op4"));
 
@@ -88,12 +89,100 @@ namespace HatTrick.CommandLine.Test
             Option op4 = new Option("key4", "-f4", "4");
             Option op5 = new EmptyOption("key5", "-f5");
 
-            Command cmd = new Command("go", new SetOf<Option>(op1, op2, op3, op4, op5));
+            Command cmd = new Command("go", op1, op2, op3, op4, op5);
 
             var constraint = new MutuallyExclusiveSetConstraint(("key2", "-f2"), ("key4", "op4"));
 
             Action action = () => constraint.Ensure(cmd);
 
+            Assert.Throws<CommandInputException>(action);
+        }
+        #endregion
+
+        #region usage
+        [Fact]
+        public void Usage_WhenNothingAssigned_ShouldPass()
+        {
+            DefinitionRegistry.Clear();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.Handler = (cmd) => { };
+            cmdDef.Help = "help";
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.MutuallyExclusiveSet("op3", "op4");
+            var reg = DefinitionRegistry.GetInstance();
+            reg.Add(cmdDef);
+
+            string input = "go";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = reg.GetCommandExecutor(cmd);
+            exe.Execute();
+        }
+
+        [Fact]
+        public void Usage_WhenNoTargetAssigned_ShouldPass()
+        {
+            DefinitionRegistry.Clear();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.Handler = (cmd) => { };
+            cmdDef.Help = "help";
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.MutuallyExclusiveSet("op3", "op4");
+            var reg = DefinitionRegistry.GetInstance();
+            reg.Add(cmdDef);
+
+            string input = "go --op1:y --op2:y";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = reg.GetCommandExecutor(cmd);
+            exe.Execute();
+        }
+
+        [Fact]
+        public void Usage_WhenOneTargetAssigned_ShouldPass()
+        {
+            DefinitionRegistry.Clear();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.Handler = (cmd) => { };
+            cmdDef.Help = "help";
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.MutuallyExclusiveSet("op3", "op4");
+            var reg = DefinitionRegistry.GetInstance();
+            reg.Add(cmdDef);
+
+            string input = "go --op1:y --op2:y --op4:y";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = reg.GetCommandExecutor(cmd);
+            exe.Execute();
+
+        }
+
+        [Fact]
+        public void Usage_WhenTwoOrMoreTargetsAssigned_ShouldThrow_CommandInputException()
+        {
+            DefinitionRegistry.Clear();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.Handler = (cmd) => { };
+            cmdDef.Help = "help";
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", flags: ("-1", "--op1"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", flags: ("-2", "--op2"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", flags: ("-3", "--op3"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", flags: ("-4", "--op4"));
+            cmdDef.MutuallyExclusiveSet("op3", "op4");
+            var reg = DefinitionRegistry.GetInstance();
+            reg.Add(cmdDef);
+
+            string input = "go --op1:y --op2:y --op4:y --op3:y";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = reg.GetCommandExecutor(cmd);
+            Action action = () => exe.Execute();
             Assert.Throws<CommandInputException>(action);
         }
         #endregion

@@ -253,6 +253,8 @@ namespace HatTrick.CommandLine
         #region validate
         internal virtual void Validate()
         {
+            //TODO: this should share logic with CommandToken.IsValid
+
             if (_name == string.Empty)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Name)}.");
 

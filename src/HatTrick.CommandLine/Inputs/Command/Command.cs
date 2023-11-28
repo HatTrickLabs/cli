@@ -33,7 +33,8 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal Command(string name, SetOf<Option> options = null)
+        //internal Command(string name, SetOf<Option> options = null)
+        internal Command(string name, params Option[] options)
         {
             if (name is null)
                 throw new ArgumentNullException(nameof(name));
@@ -42,7 +43,7 @@ namespace HatTrick.CommandLine
                 throw new ArgumentException($"{nameof(name)} argument must contain a value.");
 
             _name = name;
-            _ops = options ?? new();
+            _ops = new SetOf<Option>(options) ?? new();
         }
         #endregion
 
