@@ -38,7 +38,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region one and only one assigned
-        private bool ZeroOrOneAssigned(IConstrainedCommand command)
+        private bool ZeroOrOneAssigned(ICommand command)
         {
             Func<string, Option> getOptionByKey = (key) => command[key];
 

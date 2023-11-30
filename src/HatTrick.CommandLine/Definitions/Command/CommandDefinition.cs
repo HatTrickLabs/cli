@@ -220,7 +220,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply constraint
-        public void ApplyConstraint(Func<IConstrainedCommand, bool> constraint, string name, string description)
+        public void ApplyConstraint(Func<ICommand, bool> constraint, string name, string description)
         {
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));

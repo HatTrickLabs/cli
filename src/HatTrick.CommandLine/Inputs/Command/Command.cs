@@ -6,7 +6,7 @@ using System.Transactions;
 
 namespace HatTrick.CommandLine
 {
-    public class Command : IConstrainedCommand
+    public class Command : ICommand
     {
         #region internals
         private string _name;

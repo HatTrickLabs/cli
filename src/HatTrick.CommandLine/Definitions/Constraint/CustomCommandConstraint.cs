@@ -5,11 +5,11 @@ namespace HatTrick.CommandLine
     public class CustomCommandConstraint : CommandConstraint
     {
         #region internals
-        private Func<IConstrainedCommand, bool> _constraint;
+        private Func<ICommand, bool> _constraint;
         #endregion
 
         #region constructors
-        public CustomCommandConstraint(Func<IConstrainedCommand, bool> constraint, string name, string description) 
+        public CustomCommandConstraint(Func<ICommand, bool> constraint, string name, string description) 
             : base(name, description)
         {
             _constraint = constraint ?? throw new ArgumentNullException(nameof(constraint));

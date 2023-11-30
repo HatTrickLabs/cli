@@ -37,7 +37,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region at least one assigned
-        private bool AtLeastOneAssigned(IConstrainedCommand command)
+        private bool AtLeastOneAssigned(ICommand command)
         {
             Func<string, Option> getOptionByKey = (key) => command[key];
 

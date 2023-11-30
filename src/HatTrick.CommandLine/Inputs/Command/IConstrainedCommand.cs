@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HatTrick.CommandLine
 {
-    public interface IConstrainedCommand
+    public interface ICommand
     {
         public string Name { get; }
 
