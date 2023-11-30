@@ -42,9 +42,9 @@ namespace HatTrick.CommandLine.Test
         }
         #endregion
 
-        #region usage
+        #region ensure
         [Fact]
-        public void Usage_WhenConstraintFails_ShouldThrow_CommandInputException()
+        public void Ensure_WhenConstraintFails_ShouldThrow_CommandInputException()
         {
             var op1 = new Option("key1", "-1", "1");
             var op2 = new Option("key2", "-2", "2");
@@ -57,7 +57,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Usage_WhenConstraintPasses_ShouldPass()
+        public void Ensure_WhenConstraintPasses_ShouldPass()
         {
             var op1 = new Option("key1", "-1", "1");
             var op2 = new Option("key2", "-2", "2");
@@ -66,6 +66,60 @@ namespace HatTrick.CommandLine.Test
             var command = new Command("go", op1, op2, op3, op4);
             var constraint = new CustomCommandConstraint((cmd) => cmd["key2"].Argument == "2", "name", "description");
             constraint.Ensure(command);
+        }
+        #endregion
+
+        #region usage
+        [Fact]
+        public void Usage_WhenConstraintConditionPasses_ShouldPass()
+        {
+            DefinitionRegistry.Clear();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "fn", help: "fn help", ("-f", "--fn"));
+            cmdDef.AddOption<string>(key: "ln", help: "ln help", ("-l", "--ln"));
+            cmdDef.AddOption<int>(key: "age", help: "age help", ("-a", "--age"));
+
+            cmdDef.ApplyConstraint((cmd) => cmd["age"].Value > 7, "age restriction", "age > 7");
+
+            cmdDef.Handler = (cmd) =>
+            {
+                Assert.Equal("Charlie", cmd["fn"].GetValue<string>());
+                Assert.Equal("Brown", cmd["ln"].GetValue<string>());
+                Assert.Equal(8, cmd["age"].GetValue<int>());
+            };
+
+            DefinitionRegistry.GetInstance().Add(cmdDef);
+            string input = "go -f Charlie -l Brown -a 8";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(cmd);
+            exe.Execute();
+        }
+
+        [Fact]
+        public void Usage_WhenConstraintConditionFails_ShouldThrow_CommandInputException()
+        {
+            DefinitionRegistry.Clear();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "fn", help: "fn help", ("-f", "--fn"));
+            cmdDef.AddOption<string>(key: "ln", help: "ln help", ("-l", "--ln"));
+            cmdDef.AddOption<int>(key: "age", help: "age help", ("-a", "--age"));
+
+            cmdDef.ApplyConstraint((cmd) => cmd["age"].Value > 8, "age restriction", "age > 7");
+
+            cmdDef.Handler = (cmd) =>
+            {
+                Assert.Equal("Charlie", cmd["fn"].GetValue<string>());
+                Assert.Equal("Brown", cmd["ln"].GetValue<string>());
+                Assert.Equal(8, cmd["age"].GetValue<int>());
+            };
+
+            DefinitionRegistry.GetInstance().Add(cmdDef);
+            string input = "go -f Charlie -l Brown -a 8";
+            Command cmd = CommandBuilder.Build(input);
+            CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(cmd);
+            Action action = () => exe.Execute();
+
+            Assert.Throws<CommandInputException>(action);
         }
         #endregion
     }
