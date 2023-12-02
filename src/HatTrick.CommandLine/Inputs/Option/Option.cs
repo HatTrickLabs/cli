@@ -20,8 +20,6 @@ namespace HatTrick.CommandLine
 
         public bool HasArgument => _arg is not null;
 
-        public dynamic Value => _value;
-
         public bool HasValue => _value is not null;
         #endregion
 
@@ -114,7 +112,7 @@ namespace HatTrick.CommandLine
             return _value;
         }
 
-        internal T GetValue<T>()
+        public T GetValue<T>()
         {
             return (T)_value;
         }

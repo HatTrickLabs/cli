@@ -79,7 +79,7 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "ln", help: "ln help", ("-l", "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "age help", ("-a", "--age"));
 
-            cmdDef.ApplyConstraint((cmd) => cmd["age"].Value > 7, "age restriction", "age > 7");
+            cmdDef.ApplyConstraint((cmd) => cmd["age"].GetValue<int>() > 7, "age restriction", "age > 7");
 
             cmdDef.Handler = (cmd) =>
             {
@@ -104,7 +104,7 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "ln", help: "ln help", ("-l", "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "age help", ("-a", "--age"));
 
-            cmdDef.ApplyConstraint((cmd) => cmd["age"].Value > 8, "age restriction", "age > 7");
+            cmdDef.ApplyConstraint((cmd) => cmd["age"].GetValue<int>() > 8, "age restriction", "age > 7");
 
             cmdDef.Handler = (cmd) =>
             {

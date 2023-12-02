@@ -92,7 +92,7 @@ namespace HatTrick.CommandLine.Test
         {
             var op = new Option("-x");
             op.SetValue(888);
-            Assert.Equal(888, op.Value);
+            Assert.Equal(888, op.GetValue<int>());
         }
 
         [Fact]

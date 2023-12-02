@@ -42,8 +42,8 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmdDef.Handler = (cmd) =>
             {
-                for (int i = 0; i < cmd["count"].Value; i++)
-                    Console.WriteLine(Guid.NewGuid().ToString(cmd["format"].Value));
+                for (int i = 0; i < cmd["count"].GetValue<int>(); i++)
+                    Console.WriteLine(Guid.NewGuid().ToString(cmd["format"].GetValue<string>()));
             };
             cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", (terse: "-f", verbose: "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
@@ -57,9 +57,9 @@ namespace HatTrick.CommandLine.TestHarness
             var cmdDef = new CommandDefinition(name: "htl.base64");
             cmdDef.Handler = (cmd) =>
             {
-                string result = cmd["reverse"].Value == true
-                ? Encoding.UTF8.GetString(Convert.FromBase64String(cmd["value"].Value))
-                : Convert.ToBase64String(Encoding.UTF8.GetBytes(cmd["value"].Value));
+                string result = cmd["reverse"].GetValue<bool>() == true
+                ? Encoding.UTF8.GetString(Convert.FromBase64String(cmd["value"].GetValue<string>()))
+                : Convert.ToBase64String(Encoding.UTF8.GetBytes(cmd["value"].GetValue<string>()));
 
                 Console.WriteLine(result);
             };
@@ -83,9 +83,9 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmdDef.Handler += (cmd) =>
             {
-                string first = cmd["first"].Value;
-                string last = cmd["last"].Value;
-                int age = cmd["age"].Value;
+                string first = cmd["first"].GetValue<string>();
+                string last = cmd["last"].GetValue<string>();
+                int age = cmd["age"].GetValue<int>();
 
                 Person.SavePerson(new Person() { FirstName = first, LastName = last, Age = age });
             };
