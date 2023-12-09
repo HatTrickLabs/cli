@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace HatTrick.CommandLine
 {
@@ -44,7 +43,9 @@ namespace HatTrick.CommandLine
 
             bool[] results = base.ResolveAssignmentResults(getOptionByKey, Array.ConvertAll(_opDefKeys, o => o.key));
 
-            return results.Where(r => r == true).Take(2).Count() < 2;
+            int count = 0;
+            Array.ForEach(results, (r) => { if (r == true) count += 1; });
+            return count < 2;
         }
         #endregion
     }
