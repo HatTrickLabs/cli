@@ -1,9 +1,5 @@
 ﻿namespace HatTrick.CommandLine
 {
-    public interface IDefaultConstraint
-    {
-    }
-
     public class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
     {
         #region const
@@ -42,4 +38,10 @@
         }
         #endregion
     }
+
+    #region i default constraint [interface]
+    public interface IDefaultConstraint
+    {
+    }
+    #endregion
 }

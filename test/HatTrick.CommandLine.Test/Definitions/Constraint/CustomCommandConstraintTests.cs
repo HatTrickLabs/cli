@@ -89,6 +89,7 @@ namespace HatTrick.CommandLine.Test
             };
 
             DefinitionRegistry.GetInstance().Add(cmdDef);
+
             string input = "go -f Charlie -l Brown -a 8";
             Command cmd = CommandBuilder.Build(input);
             CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(cmd);
@@ -104,7 +105,7 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "ln", help: "ln help", ("-l", "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "age help", ("-a", "--age"));
 
-            cmdDef.ApplyConstraint((cmd) => cmd["age"].GetValue<int>() > 8, "age restriction", "age > 7");
+            cmdDef.ApplyConstraint((cmd) => cmd["age"].GetValue<int>() > 8, "age restriction", "age > 8");
 
             cmdDef.Handler = (cmd) =>
             {

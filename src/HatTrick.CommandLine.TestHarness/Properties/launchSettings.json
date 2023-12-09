@@ -2,7 +2,7 @@
   "profiles": {
     "HatTrick.CommandLine.TestHarness": {
       "commandName": "Project",
-      "commandLineArgs": "htl.add-person -f Jerrod -l Eiman -a \"1\""
+      "commandLineArgs": "-r"
     }
   }
 }

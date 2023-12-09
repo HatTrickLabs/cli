@@ -46,7 +46,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region clear
-        internal static void Clear()// complete garbage...for unit testing only!!!
+        internal static void Clear()// complete garbage...for unit testing only!
         {
             lock (_lock)
             {

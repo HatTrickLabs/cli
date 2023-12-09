@@ -63,7 +63,7 @@ namespace HatTrick.CommandLine.TestHarness
 
                 Console.WriteLine(result);
             };
-            cmdDef.AddOption<string>(key: "value", help: "The value to base 64 encode or decode", (terse: "-v", verbose: "--verbose"));
+            cmdDef.AddOption<string>(key: "value", help: "The value to base 64 encode or decode", (terse: "-v", verbose: "--value"));
             cmdDef.AddOption<bool>(key: "reverse", defaultArg: false, help: "Reverse the base 64 encoding (decode).", (terse: "-r", verbose: "--reverse"));
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
@@ -75,6 +75,9 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<string>(key: "first", help: "Person's first name.", ("-f", "--first"));
             cmdDef.AddOption<string>(key: "last", help: "Person's first name.", ("-l", "--last"));
             cmdDef.AddOption<int>(key: "age", help: "Person's first name.", ("-a", "--age"));
+
+            cmdDef.MapTo<Person>(("first","FirstName"),("last","LastName"), ("age","Age")).Then(Person.SavePerson);
+
             cmdDef.MapToSignature<Action<string, string, int>>(
                 ("first", "firstName"),
                 ("last", "lastName")

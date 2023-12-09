@@ -11,6 +11,7 @@ namespace HatTrick.CommandLine
         #region constructors
         public CustomArgumentConstraint(Func<T, bool> constraint, string name, string description) : base(name, description)
         {
+            _constraint = constraint;
         }
         #endregion
 

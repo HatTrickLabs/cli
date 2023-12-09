@@ -6,6 +6,17 @@ namespace HatTrick.CommandLine.Extensions
 {
     public static class CommandDefinitionExtensions
     {
+        #region map to
+        public static IContinuation<T> MapTo<T>(this CommandDefinition cmdDef) where T : new()
+        {
+            return new MapOf<T>(cmdDef);
+        }
+
+        public static IContinuation<T> MapTo<T>(this CommandDefinition cmdDef, params (string optionKey, string propertyName)[] correlations) where T : new()
+        {
+            return new MapOf<T>(cmdDef, correlations);
+        }
+        #endregion
 
         #region map to signature
         public static ISignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef) where T : Delegate

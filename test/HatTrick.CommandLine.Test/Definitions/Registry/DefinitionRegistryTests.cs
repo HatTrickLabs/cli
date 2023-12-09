@@ -2,6 +2,7 @@
 
 namespace HatTrick.CommandLine.Test
 {
+    [Collection("Sequential")]
     public class DefinitionRegistryTests
     {
         #region get instance

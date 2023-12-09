@@ -3,7 +3,7 @@
 namespace HatTrick.CommandLine.Test
 {
     [Collection("Sequential")]
-    public class DefaultConstraintTests
+    public class CustomArgumentConstraintTests
     {
     }
 }

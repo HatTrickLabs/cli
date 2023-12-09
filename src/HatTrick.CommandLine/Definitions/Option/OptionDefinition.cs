@@ -273,7 +273,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region accepted values
-        public void AcceptedValues(T[] values)
+        internal void AcceptedValues(T[] values)
         {
             if (values is null)
                 throw new ArgumentNullException(nameof(values));
@@ -308,7 +308,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region apply constraint
-        public void ApplyConstraint(Func<T, bool> constraint, string name, string description)
+        internal void ApplyConstraint(Func<T, bool> constraint, string name, string description)
         {
             if (constraint is null)
                 throw new ArgumentNullException(nameof(constraint));
