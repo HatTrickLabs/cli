@@ -96,13 +96,20 @@ namespace HatTrick.CommandLine
 
                         case ArgumentToken _:
                             if (options.Length == 0)
-                                throw new CommandParseException(this.ExceptionHelper("Unexpected argument, positional arguments not supported", token));
+                            {
+                                if (this.Peek() is not null)
+                                    throw new CommandParseException(this.ExceptionHelper("Unexpected argument, positional arguments not supported", token));
 
-                            var op = options[^1];
-                            if (op.HasArgument)
-                                throw new CommandParseException(this.ExceptionHelper("Unexpected argument, multi value arguments not supported", token));
+                                options.Add(new UnflaggedOption(token.Value));
+                            }
+                            else
+                            {
+                                var op = options[^1];
+                                if (op.HasArgument)
+                                    throw new CommandParseException(this.ExceptionHelper("Unexpected argument, multi value arguments not supported", token));
 
-                            op.SetArgument(token.Value);
+                                op.SetArgument(token.Value);
+                            }
                             break;
 
                         default:

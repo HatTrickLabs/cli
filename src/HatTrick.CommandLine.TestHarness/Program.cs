@@ -28,6 +28,7 @@ namespace HatTrick.CommandLine.TestHarness
             RegisterGuidCommand();
             RegisterBase64Command();
             RegisterFakePersonCommand();
+            RegisterCapsCommand();
         }
 
         static void RegisterNamespaces()
@@ -96,6 +97,18 @@ namespace HatTrick.CommandLine.TestHarness
             };
 
             reg.Add(cmdDef);
+        }
+
+        static void RegisterCapsCommand()
+        {
+            var cmdDef = new CommandDefinition("htl.caps");
+            cmdDef.AddOption<string>(key: "value", help: "Value to capitalize.", ("-v", "--value"));
+            cmdDef.Handler += (cmd) =>
+            {
+                string value = cmd["value"].GetValue<string>();
+                Console.Write(value?.ToUpper() ?? string.Empty);
+            };
+            DefinitionRegistry.GetInstance().Add(cmdDef);
         }
 
         static void GenerateGuids(int count, string format)

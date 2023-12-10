@@ -22,12 +22,6 @@ namespace HatTrick.CommandLine
         {
             _cmdDef = commandDefinition ?? throw new ArgumentNullException(nameof(commandDefinition));
             _cmd = command ?? throw new ArgumentNullException(nameof(command));
-
-            if (command.Name is null)
-                throw new ArgumentNullException($"{nameof(command)}.{nameof(command.Name)}");
-
-            if (command.Name == string.Empty)
-                throw new ArgumentException("Property must contain a value.", $"{nameof(command)}.{nameof(command.Name)}");
         }
         #endregion
 
@@ -73,10 +67,41 @@ namespace HatTrick.CommandLine
         #region ensure command options
         private void EnsureCommandOptions(Command command)
         {
-            this.EnsureCommandOptionsFullyHydrated(command);
-            this.EnsureAllProvidedOptionsDefined(command);
-            this.EnsureNoDuplicateOptions(command);
+            //check for unflagged single op
+            if (!this.HydrateSingleUnflaggedOption(command))
+            {
+                this.EnsureCommandOptionsFullyHydrated(command);
+                this.EnsureAllProvidedOptionsDefined(command);
+                this.EnsureNoDuplicateOptions(command);
+            }
             this.EnsureOptionConstraints(command);
+        }
+        #endregion
+
+        #region hydrate single unflagged option
+        private bool HydrateSingleUnflaggedOption(Command command)
+        {
+            CommandDefinition cmdDef = _cmdDef;
+
+            int definedLen = cmdDef.Options.Length;
+            int suppliedLen = command.Options.Length;
+
+            //to take adv of the single unflagged arg, cmd def can only contain a single op def
+            if (definedLen == 1 && suppliedLen == definedLen)
+            {
+                ref Option op = ref command.Options.GetPointerTo(0);
+
+                //if the parser parsed it unflagged, swap it with proper option
+                if (op is UnflaggedOption)
+                {
+                    var opDef = cmdDef.Options[0];
+                    op = new Option(opDef.Key, opDef.Flags.Verbose, op.Argument);
+                    //apply the converted argument value to the option
+                    this.EnsureOptionValue(op, opDef);
+                    return true;
+                }
+            }
+            return false;
         }
         #endregion
 
@@ -100,14 +125,14 @@ namespace HatTrick.CommandLine
                     op.SetKey(opDef.Key);
 
                     //apply the converted argument value to the option
-                    this.EnsureOptionArgumentValue(op, opDef);
+                    this.EnsureOptionValue(op, opDef);
                 }
             }
         }
         #endregion
 
-        #region ensure option argument value
-        private void EnsureOptionArgumentValue(Option option, OptionDefinition optionDef)
+        #region ensure option value
+        private void EnsureOptionValue(Option option, OptionDefinition optionDef)
         {
             if (option.Key != optionDef.Key)
                 throw new ArgumentException($"Key of option: {option.Key} does not match key of option definition: {optionDef.Key}");

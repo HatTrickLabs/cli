@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 
 namespace HatTrick.CommandLine
 {
@@ -152,6 +147,12 @@ namespace HatTrick.CommandLine
         #region get command executor
         public CommandExecutor GetCommandExecutor(Command command)
         {
+            if (command.Name is null)
+                throw new ArgumentNullException($"{nameof(command)}.{nameof(command.Name)}");
+
+            if (command.Name == string.Empty)
+                throw new ArgumentException("Property must contain a value.", $"{nameof(command)}.{nameof(command.Name)}");
+
             CommandDefinition cmdDef = this.GetCommandDefinition(command.Name);
             var executor = new CommandExecutor(cmdDef, command);
             return executor;
