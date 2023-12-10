@@ -97,7 +97,7 @@ x Toss out the super friendly boolean converter...stick with 0, 1 and case-insen
 x Refactor OptionDefinition<T>.ApplyConvertedValueTo...shouldn't be passing in the op to the opDef.
 x Impl standard nix flag and arg seperated by = or : concept to be back compat.   i.e.   --format=X   --format:X   -f:x  -f=X
 x Imple ICommand and IOptions and pass it to Handle/HandleAsync in lue of actual command and ops. 
-- Imple flagless arg IF AND ONLY IF command only accepts a single argument (take into account mutual exclusivity).
+- Imple [Flagless|Unflagged] option arg IF AND ONLY IF command only accepts a single argument (take into account mutual exclusivity).
 x Fix the capacity growth logic in SetOf<T>...the whole point was to slow growth as it grew.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
