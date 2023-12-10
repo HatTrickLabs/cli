@@ -98,6 +98,7 @@ x Refactor OptionDefinition<T>.ApplyConvertedValueTo...shouldn't be passing in t
 x Impl standard nix flag and arg seperated by = or : concept to be back compat.   i.e.   --format=X   --format:X   -f:x  -f=X
 - Imple ICommand and IOptions and pass it to Handle/HandleAsync in lue of actual command and ops. 
 - Imple flagless arg IF AND ONLY IF command only accepts a single argument (take into account mutual exclusivity).
+- Fix the capacity growth logic in SetOf<T>...the whole point was to slow growth as it grew.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

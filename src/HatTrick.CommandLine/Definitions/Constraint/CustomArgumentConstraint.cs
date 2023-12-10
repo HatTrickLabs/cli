@@ -11,7 +11,7 @@ namespace HatTrick.CommandLine
         #region constructors
         internal CustomArgumentConstraint(Func<T, bool> constraint, string name, string description) : base(name, description)
         {
-            _constraint = constraint;
+            _constraint = constraint ?? throw new ArgumentNullException(nameof(constraint));
         }
         #endregion
 

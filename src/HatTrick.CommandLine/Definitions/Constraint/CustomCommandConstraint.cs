@@ -9,8 +9,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        internal CustomCommandConstraint(Func<ICommand, bool> constraint, string name, string description) 
-            : base(name, description)
+        internal CustomCommandConstraint(Func<ICommand, bool> constraint, string name, string description) : base(name, description)
         {
             _constraint = constraint ?? throw new ArgumentNullException(nameof(constraint));
         }

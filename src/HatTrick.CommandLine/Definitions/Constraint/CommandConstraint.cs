@@ -31,11 +31,11 @@ namespace HatTrick.CommandLine
 
         #region resolve assignment result
         //TODO: This def should not live here ...
-        protected bool[] ResolveAssignmentResults(Func<string, Option> getOptionByKey, string[] opDefKeys)
+        protected bool[] ResolveAssignmentResults(Func<string, IOption> getOptionByKey, string[] opDefKeys)
         {
             bool[] results = new bool[opDefKeys.Length];
 
-            Func<Option, bool> wasAssigned = (op) => !(op is DefaultOption || op is EmptyOption);
+            Func<IOption, bool> wasAssigned = (op) => !(op is DefaultOption || op is EmptyOption);
 
             for (int i = 0; i < opDefKeys.Length; i++)
             {

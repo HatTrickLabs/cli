@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
-    public class Option
+    public class Option : IOption
     {
         #region internals
         private string _key;

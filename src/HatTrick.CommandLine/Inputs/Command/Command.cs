@@ -30,6 +30,8 @@ namespace HatTrick.CommandLine
                 return op;
             }
         }
+
+        IOption ICommand.this[string key] => this[key] as IOption;
         #endregion
 
         #region constructors
@@ -62,6 +64,11 @@ namespace HatTrick.CommandLine
         {
             Option[] ops = _ops.FindAll(where == null ? (o) => true : where);
             return ops;
+        }
+
+        IOption[] ICommand.GetOptions(Predicate<Option> where)
+        {
+            return Array.ConvertAll(this.GetOptions(where), (o) => o as IOption);
         }
         #endregion
 

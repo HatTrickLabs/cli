@@ -39,7 +39,7 @@ namespace HatTrick.CommandLine
         #region one and only one assigned
         private bool ZeroOrOneAssigned(ICommand command)
         {
-            Func<string, Option> getOptionByKey = (key) => command[key];
+            Func<string, IOption> getOptionByKey = (key) => command[key];
 
             bool[] results = base.ResolveAssignmentResults(getOptionByKey, Array.ConvertAll(_opDefKeys, o => o.key));
 

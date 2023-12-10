@@ -16,7 +16,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        protected internal ArgumentConstraint(string name, string description)
+        internal ArgumentConstraint(string name, string description)
         {
             if (name is null)
                 throw new ArgumentNullException(nameof(name));
