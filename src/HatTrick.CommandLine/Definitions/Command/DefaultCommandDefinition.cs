@@ -47,21 +47,21 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region default command handler
-        private void DefaultCommandHandler(Command cmd)
+        private void DefaultCommandHandler(ICommand cmd)
         {
-            //command def ensures only one of these can be true...
+            //command definition ensures only one of these can be true...
             bool version = cmd["version"].GetValue<bool>();
             bool run = cmd["run"].GetValue<bool>();
             bool help = cmd["help"] is not DefaultOption || !(run || version);
 
             if (help)
-                this.InvokeHelp(cmd);
+                this.InvokeHelp(cmd as Command);
 
             else if (version)
-                this.InvokeVersion(cmd);
+                this.InvokeVersion(cmd as Command);
 
             else if (run)
-                this.InvokeRun(cmd);
+                this.InvokeRun(cmd as Command);
         }
         #endregion
 

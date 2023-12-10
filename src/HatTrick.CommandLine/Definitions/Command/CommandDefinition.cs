@@ -16,8 +16,8 @@ namespace HatTrick.CommandLine
         private int _depth;
         private bool _hidden;
         private Action _registeredValidators;
-        private Action<Command> _handler;
-        private Func<Command, Task> _asyncHandler;
+        private Action<ICommand> _handler;
+        private Func<ICommand, Task> _asyncHandler;
         private SetOfOptionDefinition _options;
         private SetOf<CommandConstraint> _constraints;
         #endregion
@@ -37,13 +37,13 @@ namespace HatTrick.CommandLine
 
         internal int Depth => _depth;
 
-        public Action<Command> Handler
+        public Action<ICommand> Handler
         {
             get => _handler;
             set => _handler = value;
         }
 
-        public Func<Command, Task> AsyncHandler
+        public Func<ICommand, Task> AsyncHandler
         {
             get => _asyncHandler;
             set => _asyncHandler = value;

@@ -222,9 +222,9 @@ namespace HatTrick.CommandLine.Extensions
             #region then
             public void Then(Action<T> handler)
             {
-                Action<Command> action = (cmd) =>
+                Action<ICommand> action = (cmd) =>
                 {
-                    this.Map(cmd, out T instance);
+                    this.Map(cmd as Command, out T instance);
                     handler(instance);
                 };
                 base.CommandDefinition.Handler += action;
@@ -234,9 +234,9 @@ namespace HatTrick.CommandLine.Extensions
             #region then async
             public void ThenAsync(Func<T, Task> handler)
             {
-                Func<Command, Task> function = async (cmd) =>
+                Func<ICommand, Task> function = async (cmd) =>
                 {
-                    this.Map(cmd, out T instance);
+                    this.Map(cmd as Command, out T instance);
                     await handler(instance);
                 };
                 base.CommandDefinition.AsyncHandler = function;
@@ -369,9 +369,9 @@ namespace HatTrick.CommandLine.Extensions
             {
                 this.SetTarget(target);
 
-                Action<Command> action = (cmd) =>
+                Action<ICommand> action = (cmd) =>
                 {
-                    this.Map(cmd, out object[] parameters);
+                    this.Map(cmd as Command, out object[] parameters);
                     this.GetTarget().DynamicInvoke(parameters);
                 };
                 base.CommandDefinition.Handler += action;
@@ -383,9 +383,9 @@ namespace HatTrick.CommandLine.Extensions
             {
                 this.SetTarget(target);
 
-                Func<Command, Task> function = async (cmd) =>
+                Func<ICommand, Task> function = async (cmd) =>
                 {
-                    this.Map(cmd, out object[] parameters);
+                    this.Map(cmd as Command, out object[] parameters);
                     await (Task)this.GetTarget().DynamicInvoke(parameters);
                 };
                 base.CommandDefinition.AsyncHandler += function;
