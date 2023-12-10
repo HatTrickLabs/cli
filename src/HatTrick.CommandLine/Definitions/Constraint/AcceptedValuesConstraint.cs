@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace HatTrick.CommandLine
 {
-    public class AcceptedValuesConstraint<T> : ArgumentConstraint<T>
+    internal class AcceptedValuesConstraint<T> : ArgumentConstraint<T>
     {
         #region const
-        public const string ConstraintName = "accepts";
+        internal const string ConstraintName = "accepts";
         #endregion
 
         #region internals

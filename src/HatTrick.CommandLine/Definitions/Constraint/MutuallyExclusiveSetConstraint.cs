@@ -2,10 +2,10 @@
 
 namespace HatTrick.CommandLine
 {
-    public class MutuallyExclusiveSetConstraint : CommandConstraint
+    internal class MutuallyExclusiveSetConstraint : CommandConstraint
     {
         #region const 
-        public const string ConstraintName = "mutually exclusive";
+        internal const string ConstraintName = "mutually exclusive";
         #endregion
 
         #region internals
@@ -29,7 +29,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        public override void Ensure(Command command)
+        internal override void Ensure(Command command)
         {
             if (!this.ZeroOrOneAssigned(command))
                 throw new CommandInputException($"Constraint Failed...{base.Name}:  {base.Description}");

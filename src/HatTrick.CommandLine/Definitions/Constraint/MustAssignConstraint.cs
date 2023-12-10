@@ -9,7 +9,7 @@ namespace HatTrick.CommandLine
     #endregion
 
     #region must assign constraint [class]
-    public class MustAssignConstraint<T> : ArgumentConstraint<T>, IMustAssignConstraint
+    internal class MustAssignConstraint<T> : ArgumentConstraint<T>, IMustAssignConstraint
     {
         #region const
         public const string ConstraintName = "must assign";

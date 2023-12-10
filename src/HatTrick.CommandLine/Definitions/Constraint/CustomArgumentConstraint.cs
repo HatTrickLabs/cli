@@ -2,14 +2,14 @@
 
 namespace HatTrick.CommandLine
 {
-    public class CustomArgumentConstraint<T> : ArgumentConstraint<T>
+    internal class CustomArgumentConstraint<T> : ArgumentConstraint<T>
     {
         #region internals
         private Func<T, bool> _constraint;
         #endregion
 
         #region constructors
-        public CustomArgumentConstraint(Func<T, bool> constraint, string name, string description) : base(name, description)
+        internal CustomArgumentConstraint(Func<T, bool> constraint, string name, string description) : base(name, description)
         {
             _constraint = constraint;
         }

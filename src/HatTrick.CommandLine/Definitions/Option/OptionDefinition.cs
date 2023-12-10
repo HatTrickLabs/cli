@@ -35,11 +35,7 @@ namespace HatTrick.CommandLine
 
         public OptionFlags Flags => _flags;
 
-        public SetOf<ArgumentConstraint> Constraints
-        {
-            get => _constraints;
-            protected set => _constraints = value;
-        }
+        internal SetOf<ArgumentConstraint> Constraints => _constraints;
 
         public bool HasConstraints => _constraints.Length > 0;
 

@@ -2,14 +2,14 @@
 
 namespace HatTrick.CommandLine
 {
-    public class CustomCommandConstraint : CommandConstraint
+    internal class CustomCommandConstraint : CommandConstraint
     {
         #region internals
         private Func<ICommand, bool> _constraint;
         #endregion
 
         #region constructors
-        public CustomCommandConstraint(Func<ICommand, bool> constraint, string name, string description) 
+        internal CustomCommandConstraint(Func<ICommand, bool> constraint, string name, string description) 
             : base(name, description)
         {
             _constraint = constraint ?? throw new ArgumentNullException(nameof(constraint));
@@ -17,7 +17,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        public override void Ensure(Command command)
+        internal override void Ensure(Command command)
         {
             if (!_constraint(command))
                 throw new CommandInputException($"Constraint Failed...{base.Name}:  {base.Description}");

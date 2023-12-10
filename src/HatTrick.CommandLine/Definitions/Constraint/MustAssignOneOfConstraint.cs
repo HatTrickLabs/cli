@@ -2,10 +2,10 @@
 
 namespace HatTrick.CommandLine
 {
-    public class MustAssignOneOfConstraint : CommandConstraint
+    internal class MustAssignOneOfConstraint : CommandConstraint
     {
         #region const
-        public const string ConstraintName = "must assign one of";
+        internal const string ConstraintName = "must assign one of";
         #endregion
 
         #region internals
@@ -29,7 +29,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        public override void Ensure(Command command)
+        internal override void Ensure(Command command)
         {
             if (!this.AtLeastOneAssigned(command))
                 throw new CommandInputException($"Constraint Failed...{base.Name}:  {base.Description}");

@@ -7,10 +7,10 @@
     #endregion
 
     #region defaulg constraint [class]
-    public class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
+    internal class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
     {
         #region const
-        public const string ConstraintName = "defaults to";
+        internal const string ConstraintName = "defaults to";
         #endregion
 
         #region internals
@@ -20,7 +20,7 @@
         #endregion
 
         #region interface
-        public T DefaultValue => _default;
+        internal T DefaultValue => _default;
         #endregion
 
         #region constructors

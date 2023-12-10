@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
-    public abstract class CommandConstraint
+    internal abstract class CommandConstraint
     {
         #region internals
         private string _name;
@@ -10,9 +10,9 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region interface
-        public string Name => _name;
+        internal string Name => _name;
 
-        public string Description => _description;
+        internal string Description => _description;
         #endregion
 
         #region constructors
@@ -52,7 +52,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region ensure
-        public abstract void Ensure(Command command);
+        internal abstract void Ensure(Command command);
         #endregion
     }
 }

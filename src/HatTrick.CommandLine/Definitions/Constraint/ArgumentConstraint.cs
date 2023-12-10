@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
-    public abstract class ArgumentConstraint
+    internal abstract class ArgumentConstraint
     {
         #region internals
         private string _name;
@@ -16,7 +16,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        public ArgumentConstraint(string name, string description)
+        protected internal ArgumentConstraint(string name, string description)
         {
             if (name is null)
                 throw new ArgumentNullException(nameof(name));
@@ -40,7 +40,7 @@ namespace HatTrick.CommandLine
         #endregion
     }
 
-    public abstract class ArgumentConstraint<T> : ArgumentConstraint
+    internal abstract class ArgumentConstraint<T> : ArgumentConstraint
     {
         #region constructors
         internal ArgumentConstraint(string name, string description) : base(name, description)
