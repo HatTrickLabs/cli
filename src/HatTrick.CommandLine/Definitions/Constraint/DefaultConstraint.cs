@@ -1,5 +1,12 @@
 ﻿namespace HatTrick.CommandLine
 {
+    #region i default constraint [interface]
+    public interface IDefaultConstraint
+    {
+    }
+    #endregion
+
+    #region defaulg constraint [class]
     public class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
     {
         #region const
@@ -17,7 +24,7 @@
         #endregion
 
         #region constructors
-        public DefaultConstraint(string optionKey, string verboseFlag, T defaultValue) 
+        internal DefaultConstraint(string optionKey, string verboseFlag, T defaultValue) 
             : base(ConstraintName, defaultValue is null ? "null" : defaultValue.ToString())
         {
             _optionKey = optionKey;
@@ -37,11 +44,6 @@
             }
         }
         #endregion
-    }
-
-    #region i default constraint [interface]
-    public interface IDefaultConstraint
-    {
     }
     #endregion
 }

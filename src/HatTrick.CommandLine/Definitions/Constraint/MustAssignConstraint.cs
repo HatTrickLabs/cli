@@ -2,10 +2,13 @@
 
 namespace HatTrick.CommandLine
 {
+    #region i must assign constraint [interface]
     public interface IMustAssignConstraint
     {
     }
+    #endregion
 
+    #region must assign constraint [class]
     public class MustAssignConstraint<T> : ArgumentConstraint<T>, IMustAssignConstraint
     {
         #region const
@@ -31,4 +34,5 @@ namespace HatTrick.CommandLine
         }
         #endregion
     }
+    #endregion
 }

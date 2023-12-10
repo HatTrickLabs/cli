@@ -33,7 +33,6 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region constructors
-        //internal Command(string name, SetOf<Option> options = null)
         internal Command(string name, params Option[] options)
         {
             if (name is null)

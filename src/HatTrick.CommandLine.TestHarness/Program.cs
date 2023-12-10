@@ -42,8 +42,10 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmdDef.Handler = (cmd) =>
             {
-                for (int i = 0; i < cmd["count"].GetValue<int>(); i++)
-                    Console.WriteLine(Guid.NewGuid().ToString(cmd["format"].GetValue<string>()));
+                int count = cmd["count"].GetValue<int>();
+                string format = cmd["format"].GetValue<string>();
+
+                GenerateGuids(count, format);
             };
             cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", (terse: "-f", verbose: "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
@@ -94,6 +96,12 @@ namespace HatTrick.CommandLine.TestHarness
             };
 
             reg.Add(cmdDef);
+        }
+
+        static void GenerateGuids(int count, string format)
+        {
+            for (int i = 0; i < count; i++)
+                Console.WriteLine(Guid.NewGuid().ToString(format));
         }
     }
 
