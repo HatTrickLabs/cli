@@ -108,6 +108,9 @@ namespace HatTrick.CommandLine
             if (index >= _length)
                 throw new ArgumentOutOfRangeException(nameof(index), "Provided index is outside the upper bounds of the set.");
 
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("Index must be greater than 0.");
+
             return ref _items[index];
         }
         #endregion
@@ -125,7 +128,7 @@ namespace HatTrick.CommandLine
                 if (_capacity == _maxCapacity)
                     throw new RangeOverflowException($"{nameof(SetOf<T>)} has a maximum internal buffer capacity of {_maxCapacity}.");
 
-                var newItems = new T[_capacity = (_capacity * 2)];
+                var newItems = new T[_capacity = _capacity < 524_288 ? (_capacity * 2) : (_capacity + 65_536)];
                 Array.Copy(_items, newItems, _length);
                 _items = newItems;
             }

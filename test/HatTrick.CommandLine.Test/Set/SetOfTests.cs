@@ -132,7 +132,7 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Add_WhenItemsExist_AndLengthEqualsCapacity_CapacityShouldDouble()
+        public void Add_WhenItemsExist_And_LengthEqualsCapacity_And_Capacity_LessThan_524288_CapacityShould_Double()
         {
             int initialCapacity = 16;
             var set = new SetOf<string>(initialCapacity);
@@ -145,6 +145,43 @@ namespace HatTrick.CommandLine.Test
             Assert.Equal(initialCapacity, set.Capacity);
             set.Add("x");
             Assert.Equal(initialCapacity * 2, set.Capacity);
+        }
+
+        [Fact]
+        public void Add_WhenItemsExist_And_LengthEqualsCapacity_And_Length_Equal_524288_CapacityShould_GrowBy_65536()
+        {
+            int initialCapacity = 524_288;
+            var set = new SetOf<byte>(initialCapacity);
+
+            for (int i = 0; i < initialCapacity; i++)
+            {
+                set.Add(0);
+            }
+
+            Assert.Equal(initialCapacity, set.Capacity);
+            set.Add(1);
+            Assert.Equal(initialCapacity + 65_536, set.Capacity);
+        }
+
+        [Fact]
+        public void Add_WhenItemsExist_And_LengthGrownToCapacity_FromInitialCapacity_And_InitialCapacity_GreaterThan_524288_CapacityShould_GrowBy_65536()
+        {
+            //set the init capacity > breaking point of 524,288 items
+            int initialCapacity = 525_000;
+
+            //The actual capacity should be set to the next jump point past the 525,000 of (524,288 + 65,536) = 589,824
+            var set = new SetOf<byte>(initialCapacity);
+
+            int actualCapacity = set.Capacity;
+            for (int i = 0; i < actualCapacity; i++)
+            {
+                set.Add(0);
+            }
+
+            Assert.Equal(actualCapacity, set.Capacity);
+            set.Add(1);
+            int result = actualCapacity + 65_536;
+            Assert.Equal(result, set.Capacity);
         }
 
         [Fact]
