@@ -169,7 +169,7 @@ namespace HatTrick.CommandLine.Test
             //set the init capacity > breaking point of 524,288 items
             int initialCapacity = 525_000;
 
-            //The actual capacity should be set to the next jump point past the 525,000 of (524,288 + 65,536) = 589,824
+            //The actual capacity should be set to the next jump point past the 525,000 or (524,288 + 65,536) = 589,824
             var set = new SetOf<byte>(initialCapacity);
 
             int actualCapacity = set.Capacity;
