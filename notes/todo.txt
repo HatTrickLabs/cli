@@ -34,7 +34,7 @@ x Implement root command concept..Root command is command run when NO command pr
 x Implement command namespaces to alleviate pains in rendering help content.
 x Implement interactive mode...inner process command loop...will enable tab based command help in the future.
 x Vault.cs  public set value method adds passed char[] value (a ref) directly into the Dictionary<string, char[]>...that ref char[] could EASILY be corrupted
-- Implement ability to pass in a prefix/prompt value into the masked input line reader ex: password:********** or password>****** or secret key:>
+- NO, this just makes everything 10 times more complicated...cannot just cr back to 0... Implement ability to pass in a prefix/prompt value into the masked input line reader ex: password:********** or password>****** or secret key:>
 x Ensure no name collisions between namespaces and commands.
 x Refactor BooleanConverter.  Just janky
 x Default option value???
@@ -97,7 +97,10 @@ x Toss out the super friendly boolean converter...stick with 0, 1 and case-insen
 x Refactor OptionDefinition<T>.ApplyConvertedValueTo...shouldn't be passing in the op to the opDef.
 x Impl standard nix flag and arg seperated by = or : concept to be back compat.   i.e.   --format=X   --format:X   -f:x  -f=X
 x Imple ICommand and IOptions and pass it to Handle/HandleAsync in lue of actual command and ops. 
-- Imple [Flagless|Unflagged] option arg IF AND ONLY IF command only accepts a single argument (take into account mutual exclusivity).
+x Imple [Flagless|Unflagged] option arg IF AND ONLY IF command only accepts a single argument (take into account mutual exclusivity).
+  x Arg would be the last token tokenized.
+  x Create a UnflaggedOption class that extends option and has some DEFAULT value for a flag that is not an actual valid flag for consumers.
+  x open 'filename' vs open -f 'filename'  
 x Fix the capacity growth logic in SetOf<T>...the whole point was to slow growth as it grew.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository

@@ -29,6 +29,7 @@ namespace HatTrick.CommandLine.TestHarness
             RegisterBase64Command();
             RegisterFakePersonCommand();
             RegisterCapsCommand();
+            RegisterSumCommand();
         }
 
         static void RegisterNamespaces()
@@ -79,6 +80,8 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<string>(key: "last", help: "Person's first name.", ("-l", "--last"));
             cmdDef.AddOption<int>(key: "age", help: "Person's first name.", ("-a", "--age"));
 
+            cmdDef.ApplyConstraint((cmd) => cmd["age"].GetValue<int>() > 21, "age restriction", "must be older than 21.");
+
             cmdDef.MapTo<Person>(("first","FirstName"),("last","LastName"), ("age","Age")).Then(Person.SavePerson);
 
             cmdDef.MapToSignature<Action<string, string, int>>(
@@ -108,6 +111,32 @@ namespace HatTrick.CommandLine.TestHarness
                 string value = cmd["value"].GetValue<string>();
                 Console.Write(value?.ToUpper() ?? string.Empty);
             };
+            DefinitionRegistry.GetInstance().Add(cmdDef);
+        }
+
+        static void RegisterSumCommand()
+        {
+            Func<string, int[]> split = (v) =>
+            {
+                string[] vals = v.Split(new char[] { ','  }, StringSplitOptions.RemoveEmptyEntries);
+                int[] nums = new int[vals.Length];
+
+                for (int i = 0; i < vals.Length; i++)
+                {
+                    nums[i] = OptionTypeMap.ParseOptionArgument<int>(vals[i]);
+                }
+
+                return nums;
+            };
+            Func<int[], int> sum = (values) =>
+            {
+                int sum = 0;
+                Array.ForEach(values, (v) => sum += v);
+                return sum;
+            };
+            var cmdDef = new CommandDefinition("htl.sum");
+            cmdDef.AddOption<int[]>(key: "values", "Comma delimited list of values to sum.", split, ("-v", "--values"));
+            cmdDef.Handler += (cmd) => Console.WriteLine(sum(cmd["values"].GetValue<int[]>()));
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
 

@@ -68,7 +68,7 @@ namespace HatTrick.CommandLine
         private void EnsureCommandOptions(Command command)
         {
             //check for unflagged single op
-            if (!this.HydrateSingleUnflaggedOption(command))
+            if (!this.TryHydrateSingleUnflaggedOption(command))
             {
                 this.EnsureCommandOptionsFullyHydrated(command);
                 this.EnsureAllProvidedOptionsDefined(command);
@@ -78,8 +78,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region hydrate single unflagged option
-        private bool HydrateSingleUnflaggedOption(Command command)
+        #region try hydrate single unflagged option
+        private bool TryHydrateSingleUnflaggedOption(Command command)
         {
             CommandDefinition cmdDef = _cmdDef;
 
