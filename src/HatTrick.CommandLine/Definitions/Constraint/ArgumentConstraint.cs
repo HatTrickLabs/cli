@@ -2,6 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
+    #region argument constraint [class]
     internal abstract class ArgumentConstraint
     {
         #region internals
@@ -39,7 +40,9 @@ namespace HatTrick.CommandLine
         internal abstract void Ensure(ref Option option);
         #endregion
     }
+    #endregion
 
+    #region argument constraint of T [class]
     internal abstract class ArgumentConstraint<T> : ArgumentConstraint
     {
         #region constructors
@@ -48,4 +51,5 @@ namespace HatTrick.CommandLine
         }
         #endregion
     }
+    #endregion
 }
