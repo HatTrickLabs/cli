@@ -278,65 +278,52 @@ namespace HatTrick.CommandLine.Extensions
             #endregion
 
             #region validate
-            //Yikes, this whole thing def works, but it's getting wild.
             public void Validate()
             {
                 SetOf<OptionDefinition> options = base.CommandDefinition.Options;
-                bool[] utilized = new bool[options.Length];
 
-                ParameterInfo[] pInfos = _target.Method.GetParameters();
+                ParameterInfo[] paramInfos = _target.Method.GetParameters();
+                bool[] mappedParams = new bool[paramInfos.Length];
 
-                for (int i = 0; i < pInfos.Length; i++)
+                for (int i = 0; i < options.Length; i++)
                 {
-                    var parameter = pInfos[i];
-                    bool isCorrelated = base.CorrelationExistsForMapTarget(parameter.Name, out (string opKey, string to) correlation);
-                    string opKey = isCorrelated ? correlation.opKey : parameter.Name;
+                    var op = options[i];
+                    bool isCorrelated = base.CorrelationExistsForOptionKey(op.Key, out (string opKey, string parameter) correlation);
+                    string paramName = isCorrelated ? correlation.parameter : op.Key;
 
-                    int idx = options.FindIndex(o => o.Key == opKey);
-                    if (idx == -1)
+                    //if correlation map specifies the 'ignore map' token for the parameter, it means DO NOT attempt to map.
+                    if (paramName == Mapper.IgnoreMapToken)
+                        continue;
+
+                    int idx = Array.FindIndex(paramInfos, (p) => p.Name == paramName);
+
+                    if (idx ==  -1)
                     {
-                        string msg = $"No option definition found for signature parameter '{parameter.Name}'";
+                        string message = $"No parameter found on signature for option '{op.Key}'";
 
                         if (isCorrelated)
-                            msg += " via correlation " + correlation;
+                            message += " via correlation " + correlation;
 
-                        throw new CommandMappingException(msg);
+                        throw new CommandMappingException(message);
                     }
 
-                    var op = options[idx];
+                    ParameterInfo paramInfo = paramInfos[idx];
+                    mappedParams[idx] = true;
 
-                    utilized[idx] = true;
+                    Type type = op.GenericType;
 
-                    Type valType = op.GenericType;
-
-                    if (!parameter.ParameterType.IsAssignableFrom(valType))
+                    if (!paramInfo.ParameterType.IsAssignableFrom(type))
                     {
                         var opTypeName = OptionTypeMap.GetAliasOrName(op.GenericType);
-                        var paramTypeName = OptionTypeMap.GetAliasOrName(parameter.ParameterType);
-                        var msg = $"Type mismatch while mapping option value to parameter...Option key: {opKey}...Option type: {opTypeName}...Parameter type: {paramTypeName}";
+                        var paramTypeName = OptionTypeMap.GetAliasOrName(paramInfo.ParameterType);
+                        var msg = $"Type mismatch while mapping option value to parameter...Option key: {op.Key}...Option type: {opTypeName}...Parameter type: {paramTypeName}";
                         throw new CommandMappingException(msg);
                     }
                 }
 
-                //TODO: Move this to a ThrowOn.... type of method
-                for (int i = 0; i < utilized.Length; i++)
-                {
-                    if (utilized[i] == false)
-                    {
-                        var op = options[i];
-                        bool isCorrelated = base.CorrelationExistsForOptionKey(op.Key, out (string opKey, string to) correlation);
-
-                        if (isCorrelated && correlation.to == Mapper.IgnoreMapToken)
-                            continue;
-
-                        string msg = $"No parameter found on signature for option '{op.Key}'";
-
-                        if (isCorrelated)
-                            msg += " via correlation " + correlation;
-
-                        throw new CommandMappingException(msg);
-                    }
-                }
+                int unMappedIdx = Array.FindIndex(mappedParams, (p) => !p);
+                if (unMappedIdx > -1)
+                    throw new CommandMappingException($"No option definition found for signature parameter '{paramInfos[unMappedIdx].Name}'");
             }
             #endregion
 
