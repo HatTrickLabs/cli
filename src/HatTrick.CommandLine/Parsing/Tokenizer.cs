@@ -70,7 +70,7 @@ namespace HatTrick.CommandLine
                     if (ExplicitAssignToken.IsValid(arg))
                         tkn = new ExplicitAssignToken(arg);
 
-                    else if (CommandToken.IsValid(arg) && tokens.Length == 0)//command must be first
+                    else if (tokens.Length == 0 && CommandToken.IsValid(arg))//command must be first
                         tkn = new CommandToken(arg);
 
                     else if (TerseFlagToken.IsValid(arg))
