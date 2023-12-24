@@ -198,13 +198,158 @@ namespace HatTrick.CommandLine.Test
             var cmdDef = new CommandDefinition("go");
             cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
-            //spell age incorrectly to generate a mapping (op key to parameter) exception
-            cmdDef.AddOption<int>(key: "agg", help: "Age.", (terse: "-a", verbose: "--age"));
-            cmdDef.MapToSignature<Action<string,string,int>>().Then(Person.CreateUser);
+            //misspell age to cause mapping conflict
+            cmdDef.AddOption<int>(key: "agee", help: "Age.", (terse: "-a", verbose: "--age"));
+            cmdDef.MapToSignature<Action<string,string,int>>().Then(Person.Create);
 
-            //age option key misspelled to agg does not match parameter definition
             Action action = () => registry.Add(cmdDef);
-            Assert.Contains("No option definition found for signature parameter", Assert.Throws<CommandMappingException>(action).Message);
+            Assert.Contains("No parameter found on signature for option", Assert.Throws<CommandMappingException>(action).Message);
+        }
+
+        [Fact]
+        public void MapToSignature_OnValidate_WhenCorrelationKey_DoesNotMatch_WithAParameterName_ShouldThrow_CommandMappingException()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
+            cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
+            cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
+            cmdDef.MapToSignature<Action<string, string, int>>(
+                (optionKey: "first-name", parameterName: "firstName"),
+                (optionKey: "last-name", parameterName: "lastNm"),//LastNm does not exist on Person..
+                (optionKey: "age", parameterName: "Age")
+            ).Then(Person.Create);
+            Action action = () => registry.Add(cmdDef);
+            Assert.Contains("via correlation", Assert.Throws<CommandMappingException>(action).Message);
+        }
+
+        [Fact]
+        public void MapTSignature_OnValidate_WhenCorrelationKeys_Match_WithAParameterNames_ShouldPass()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
+            cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
+            cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
+            cmdDef.MapToSignature<Action<string,string,int>>(
+                (optionKey: "first-name", parameterName: "firstName"),
+                (optionKey: "last-name", parameterName: "lastName"),
+                (optionKey: "age", parameterName: "age")
+            ).Then(Person.Create);
+
+            //correlation maps should all align, should pass validation
+            registry.Add(cmdDef);
+        }
+
+        [Fact]
+        public void MapToSignature_OnValidate_WhenOptionKeys_MatchDirectly_WithParameterNames_ShouldPass()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
+            cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
+            cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
+
+            cmdDef.MapToSignature<Action<string,string,int>>().Then(Person.Create);
+
+            //all of the option keys match directly with signature parameters.  Add should pass validation.
+            registry.Add(cmdDef);
+        }
+
+        [Fact]
+        public void MapToSignature_OnValidate_WhenParameter_IsNotAssignableFrom_OptionType_ShouldThrow_CommandMappingException()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
+            cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
+            //typeing the age op as string to force validation exception
+            cmdDef.AddOption<string>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
+
+            cmdDef.MapToSignature<Action<string, string, int>>().Then(Person.Create);
+
+            //Age parameter of int is not assignable from age option type of string
+            Action action = () => registry.Add(cmdDef);
+            Assert.Contains("Type mismatch while mapping option value to parameter",
+                Assert.Throws<CommandMappingException>(action).Message);
+        }
+
+        [Fact]
+        public void MapToSignature_OnValidate_WithCorrelationMap_WhenParameter_IsNotAssignableFrom_OptionType_ShouldThrow_CommandMappingException()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
+            cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
+            //typeing the age op as string to force validation exception
+            cmdDef.AddOption<string>(key: "Age", help: "Age.", (terse: "-a", verbose: "--age"));
+
+            cmdDef.MapToSignature<Action<string, string, int>>(("Age", "age")).Then(Person.Create);
+
+            //Age property of int is not assignable from Age option type of string
+            Action action = () => registry.Add(cmdDef);
+            Assert.Contains("Type mismatch while mapping option value to parameter",
+                Assert.Throws<CommandMappingException>(action).Message);
+        }
+
+        [Fact]
+        public void MapToSignature_OnValidate_WithoutCorrelationMap_IfCommandDefinition_ContainsUnmappableParameter_ShouldThrow_CommandMappingException()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
+            cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
+            cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
+            //add an unmappable option
+            cmdDef.AddOption<string>(key: "gender", help: "Person's gender.", (terse: "-g", verbose: "--gender"));
+
+            cmdDef.MapToSignature<Action<string, string, int>>().Then(Person.Create);
+
+            //Age property of int is not assignable from Age option type of string
+            Action action = () => registry.Add(cmdDef);
+            Assert.Contains("No parameter found on signature for option", Assert.Throws<CommandMappingException>(action).Message);
+        }
+
+        [Fact]
+        public void MapToSignature_OnValidate_WithCorrelationMap_IncludingTheIgnoreToken_IfCommandDefinition_ContainsUnmappableParameter_ShouldPass()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
+            cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
+            cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
+            //add an unmappable option
+            cmdDef.AddOption<string>(key: "gender", help: "Person's gender.", (terse: "-g", verbose: "--gender"));
+
+            //inform the mapper to ignore the Gender option...~ marks it as un-mappable...
+            cmdDef.MapToSignature<Action<string, string, int>>((optionKey: "gender", parameterName: "~")).Then(Person.Create);
+
+            //should pass validation
+            registry.Add(cmdDef);
+        }
+
+        [Fact]
+        public void MapToSignature_OnValidate_WhenSignature_ContainsParameter_WithNoMatchingOption_ShouldThrow_CommandMappingException()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            var cmdDef = new CommandDefinition("go");
+            cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
+            cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
+            cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
+
+            cmdDef.MapToSignature<Action<string, string, string, int>>().Then((string fn, string ln, string mn, int age) => { });
+
+            //Age property of int is not assignable from Age option type of string
+            Action action = () => registry.Add(cmdDef);
+            Assert.Contains("No parameter found on signature for option", Assert.Throws<CommandMappingException>(action).Message);
         }
         #endregion
 
@@ -221,10 +366,8 @@ namespace HatTrick.CommandLine.Test
         public string LastName { get; set; }
         public int Age { get; set; }
 
-        public static void CreateUser(string firstName, string lastName, int age)
-        {
-            
-        }
+        public static void Create(string firstName, string lastName, int age)
+        { }
     }
     #endregion
 }
