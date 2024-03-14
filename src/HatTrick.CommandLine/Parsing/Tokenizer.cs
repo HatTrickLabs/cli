@@ -68,8 +68,19 @@ namespace HatTrick.CommandLine
                 while (this.Read(out string arg))
                 {
                     if (ExplicitAssignToken.IsValid(arg))
-                        tkn = new ExplicitAssignToken(arg);
+                    {
+                        var left = tokens.Length > 0 ? tokens[^1] : null;
+                        //if left is flag, logical that this is explicit assign
+                        if (left is FlagToken)
+                            tkn = new ExplicitAssignToken(arg);
 
+                        //if left is arg...because underlying framework strips dbl quotes, we assume it was originally quoted
+                        else if (left is ArgumentToken a)
+                            a.Merge(arg);
+
+                        else
+                            tkn = new ExplicitAssignToken(arg);
+                    }
                     else if (tokens.Length == 0 && CommandToken.IsValid(arg))//command must be first
                         tkn = new CommandToken(arg);
 
@@ -83,12 +94,24 @@ namespace HatTrick.CommandLine
                         tkn = new VerboseFlagToken(arg);
 
                     else if (ArgumentToken.IsValid(arg))
-                        tkn = new ArgumentToken(arg);
+                    {
+                        var left = tokens[^1];
+                        //if left is flag, logical that this is the arg
+                        if (left is FlagToken || left is ExplicitAssignToken)
+                            tkn = new ArgumentToken(arg);
+
+                        //if left is arg token that has been merged, logical that this is just another part of the previous arg.
+                        if (left is ArgumentToken a && a.IsMerged)
+                            a.Merge(arg);
+                    }
 
                     else
                         throw new CommandInputException(this.ExceptionMessageHelper(arg));
 
-                    tokens.Add(tkn);
+                    if (tkn is not null)
+                        tokens.Add(tkn);
+
+                    tkn = null;
                 }
 
                 return tokens;

@@ -9,7 +9,11 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region interface
-        public string Value => _value;
+        public string Value
+        {
+            get => _value;
+            protected set => _value = value;
+        }
         #endregion
 
         #region constructor

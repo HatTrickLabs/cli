@@ -78,5 +78,29 @@ namespace HatTrick.CommandLine.Test
             Token[] tokens = Tokenizer.Tokenize(input);
             Assert.IsAssignableFrom<CompoundTerseFlagToken>(tokens[0]);
         }
+
+        [Fact]
+        public void Tokenize_WhenArg_OriginallyQuoted_ContainsExplicitAssignColon_ShouldMerge_Colon_WithLeftAndOrRightArgument()
+        {
+            string[] input = new string[] { "-f", "ftp", ":", "//127.0.0.1", ":", "22" };
+            Token[] tokens = Tokenizer.Tokenize(input);
+            Assert.Equal(2, tokens.Length);
+            Assert.Collection<Token>(tokens,
+                (x) => Assert.Equal("-f", Assert.IsAssignableFrom<TerseFlagToken>(x).Value),
+                (x) => Assert.Equal("ftp://127.0.0.1:22", Assert.IsAssignableFrom<ArgumentToken>(x).Value)
+            );
+        }
+
+        [Fact]
+        public void Tokenize_WhenArg_OriginallyQuoted_ContainsExplicitAssignEqual_ShouldMerge_Equal_WithLeftAndOrRightArgument()
+        {
+            string[] input = new string[] { "--formula", "x=(2x * 5)" };
+            Token[] tokens = Tokenizer.Tokenize(input);
+            Assert.Equal(2, tokens.Length);
+            Assert.Collection<Token>(tokens,
+                (x) => Assert.Equal("--formula", Assert.IsAssignableFrom<VerboseFlagToken>(x).Value),
+                (x) => Assert.Equal("x=(2x * 5)", Assert.IsAssignableFrom<ArgumentToken>(x).Value)
+            );
+        }
     }
 }
