@@ -21,6 +21,8 @@ namespace HatTrick.CommandLine
         public bool HasArgument => _arg is not null;
 
         public bool HasValue => _value is not null;
+
+        public dynamic Value => _value;
         #endregion
 
         #region constructors
