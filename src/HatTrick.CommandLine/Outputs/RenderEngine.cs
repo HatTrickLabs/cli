@@ -311,6 +311,7 @@ namespace HatTrick.CommandLine
 
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
+            ngin.LambdaRepo.Register(nameof(indent), () => indent);
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
             ngin.LambdaRepo.Register(nameof(CommandDefinition.GetOptions), target.GetOptions);
             ngin.LambdaRepo.Register("GetOpDefConstraints", (OptionDefinition opDef) => opDef.Constraints);

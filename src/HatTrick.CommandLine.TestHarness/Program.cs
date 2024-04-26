@@ -40,7 +40,7 @@ namespace HatTrick.CommandLine.TestHarness
         static void RegisterGuidCommand()
         {
             var cmdDef = new CommandDefinition(name: "htl.guid");
-            cmdDef.Help = "Generate one or many GUID values.";
+            cmdDef.Help = "Generates one or many GUID values.";
 
             cmdDef.Handler = (cmd) =>
             {
@@ -59,6 +59,7 @@ namespace HatTrick.CommandLine.TestHarness
         static void RegisterBase64Command()
         {
             var cmdDef = new CommandDefinition(name: "htl.base64");
+            cmdDef.Help = "Encodes or decodes string input as base 64.";
             cmdDef.Handler = (cmd) =>
             {
                 string result = cmd["reverse"].GetValue<bool>() == true
@@ -76,6 +77,7 @@ namespace HatTrick.CommandLine.TestHarness
         {
             var reg = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("htl.add-person");
+            cmdDef.Help = "Saves a baseline person entity into the SQL database.";
             cmdDef.AddOption<string>(key: "first", help: "Person's first name.", ("-f", "--first"));
             cmdDef.AddOption<string>(key: "last", help: "Person's first name.", ("-l", "--last"));
             cmdDef.AddOption<int>(key: "age", help: "Person's first name.", ("-a", "--age"));

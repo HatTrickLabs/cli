@@ -1,6 +1,9 @@
 
+Description:
+{()=>indent}{Help}
+
 Usage:
-{() => GetExecutableName} {$.Name} {+#each (false) => GetOptions+}{#if !$.MustAssign}[{/if}{$.Flags.Verbose} {($.GenericType) => GetFriendlyTypeName}{#if !$.MustAssign}]{/if+} {+/each+}
+{()=>indent}{() => GetExecutableName} {$.Name} {+#each (false) => GetOptions+}{#if !$.MustAssign}[{/if}{$.Flags.Verbose} {($.GenericType) => GetFriendlyTypeName}{#if !$.MustAssign}]{/if+} {+/each+}
 
 {#if $.HasOptions}
 Options:

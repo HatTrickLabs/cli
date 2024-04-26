@@ -2,7 +2,7 @@
   "profiles": {
     "HatTrick.CommandLine.TestHarness": {
       "commandName": "Project",
-      "commandLineArgs": "sync -s \"tcp://localhost:1980/d:/abc\" -t \"tcp://localhost:1981/d:/_bak/abc\""
+      "commandLineArgs": "-r"
     }
   }
 }
