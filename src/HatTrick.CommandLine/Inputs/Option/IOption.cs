@@ -12,6 +12,8 @@ namespace HatTrick.CommandLine
 
         public bool HasValue { get; }
 
+        public dynamic Value { get; }
+
         public T GetValue<T>();
     }
 }
