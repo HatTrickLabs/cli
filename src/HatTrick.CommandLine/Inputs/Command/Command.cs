@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+//using System.Linq;
 using System.Transactions;
 
 namespace HatTrick.CommandLine
@@ -81,7 +81,7 @@ namespace HatTrick.CommandLine
             if (flags.Length == 0)
                 throw new ArgumentException("Argument cannot be empty.", nameof(flags));
 
-            Option op = _ops.Find(o => flags.Contains(o.Flag));
+            Option op = _ops.Find(o => Array.Exists(flags, (f) => f == o.Flag));
             return op;
         }
         #endregion

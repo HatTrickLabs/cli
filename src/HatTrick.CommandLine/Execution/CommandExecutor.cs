@@ -170,7 +170,7 @@ namespace HatTrick.CommandLine
                 if (op is EmptyOption)
                     continue;
 
-                if (!cmdDef.Options.Exists(o => o.Flags.Terse == op.Flag || o.Flags.Verbose == op.Flag))
+                if (!cmdDef.Options.Exists(o => o.Flags.IsMatch(op.Flag)))
                     throw new CommandInputException($"Undefined option at position: {i + 1} ... option: {op.Flag}");
             }
         }
@@ -192,7 +192,7 @@ namespace HatTrick.CommandLine
                     if (opTwo == opOne)
                         continue;
 
-                    if (opDef.Flags.Verbose == opTwo.Flag || opDef.Flags.Terse == opTwo.Flag)
+                    if (opDef.Flags.IsMatch(opTwo.Flag))
                         throw new CommandInputException($"Duplicate options provided at positions: {i + 1} and {j + 1}...'{opOne.Flag}' and '{opTwo.Flag}'");
                 }
             }

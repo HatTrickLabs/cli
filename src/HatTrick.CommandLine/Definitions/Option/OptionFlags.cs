@@ -25,8 +25,21 @@ namespace HatTrick.CommandLine
 
         public OptionFlags(string terse, string verbose)
         {
-            _terse = terse;
+            _terse = terse == string.Empty ? null : terse;
             _verbose = verbose ?? throw new ArgumentNullException(nameof(verbose));
+        }
+        #endregion
+
+        #region is match
+        public bool IsMatch(string flag)
+        {
+            if (_terse is not null && _terse == flag)
+                return true;
+
+            if (_verbose == flag)
+                return true;
+
+            return false;
         }
         #endregion
 

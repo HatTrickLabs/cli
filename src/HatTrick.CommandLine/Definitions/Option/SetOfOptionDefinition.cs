@@ -76,12 +76,18 @@ namespace HatTrick.CommandLine
         #region throw on duplicate flag
         private void ThrowOnDuplicateFlag(OptionFlags flags)
         {
+            var left = flags;
             for (int i = 0; i < base.Length; i++)
             {
-                if (flags.Terse == base[i].Flags.Terse)
-                    throw new CommandDefinitionException($"Cannot add {nameof(OptionDefinition)}, duplicate flag found: {flags.Terse}");
+                OptionFlags right = base[i].Flags;
 
-                if (flags.Verbose == base[i].Flags.Verbose)
+                if (!string.IsNullOrEmpty(left.Terse))
+                {
+                    if (left.Terse == right.Terse)
+                        throw new CommandDefinitionException($"Cannot add {nameof(OptionDefinition)}, duplicate flag found: {flags.Terse}");
+                }
+
+                if (left.Verbose == right.Verbose)
                     throw new CommandDefinitionException($"Cannot add {nameof(OptionDefinition)}, duplicate flag found: {flags.Verbose}");
             }
         }
