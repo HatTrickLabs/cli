@@ -44,7 +44,7 @@ namespace HatTrick.CommandLine
         #region compute option flags descriptor lengths
         private int ComputeMaxFlagsDescriptorLength(SetOf<OptionDefinition> optionSet)
         {
-            int max = optionSet.Max(o => string.Join('|', o.Flags).Length);
+            int max = optionSet.Max(o => o.Flags.ToString().Length);
             return max;
         }
         #endregion
@@ -119,9 +119,7 @@ namespace HatTrick.CommandLine
 
             Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {
-                string flags = op.Flags.Terse is null
-                    ? op.Flags.Verbose
-                    : $"{op.Flags.Terse}|{op.Flags.Verbose}";
+                string flags = op.Flags.ToString();
                 int startAt = indent.Length + flags.Length;
                 return $"{indent}{flags}{this.GetBlockedContent(op.Help, blockStart, startAt)}";
             };
@@ -288,9 +286,7 @@ namespace HatTrick.CommandLine
 
             Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {
-                string flags = op.Flags.Terse is null 
-                    ? op.Flags.Verbose 
-                    : $"{op.Flags.Terse}|{op.Flags.Verbose}";
+                string flags = op.Flags.ToString();
                 int startAt = indent.Length + flags.Length;
                 return $"{indent}{flags}{this.GetBlockedContent(op.Help, opBlockStart, startAt)}";
             };

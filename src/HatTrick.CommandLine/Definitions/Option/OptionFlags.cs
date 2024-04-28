@@ -49,5 +49,12 @@ namespace HatTrick.CommandLine
             return new OptionFlags(flags.terse, flags.verbose);
         }
         #endregion
+
+        #region to string
+        public override string ToString()
+        {
+            return _terse is null ? _verbose : (_terse + "|" + _verbose);
+        }
+        #endregion
     }
 }
