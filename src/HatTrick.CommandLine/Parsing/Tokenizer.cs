@@ -101,8 +101,11 @@ namespace HatTrick.CommandLine
                             tkn = new ArgumentToken(arg);
 
                         //if left is arg token that has been merged, logical that this is just another part of the previous arg.
-                        if (left is ArgumentToken a && a.IsMerged)
+                        else if (left is ArgumentToken a && a.IsMerged)
                             a.Merge(arg);
+
+                        else
+                            throw new CommandInputException(this.ExceptionMessageHelper(arg));
                     }
 
                     else
