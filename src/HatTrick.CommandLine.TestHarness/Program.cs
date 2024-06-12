@@ -14,8 +14,18 @@ namespace HatTrick.CommandLine.TestHarness
             RegisterCommandDefinitions();
             Command cmd = CommandBuilder.Build(args);
             CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(cmd);
-            exe.Execute();
-            //await exe.ExecuteAsync();
+            try
+            {
+                exe.Execute();
+                //await exe.ExecuteAsync();
+            }
+            finally
+            {
+                //TODO: clean up any state that is IDisposable
+                //a?.Dispose();
+                //b?.Dispose();
+                //c?.Dispose();
+            }
 
 #if DEBUG
             Console.ReadLine();

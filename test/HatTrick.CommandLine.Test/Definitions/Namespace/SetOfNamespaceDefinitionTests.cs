@@ -318,7 +318,7 @@ namespace HatTrick.CommandLine.Test
             set.Add(new NamespaceDefinition("abc.name3", "help"));
             set.Add(new NamespaceDefinition("abc.name4", "help"));
 
-            Action action = () => set.GetDescendents(null);
+            Action action = () => set.GetDescendants(null);
 
             Assert.Throws<ArgumentNullException>(action);
 
@@ -337,7 +337,7 @@ namespace HatTrick.CommandLine.Test
             set.Add(new NamespaceDefinition("abc.xyz.name5", "help"));
 
             NamespaceDefinition parent = set["abc"];//depth 0
-            NamespaceDefinition[] childSet = set.GetDescendents(parent);
+            NamespaceDefinition[] childSet = set.GetDescendants(parent);
 
             Assert.Equal(4, childSet.Length);
             Assert.Collection(childSet,
@@ -364,7 +364,7 @@ namespace HatTrick.CommandLine.Test
             set["abc.name4"].Hide();
 
             NamespaceDefinition parent = set["abc"];//depth 0
-            NamespaceDefinition[] childSet = set.GetDescendents(parent);
+            NamespaceDefinition[] childSet = set.GetDescendants(parent);
 
             Assert.Equal(3, childSet.Length);
             Assert.Collection(childSet,
@@ -390,7 +390,7 @@ namespace HatTrick.CommandLine.Test
             set["abc.name4"].Hide();
 
             NamespaceDefinition parent = set["abc"];//depth 0
-            NamespaceDefinition[] childSet = set.GetDescendents(parent: parent, includeHidden: true);
+            NamespaceDefinition[] childSet = set.GetDescendants(parent: parent, includeHidden: true);
 
             Assert.Equal(4, childSet.Length);
             Assert.Collection(childSet,

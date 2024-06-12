@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace HatTrick.CommandLine
 {
@@ -9,12 +10,6 @@ namespace HatTrick.CommandLine
         private CommandDefinition _cmdDef;
         private Command _cmd;
         private bool _ensured;
-        #endregion
-
-        #region interface
-        public bool HasHandler => _cmdDef.Handler is not null;
-
-        public bool HasAsyncHandler => _cmdDef.AsyncHandler is not null;
         #endregion
 
         #region constructors
@@ -28,13 +23,11 @@ namespace HatTrick.CommandLine
         #region execute
         public void Execute()
         {
-            if (!_ensured)
-                this.EnsureCommand(_cmd);
-
             Action<Command> handler = _cmdDef.Handler;
-
             if (handler is null)
                 throw new CommandExecutionException($"Command definition '{_cmdDef.Name}' ... {_cmdDef.GetType().Name}.{nameof(CommandDefinition.Handler)} is null.");
+
+            this.EnsureCommand(_cmd);
 
             _cmdDef.Handler(_cmd);
         }
@@ -43,8 +36,7 @@ namespace HatTrick.CommandLine
         #region execute async
         public async Task ExecuteAsync()
         {
-            if (!_ensured)
-                this.EnsureCommand(_cmd);
+            this.EnsureCommand(_cmd);
 
             Func<Command, Task> function = _cmdDef.AsyncHandler;
 
@@ -58,9 +50,12 @@ namespace HatTrick.CommandLine
         #region ensure command
         private void EnsureCommand(Command command)
         {
-            this.EnsureCommandOptions(command);
-            this.EnsureCommandConstraints(command);
-            _ensured = true;
+            if (!_ensured)
+            {
+                this.EnsureCommandOptions(command);
+                this.EnsureCommandConstraints(command);
+                _ensured = true;
+            }
         }
         #endregion
 

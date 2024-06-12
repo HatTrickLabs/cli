@@ -220,7 +220,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region max
-        public Y Max<Y>(Func<T, Y> given = null) where Y : IComparable
+        public Y Max<Y>(Func<T, Y> given) where Y : IComparable
         {
             if (given is null)
                 throw new ArgumentNullException(nameof(given));

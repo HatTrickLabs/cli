@@ -114,13 +114,22 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
+        #region get ancestor namespace definitions
+        internal NamespaceDefinition[] GetAncestorNamespaceDefinitions(CommandDefinition descendant, bool includeHidden = false)
+        {
+            var ancestors = _namespaces.GetAncestors(descendant, includeHidden);
+            Array.Sort(ancestors, (a, b) => a.Depth.CompareTo(b.Depth));
+            return ancestors;
+        }
+        #endregion
+
         #region get child command definitions
         internal CommandDefinition[] GetChildCommandDefinitions(NamespaceDefinition parent, bool includeHidden = false)
         {
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
 
-            NamespaceDefinition[] descendentNamespaces = _namespaces.GetDescendents(parent, includeHidden);
+            NamespaceDefinition[] descendentNamespaces = _namespaces.GetDescendants(parent, includeHidden);
 
             CommandDefinition[] descendents = _commands.GetDescendents(parent.Name, includeHidden);
 

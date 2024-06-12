@@ -137,8 +137,8 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region get descendents
-        internal NamespaceDefinition[] GetDescendents(NamespaceDefinition parent, bool includeHidden = false)
+        #region get descendants
+        internal NamespaceDefinition[] GetDescendants(NamespaceDefinition parent, bool includeHidden = false)
         {
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
@@ -152,6 +152,24 @@ namespace HatTrick.CommandLine
             });
 
             return descendents;
+        }
+        #endregion
+
+        #region get ancestors
+        internal NamespaceDefinition[] GetAncestors(CommandDefinition descendant, bool includeHidden = false)
+        {
+            if (descendant is null)
+                throw new ArgumentNullException(nameof(descendant));
+
+            var ancestors = base.FindAll((ns) =>
+            {
+                bool isAncestor = ns.Depth < descendant.Depth && descendant.Name.StartsWith(descendant.Name);
+                return includeHidden
+                    ? isAncestor
+                    : (isAncestor && !ns.Hidden);
+            });
+
+            return ancestors;
         }
         #endregion
     }
