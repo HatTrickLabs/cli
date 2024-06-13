@@ -69,8 +69,6 @@ namespace HatTrick.CommandLine
                         continue;
                     }
 
-                    //TODO: imple local var declaration command
-                    
                     if (this.IsExitCommand(input))
                         break;
 
