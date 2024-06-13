@@ -209,7 +209,7 @@ namespace HatTrick.CommandLine
 
                 foreach (var c in opDef.Constraints)
                 {
-                    //If EMPTY op and a DEFAUL constraint exists, EMPTY op will be swapped for a DEFAULT op...hence the ref param
+                    //If EMPTY op and a DEFAULT constraint exists, EMPTY op will be swapped for a DEFAULT op...hence the ref param
                     c.Ensure(ref op);
                 }
             }

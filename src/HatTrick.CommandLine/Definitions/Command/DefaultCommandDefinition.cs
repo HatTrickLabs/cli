@@ -33,11 +33,11 @@ namespace HatTrick.CommandLine
             );
             base.Options.Add(verOp);
 
-            var runOp = new OptionDefinition<string>(
+            var runOp = new OptionDefinition<bool>(
                 key: "run", 
-                defaultArg: null, 
+                defaultArg: false, 
                 help: "Run a non-exiting command loop (accepts a namespace as argument).", 
-                converter: OptionTypeMap.ParseOptionArgument<string>,
+                converter: OptionTypeMap.ParseOptionArgument<bool>,
                 ("-r", "--run")
             );
             base.Options.Add(runOp);
@@ -51,8 +51,8 @@ namespace HatTrick.CommandLine
         {
             //command definition ensures only one of these can be true...
             bool version = cmd["version"].GetValue<bool>();
-            bool run = cmd["run"].GetValue<string>() is null;
-            bool help = !(run || version);
+            bool run = !version && cmd["run"].GetValue<bool>();
+            bool help = !run && !version;
 
             if (help)
                 this.InvokeHelp(cmd as Command);
