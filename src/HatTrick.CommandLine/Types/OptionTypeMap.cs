@@ -96,6 +96,9 @@ namespace HatTrick.CommandLine
             if (underlying == typeof(DateOnly))
                 return DateOnly.Parse(value);
 
+            if (underlying == typeof(TimeOnly))
+                return TimeOnly.Parse(value);
+
             if (underlying == typeof(DateTimeOffset))
                 return DateTimeOffset.Parse(value);
 
