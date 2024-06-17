@@ -18,7 +18,7 @@ namespace HatTrick.CommandLine
 
         #region constructors
         internal MutuallyExclusiveSetConstraint(params (string key, string flag)[] opDefKeys)
-            : base(MustAssignOneOfConstraint.ConstraintName,
+            : base(MutuallyExclusiveSetConstraint.ConstraintName,
                   opDefKeys is null
                     ? throw new ArgumentNullException(nameof(opDefKeys))
                     : string.Join("|", Array.ConvertAll(opDefKeys, o => o.flag))
