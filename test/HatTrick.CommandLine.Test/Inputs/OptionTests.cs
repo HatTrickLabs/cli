@@ -70,11 +70,11 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void SetArgument_WhenEmptyProvided_ShouldThrow_ArgumentException()
+        public void SetArgument_WhenEmptyProvided_ShouldRetainEmptyArgument()
         {
             var op = new Option("-x");
-            Action action = () => op.SetArgument(string.Empty);
-            Assert.Throws<ArgumentException>(action);
+            op.SetArgument(string.Empty);
+            Assert.Equal(string.Empty, op.Argument);
         }
 
         [Fact]

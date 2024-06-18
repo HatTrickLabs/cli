@@ -182,7 +182,7 @@ namespace HatTrick.CommandLine.TestHarness
 
         public static void SavePerson(string firstName, string lastName, int age)
         {
-            Console.WriteLine(firstName + " " + lastName + " " + age);
+            Console.WriteLine(firstName + " " + "'" + lastName + "'" + " " + age);
         }
     }
 }

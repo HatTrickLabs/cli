@@ -12,7 +12,7 @@ namespace HatTrick.CommandLine
         #region is valid
         public new static bool IsValid(string value)
         {
-            return Token.IsValid(value) && value[0] == '-';
+            return Token.IsValid(value) && value.Length > 0 && value[0] == '-';
         }
         #endregion
     }

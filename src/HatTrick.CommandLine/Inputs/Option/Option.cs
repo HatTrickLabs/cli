@@ -94,9 +94,6 @@ namespace HatTrick.CommandLine
             if (argument is null)
                 throw new ArgumentNullException(nameof(argument));
 
-            if (argument == string.Empty)
-                throw new ArgumentException("Argument cannot be empty.", nameof(argument));
-
             _arg = argument;
         }
         #endregion

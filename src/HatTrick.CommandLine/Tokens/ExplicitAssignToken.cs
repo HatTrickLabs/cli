@@ -15,7 +15,7 @@ namespace HatTrick.CommandLine
             if (!Token.IsValid(value))
                 return false;
 
-            if (value.Length > 1)
+            if (value.Length == 0 || value.Length > 1)
                 return false;
 
             char c = value[0];

@@ -29,11 +29,8 @@ namespace HatTrick.CommandLine
             if (value is null)
                 return false;
 
-            if (value == string.Empty)
-                return false;
-
             //no need to check entire string, any preceding whitespace is invalid.
-            if (char.IsWhiteSpace(value[0]))
+            if (value.Length > 0 && char.IsWhiteSpace(value[0]))
                 return false;
 
             return true;

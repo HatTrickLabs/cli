@@ -47,7 +47,7 @@ namespace HatTrick.CommandLine
                 if (i > 0)
                     sb.Append(' ');
 
-                if (arg.Contains(' '))
+                if (arg == string.Empty || arg.Contains(' '))
                     sb.Append("\"").Append(arg).Append("\"");
                 else
                     sb.Append(arg);
