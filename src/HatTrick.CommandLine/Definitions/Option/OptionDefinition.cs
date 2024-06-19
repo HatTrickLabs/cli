@@ -104,11 +104,11 @@ namespace HatTrick.CommandLine
             this.AcceptedValues<T>(EqualityComparer<T>.Default, values);
         }
 
-        public void AcceptedValues<T>(EqualityComparer<T> comparer, params T[] values)
+        public void AcceptedValues<T>(IEqualityComparer<T> comparer, params T[] values)
         {
             try
             {
-                this.Of<T>().AcceptedValues(EqualityComparer<T>.Default, values);
+                this.Of<T>().AcceptedValues(comparer, values);
             }
             catch (InvalidCastException ice)
             {
@@ -274,7 +274,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region accepted values
-        internal void AcceptedValues(EqualityComparer<T> comparer, T[] values)
+        internal void AcceptedValues(IEqualityComparer<T> comparer, T[] values)
         {
             if (values is null)
                 throw new ArgumentNullException(nameof(values));

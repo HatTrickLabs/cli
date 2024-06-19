@@ -118,6 +118,23 @@ namespace HatTrick.CommandLine.Test
             CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(command);
             exe.Execute();
         }
+
+        [Fact]
+        public void Usage_WhenStringIEqualityComparerOverrideOfIgnorCaseProvided_ShouldCompareWithOverride_GivenCaseDifference_ShouldPass()
+        {
+            DefinitionRegistry.Clear();
+            var cmdDef = new CommandDefinition("guid");
+            cmdDef.AddOption<int>(key: "count", 1, "Number of guids to generate.", ("-c", "--count"));
+            cmdDef.AddOption<string>(key: "format", "N", "Guid output format string.", ("-f", "--format"));
+            cmdDef["format"].AcceptedValues(StringComparer.OrdinalIgnoreCase, "N", "D", "B", "P", "X");
+            cmdDef.Handler += (cmd) => { };
+            DefinitionRegistry.GetInstance().Add(cmdDef);
+
+            string input = "guid -f x";
+            Command command = CommandBuilder.Build(input);
+            CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(command);
+            exe.Execute();
+        }
         #endregion
     }
 }

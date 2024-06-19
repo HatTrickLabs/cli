@@ -11,11 +11,11 @@ namespace HatTrick.CommandLine
 
         #region internals
         private T[] _accepted;
-        private EqualityComparer<T> _comparer;
+        private IEqualityComparer<T> _comparer;
         #endregion
 
         #region constructors
-        internal AcceptedValuesConstraint(EqualityComparer<T> comparer, T[] values)
+        internal AcceptedValuesConstraint(IEqualityComparer<T> comparer, T[] values)
             : base(
                   ConstraintName, 
                   values is null 
