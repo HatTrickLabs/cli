@@ -18,7 +18,7 @@ namespace HatTrick.CommandLine
             var helpOp = new OptionDefinition<string>(
                 key: "help",
                 defaultArg: null,
-                help: "Display help (accepts a command or namespace as argument).",
+                help: "Display help (accepts an optional command or namespace as argument).",
                 converter: OptionTypeMap.ParseOptionArgument<string>,
                 ("-h", "--help")
             );
