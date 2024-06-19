@@ -9,7 +9,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Constructor_WhenValues_IsNull_ShouldTrhow_ArgumentNullException()
         {
-            Action action = () => new AcceptedValuesConstraint<string>(null);
+            Action action = () => new AcceptedValuesConstraint<string>(EqualityComparer<string>.Default, null);
             Assert.Throws<ArgumentNullException>(action);
         }
         #endregion
@@ -18,7 +18,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Ensure_WhenConstraintFails_ShouldThrow_OptionArgumentException()
         {
-            var constraint = new AcceptedValuesConstraint<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 9, 10 });
+            var constraint = new AcceptedValuesConstraint<int>(EqualityComparer<int>.Default, new int[] { 1, 2, 3, 4, 5, 6, 7, 9, 10 });
             var option = new Option("key", "flag", "8");
             option.SetValue(int.Parse(option.Argument));
             Action action = () => constraint.Ensure(ref option);
@@ -27,7 +27,7 @@ namespace HatTrick.CommandLine.Test
         [Fact]
         public void Ensure_WhenConstraintPasses_shouldPass()
         {
-            var constraint = new AcceptedValuesConstraint<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 9, 10 });
+            var constraint = new AcceptedValuesConstraint<int>(EqualityComparer<int>.Default, new int[] { 1, 2, 3, 4, 5, 6, 7, 9, 10 });
             var option = new Option("key", "flag", "7");
             option.SetValue(int.Parse(option.Argument));
             Action action = () => constraint.Ensure(ref option);

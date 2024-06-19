@@ -11,10 +11,11 @@ namespace HatTrick.CommandLine
 
         #region internals
         private T[] _accepted;
+        private EqualityComparer<T> _comparer;
         #endregion
 
         #region constructors
-        internal AcceptedValuesConstraint(T[] values)
+        internal AcceptedValuesConstraint(EqualityComparer<T> comparer, T[] values)
             : base(
                   ConstraintName, 
                   values is null 
@@ -22,6 +23,7 @@ namespace HatTrick.CommandLine
                     : string.Join("|", values)
         )
         {
+            _comparer = comparer;
             _accepted = values ?? throw new ArgumentNullException(nameof(values));
         }
         #endregion
@@ -38,9 +40,8 @@ namespace HatTrick.CommandLine
         #region is in accepted set
         internal bool IsInAcceptedSet(T val)
         {
-            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
             T[] set = _accepted;
-            return Array.Exists(set, (a) => comparer.Equals(a, val));
+            return Array.Exists(set, (a) => _comparer.Equals(a, val));
         }
         #endregion
     }

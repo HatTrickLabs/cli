@@ -129,7 +129,7 @@ namespace HatTrick.CommandLine.Test
         public void AcceptedValuesOfT_WhenNullProvided_ShouldThrow_ArgumentNullException()
         {
             var opDef = new OptionDefinition<int>(key: "key", help: "help", converter: (arg) => int.Parse(arg), ("-x", "--xxx"));
-            Action action = () => opDef.AcceptedValues(null);
+            Action action = () => opDef.AcceptedValues(EqualityComparer<int>.Default, null);
             Assert.Throws<ArgumentNullException>(action);
         }
 

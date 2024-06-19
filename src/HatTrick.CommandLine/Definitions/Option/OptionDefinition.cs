@@ -101,9 +101,14 @@ namespace HatTrick.CommandLine
         #region accepted values
         public void AcceptedValues<T>(params T[] values)
         {
+            this.AcceptedValues<T>(EqualityComparer<T>.Default, values);
+        }
+
+        public void AcceptedValues<T>(EqualityComparer<T> comparer, params T[] values)
+        {
             try
             {
-                this.Of<T>().AcceptedValues(values);
+                this.Of<T>().AcceptedValues(EqualityComparer<T>.Default, values);
             }
             catch (InvalidCastException ice)
             {
@@ -269,7 +274,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region accepted values
-        internal void AcceptedValues(T[] values)
+        internal void AcceptedValues(EqualityComparer<T> comparer, T[] values)
         {
             if (values is null)
                 throw new ArgumentNullException(nameof(values));
@@ -290,7 +295,6 @@ namespace HatTrick.CommandLine
 
                     //if op def contains a default constraint, ensure the default is included in the accepted values set
                     DefaultConstraint<T> dc = constraints.Find(c => c is IDefaultConstraint) as DefaultConstraint<T>;
-                    EqualityComparer<T> comparer = EqualityComparer<T>.Default;
                     if (dc is not null && !Array.Exists<T>(values, (v) => comparer.Equals(v, dc.DefaultValue)))
                     {
                         var msg = $"Option '{this.Key}' is defined with a default value of '{dc.DefaultValue}' which is not defined in the accepted values set '{string.Join("|", values)}'. ";
@@ -299,7 +303,7 @@ namespace HatTrick.CommandLine
                 }
             }
 
-            base.Constraints.Add(new AcceptedValuesConstraint<T>(values));
+            base.Constraints.Add(new AcceptedValuesConstraint<T>(comparer, values));
         }
         #endregion
 
