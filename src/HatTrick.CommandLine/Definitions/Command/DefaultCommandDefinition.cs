@@ -36,7 +36,7 @@ namespace HatTrick.CommandLine
             var runOp = new OptionDefinition<bool>(
                 key: "run", 
                 defaultArg: false, 
-                help: "Run a non-exiting command loop (accepts a namespace as argument).", 
+                help: "Run a non-exiting command loop.", 
                 converter: OptionTypeMap.ParseOptionArgument<bool>,
                 ("-r", "--run")
             );
