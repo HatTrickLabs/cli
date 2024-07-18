@@ -100,6 +100,7 @@ namespace HatTrick.CommandLine
                                 if (this.Peek() is not null)
                                     throw new CommandParseException(this.ExceptionHelper("Unexpected argument, positional arguments not supported", token));
 
+                                //this is a single unflagged argument
                                 options.Add(new UnflaggedOption(token.Value));
                             }
                             else

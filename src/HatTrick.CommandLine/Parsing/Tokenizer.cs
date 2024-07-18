@@ -104,7 +104,11 @@ namespace HatTrick.CommandLine
                         else if (left is ArgumentToken a && a.IsMerged)
                             a.Merge(arg);
 
-                        else
+                        //this is a single unflagged argument
+                        else if (left is CommandToken && this.Peek() is null)
+                            tkn = new ArgumentToken(arg);
+
+                        else //TODO: need something here to allow the single unflagged argument
                             throw new CommandInputException(this.ExceptionMessageHelper(arg));
                     }
 

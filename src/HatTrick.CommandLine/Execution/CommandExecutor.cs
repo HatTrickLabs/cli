@@ -166,7 +166,7 @@ namespace HatTrick.CommandLine
                     continue;
 
                 if (!cmdDef.Options.Exists(o => o.Flags.IsMatch(op.Flag)))
-                    throw new CommandInputException($"For command definition '{cmdDef.Name}'...undefined option at position: {i + 1} ... option: {op.Flag}");
+                    throw new CommandInputException($"Undefined option at position: {i + 1} ... option: {op.Flag} for command definition '{cmdDef.Name}'.");
             }
         }
         #endregion
