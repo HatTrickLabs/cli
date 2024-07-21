@@ -11,7 +11,7 @@ namespace HatTrick.CommandLine.Test
         {
             string input = string.Empty;
             Command cmd = CommandBuilder.Build(input);
-            Assert.Equal(DefaultCommandDefinition.CommandName, cmd.Name);
+            Assert.Equal(CommandDefinition.DefaultCommandName, cmd.Name);
             Assert.Empty(cmd.Options);
         }
 
@@ -125,7 +125,7 @@ namespace HatTrick.CommandLine.Test
         {
             string[] args = Array.Empty<string>();
             Command cmd = CommandBuilder.Build(args);
-            Assert.Equal(DefaultCommandDefinition.CommandName, cmd.Name);
+            Assert.Equal(CommandDefinition.DefaultCommandName, cmd.Name);
             Assert.Empty(cmd.Options);
         }
 

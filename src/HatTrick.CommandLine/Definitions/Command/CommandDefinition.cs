@@ -10,6 +10,10 @@ namespace HatTrick.CommandLine
 {
     public class CommandDefinition
     {
+        #region const
+        public const string DefaultCommandName = "DEFAULT";
+        #endregion
+
         #region internals
         private string _name;
         private string _help;

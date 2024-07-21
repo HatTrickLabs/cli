@@ -4,12 +4,8 @@ namespace HatTrick.CommandLine
 {
     internal class DefaultCommandDefinition : CommandDefinition
     {
-        #region const
-        public const string CommandName = "DEFAULT";
-        #endregion
-
         #region constructors
-        internal DefaultCommandDefinition() : base(name: DefaultCommandDefinition.CommandName)
+        internal DefaultCommandDefinition() : base(name: CommandDefinition.DefaultCommandName)
         {
             base.Help = "???";
             base.Hide();

@@ -111,7 +111,7 @@ namespace HatTrick.CommandLine
         #region render usage help
         internal void RenderUsageHelp()
         {
-            var target = DefinitionRegistry.GetInstance().GetCommandDefinition(DefaultCommandDefinition.CommandName);
+            var target = DefinitionRegistry.GetInstance().GetCommandDefinition(CommandDefinition.DefaultCommandName);
             string template = TemplateAccessor.GetTemplate("usage-help");
 
             int blockStart = this.ResolveBlockStartPosition(this.ComputeMaxFlagsDescriptorLength(target.Options));
