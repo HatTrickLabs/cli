@@ -32,22 +32,20 @@ namespace HatTrick.CommandLine
         }
         #endregion
 
-        #region render hattrick assembly version info
+        #region build assembly version info
         private void BuildAssemblyVersionInfo(Assembly assembly)
         {
+            var assemName = assembly.GetName();
+            _assemblyVersionInfo.Add((assemName.Name, assemName.Version));
             foreach (var name in assembly.GetReferencedAssemblies())
             {
                 if (name.Name.StartsWith("system", StringComparison.OrdinalIgnoreCase))
-                {
                     continue;
-                }
-                else
+
+                if (!_assemblyVersionInfo.Exists((itm) => string.Compare(itm.name, name.Name, true) == 0))
                 {
-                    if (!_assemblyVersionInfo.Exists((itm) => string.Compare(itm.name, name.Name, true) == 0))
-                    {
-                        this.BuildAssemblyVersionInfo(Assembly.Load(name));
-                        _assemblyVersionInfo.Add((name.Name, name.Version));
-                    }
+                    this.BuildAssemblyVersionInfo(Assembly.Load(name));
+                    _assemblyVersionInfo.Add((name.Name, name.Version));
                 }
             }
         }
