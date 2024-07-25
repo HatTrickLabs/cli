@@ -102,8 +102,7 @@ x Imple [Flagless|Unflagged] option arg IF AND ONLY IF command only accepts a si
   x Create a UnflaggedOption class that extends option and has some DEFAULT value for a flag that is not an actual valid flag for consumers.
   x open 'filename' vs open -f 'filename'  
 x Fix the capacity growth logic in SetOf<T>...the whole point was to slow growth as it grew.
-- Mutually exclusive set throws an exception talking about option is 'marked' MustAssign... MustAssign died years ago... There is simply no 'defaultArg' on the option...fix this sh*t.
-- Finalize --version output...
+x Finalize --version output...
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

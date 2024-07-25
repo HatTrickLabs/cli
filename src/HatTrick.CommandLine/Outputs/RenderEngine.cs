@@ -284,6 +284,12 @@ namespace HatTrick.CommandLine
             int cmdConstBlockStart = this.ResolveBlockStartPosition(target.HasConstraints ? target.Constraints.Max(c => c.Name.Length) : 0);
             string indent = new string(' ', HelpRenderEngine.Indent);
 
+            Func<string, string> GetIndentedBlockedContent = (content) =>
+            {
+                int startAt = indent.Length;
+                return this.GetBlockedContent(content, startAt, startAt);
+            };
+
             Func<OptionDefinition, string> GetOpDefHelp = (op) =>
             {
                 string flags = op.Flags.ToString();
@@ -308,6 +314,7 @@ namespace HatTrick.CommandLine
             TemplateEngine ngin = new TemplateEngine(template);
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(indent), () => indent);
+            ngin.LambdaRepo.Register(nameof(GetIndentedBlockedContent), GetIndentedBlockedContent);
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
             ngin.LambdaRepo.Register(nameof(CommandDefinition.GetOptions), target.GetOptions);
             ngin.LambdaRepo.Register("GetOpDefConstraints", (OptionDefinition opDef) => opDef.Constraints);

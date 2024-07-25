@@ -1,6 +1,6 @@
 
 Description:
-{()=>indent}{Help}
+{()=>indent}{(Help) => GetIndentedBlockedContent}
 
 Usage:
 {()=>indent}{() => GetExecutableName} {$.Name} {+#each (false) => GetOptions+}{#if !$.MustAssign}[{/if}{$.Flags.Verbose} {($.GenericType) => GetFriendlyTypeName}{#if !$.MustAssign}]{/if+} {+/each+}
