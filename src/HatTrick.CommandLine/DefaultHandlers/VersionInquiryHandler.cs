@@ -45,7 +45,8 @@ namespace HatTrick.CommandLine
                 if (!_assemblyVersionInfo.Exists((itm) => string.Compare(itm.name, name.Name, true) == 0))
                 {
                     this.BuildAssemblyVersionInfo(Assembly.Load(name));
-                    _assemblyVersionInfo.Add((name.Name, name.Version));
+                    if (!_assemblyVersionInfo.Exists((itm) => string.Compare(itm.name, name.Name, true) == 0))
+                        _assemblyVersionInfo.Add((name.Name, name.Version));
                 }
             }
         }
