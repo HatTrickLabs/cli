@@ -23,11 +23,14 @@ namespace HatTrick.CommandLine
         {
             Assembly assem = Assembly.GetEntryAssembly();
             this.BuildAssemblyVersionInfo(assem);
+
             int maxLen = _assemblyVersionInfo.Max(itm => itm.name.Length);
-            string format = $"{{0,-{maxLen + 2}}} {{1}}";
+            int padTo = maxLen + 3;
+
             foreach (var v in _assemblyVersionInfo)
             {
-                Console.WriteLine(format, v.name + ":", $"{v.version.Major}.{v.version.Minor}.{v.version.Build}");
+                string line = string.Concat(v.name, new string('.', padTo - v.name.Length), v.version.Build);
+                Console.WriteLine(line);
             }
         }
         #endregion
