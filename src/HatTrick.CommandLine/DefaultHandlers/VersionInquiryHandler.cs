@@ -29,7 +29,9 @@ namespace HatTrick.CommandLine
 
             foreach (var v in _assemblyVersionInfo)
             {
-                string line = string.Concat(v.name, new string('.', padTo - v.name.Length), v.version.Build);
+                string pad = new string('.', padTo - v.name.Length);
+                Version ver = v.version;
+                string line = string.Concat(v.name, pad, ver.Major, ".", ver.Minor, ".", ver.Build);
                 Console.WriteLine(line);
             }
         }
