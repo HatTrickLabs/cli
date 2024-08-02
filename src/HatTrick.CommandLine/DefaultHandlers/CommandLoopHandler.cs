@@ -66,6 +66,7 @@ namespace HatTrick.CommandLine
                     if (IsClearScreenCommand(input))
                     {
                         Console.Clear();
+                        Console.Write("\x1B[3J");
                         continue;
                     }
 
