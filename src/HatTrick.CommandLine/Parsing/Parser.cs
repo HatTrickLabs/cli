@@ -95,12 +95,9 @@ namespace HatTrick.CommandLine
                             break;
 
                         case ArgumentToken _:
-                            if (options.Length == 0)
+                            if (options.Length == 0 || options[^1] is UnflaggedOption)
                             {
-                                if (this.Peek() is not null)
-                                    throw new CommandParseException(this.ExceptionHelper("Unexpected argument, positional arguments not supported", token));
-
-                                //this is a single unflagged argument
+                                //this is a unflagged argument
                                 options.Add(new UnflaggedOption(token.Value));
                             }
                             else

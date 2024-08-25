@@ -64,6 +64,7 @@ namespace HatTrick.CommandLine
             internal SetOf<Token> Tokenize()
             {
                 var tokens = new SetOf<Token>();
+                bool flagFound = false;
                 Token tkn = null;
                 while (this.Read(out string arg))
                 {
@@ -96,7 +97,7 @@ namespace HatTrick.CommandLine
                     else if (ArgumentToken.IsValid(arg))
                     {
                         var left = tokens[^1];
-                        //if left is flag, logical that this is the arg
+                        //if left is flag or explicit assign, this is the arg
                         if (left is FlagToken || left is ExplicitAssignToken)
                             tkn = new ArgumentToken(arg);
 
@@ -104,16 +105,19 @@ namespace HatTrick.CommandLine
                         else if (left is ArgumentToken a && a.IsMerged)
                             a.Merge(arg);
 
-                        //this is a single unflagged argument
-                        else if (left is CommandToken && this.Peek() is null)
+                        //this is an unflagged argument
+                        else if (!flagFound && left is CommandToken || left is ArgumentToken)
                             tkn = new ArgumentToken(arg);
 
-                        else //TODO: need something here to allow the single unflagged argument
+                        else
                             throw new CommandInputException(this.ExceptionMessageHelper(arg));
                     }
 
                     else
                         throw new CommandInputException(this.ExceptionMessageHelper(arg));
+
+                    if (tkn is FlagToken)
+                        flagFound = true;
 
                     if (tkn is not null)
                         tokens.Add(tkn);

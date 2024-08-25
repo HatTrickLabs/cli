@@ -121,17 +121,6 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Parse_WhenArgumentToken_And_Peek_IsNotNull_ShouldThrow_CommandParseException()
-        {
-            Action action = () => Parser.Parse(new Token[] {
-                new CommandToken("my-command"),
-                new ArgumentToken("arg1"),//would pass as unflagged arg because it is 2nd after the command
-                new ArgumentToken("arg2")//but fails because unflagged arg must be the 2nd and last token in the stack
-            });
-            Assert.Throws<CommandParseException>(action);
-        }
-
-        [Fact]
         public void Parse_WhenArgumentToken_And_Peek_IsNull_ShouldResultIn_UnflaggedOption()
         {
             Command command = Parser.Parse(new Token[] {

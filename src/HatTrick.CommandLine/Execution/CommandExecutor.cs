@@ -62,41 +62,39 @@ namespace HatTrick.CommandLine
         #region ensure command options
         private void EnsureCommandOptions(Command command)
         {
-            //check for unflagged single op
-            if (!this.TryHydrateSingleUnflaggedOption(command))
-            {
-                this.EnsureCommandOptionsFullyHydrated(command);
-                this.EnsureAllProvidedOptionsDefined(command);
-                this.EnsureNoDuplicateOptions(command);
-            }
+            this.TryHydrateUnflaggedOptions(command);
+            this.EnsureCommandOptionsFullyHydrated(command);
+            this.EnsureAllProvidedOptionsDefined(command);
+            this.EnsureNoDuplicateOptions(command);
             this.EnsureOptionConstraints(command);
         }
         #endregion
 
-        #region try hydrate single unflagged option
-        private bool TryHydrateSingleUnflaggedOption(Command command)
+        #region try hydrate unflagged options
+        private void TryHydrateUnflaggedOptions(Command command)
         {
             CommandDefinition cmdDef = _cmdDef;
 
             int definedLen = cmdDef.Options.Length;
             int suppliedLen = command.Options.Length;
 
-            //to take adv of the single unflagged arg, cmd def can only contain a single op def
-            if (definedLen == 1 && suppliedLen == definedLen)
+            for (int i = 0; i < suppliedLen; i++)
             {
-                ref Option op = ref command.Options.GetPointerTo(0);
-
-                //if the parser parsed it unflagged, swap it with proper option
-                if (op is UnflaggedOption)
+                if (definedLen > i)
                 {
-                    var opDef = cmdDef.Options[0];
+                    ref Option op = ref command.Options.GetPointerTo(i);
+                    bool isUnflagged = op is UnflaggedOption;
+                    if (!isUnflagged)
+                        break;
+
+                    //if the parser parsed it unflagged, swap it with a proper option
+                    var opDef = cmdDef.Options[i];
                     op = new Option(opDef.Key, opDef.Flags.Verbose, op.Argument);
+
                     //apply the converted argument value to the option
                     this.EnsureOptionValue(op, opDef);
-                    return true;
                 }
             }
-            return false;
         }
         #endregion
 
