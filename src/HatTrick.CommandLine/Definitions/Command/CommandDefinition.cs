@@ -106,7 +106,7 @@ namespace HatTrick.CommandLine
         #region is valid command name char
         public static bool IsValidCommandNameChar(char c)
         {
-            return (char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-');
+            return CommandToken.IsValidCommandChar(c);
         }
         #endregion
 

@@ -9,6 +9,13 @@ namespace HatTrick.CommandLine
         { }
         #endregion
 
+        #region is valid command char
+        public static bool IsValidCommandChar(char c)
+        {
+            return (char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-' || c == '+');
+        }
+        #endregion
+
         #region is valid
         public new static bool IsValid(string value)
         {
@@ -25,7 +32,7 @@ namespace HatTrick.CommandLine
             for (int i = 1; i < value.Length - 1; i++)
             {
                 c = value[i];
-                if (!(char.IsLetter(c) || char.IsDigit(c) || c == '.' || c == '-'))
+                if (!CommandToken.IsValidCommandChar(c))
                     return false;
             }
 
