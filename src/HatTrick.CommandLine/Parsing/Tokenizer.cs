@@ -96,7 +96,7 @@ namespace HatTrick.CommandLine
 
                     else if (ArgumentToken.IsValid(arg))
                     {
-                        var left = tokens[^1];
+                        var left = tokens.Length > 0 ?  tokens[^1] : null;
                         //if left is flag or explicit assign, this is the arg
                         if (left is FlagToken || left is ExplicitAssignToken)
                             tkn = new ArgumentToken(arg);
