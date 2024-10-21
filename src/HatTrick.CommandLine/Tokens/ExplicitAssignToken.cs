@@ -18,12 +18,7 @@ namespace HatTrick.CommandLine
             if (value.Length == 0 || value.Length > 1)
                 return false;
 
-            char c = value[0];
-
-            if (!(c == '=' || c == ':'))
-                return false;
-
-            return true;
+            return value[0] == '=';
         }
         #endregion
     }

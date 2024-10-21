@@ -103,6 +103,13 @@ x Imple [Flagless|Unflagged] option arg IF AND ONLY IF command only accepts a si
   x open 'filename' vs open -f 'filename'  
 x Fix the capacity growth logic in SetOf<T>...the whole point was to slow growth as it grew.
 x Finalize --version output...
+- Rename argument to CommandDefinition.ApplyCOnstraint rename 'description' to 'failsIfDescription'
+  - example: (constraint: null,  name: "File Exists", failsIfDescription: "No file exists at provided path");
+- Rename argument to OptionDefinition.ApplyConstraint rename 'description' to 'failsIfDescription' or 'passesIfDescription'
+  - example: (constraint: null, name: "age restriction", failsIfDescription: "age provided < 21");
+  - example: (constraint: null, name: "age restriction", passesIfDescription: "age provided >= 21")
+- Render some type of 'No commands registered' message if -h is run and no commands have been registered.
+- Completely remove the ':' explicit assign token.  Way too many arguments represetnt file paths that almost always contain the ':' and the arg then must be quoted.
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

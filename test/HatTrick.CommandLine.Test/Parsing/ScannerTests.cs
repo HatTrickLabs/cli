@@ -223,27 +223,6 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Scan_ShouldSplit_OnColon_ExplicitAssign()
-        {
-            string value = "abc:123 abc :123 abc: 123 abc : 123";
-            string[] result = Scanner.Scan(value);
-            Assert.Collection<string>(result,
-                (x) => Assert.Equal("abc", x),
-                (x) => Assert.Equal(":", x),
-                (x) => Assert.Equal("123", x),
-                (x) => Assert.Equal("abc", x),
-                (x) => Assert.Equal(":", x),
-                (x) => Assert.Equal("123", x),
-                (x) => Assert.Equal("abc", x),
-                (x) => Assert.Equal(":", x),
-                (x) => Assert.Equal("123", x),
-                (x) => Assert.Equal("abc", x),
-                (x) => Assert.Equal(":", x),
-                (x) => Assert.Equal("123", x)
-            );
-        }
-
-        [Fact]
         public void Scan_ShouldTreat_QuoteAsLiteral_WhenEscaped()
         {
             string value = "\"This is \\\"quoted\\\".\"";

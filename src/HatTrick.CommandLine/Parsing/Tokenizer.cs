@@ -71,12 +71,8 @@ namespace HatTrick.CommandLine
                     if (ExplicitAssignToken.IsValid(arg))
                     {
                         var left = tokens.Length > 0 ? tokens[^1] : null;
-                        //if left is flag, logical that this is explicit assign
-                        if (left is FlagToken)
-                            tkn = new ExplicitAssignToken(arg);
-
                         //if left is arg...because underlying framework strips dbl quotes, we assume it was originally quoted
-                        else if (left is ArgumentToken a)
+                        if (left is ArgumentToken a)
                             a.Merge(arg);
 
                         else

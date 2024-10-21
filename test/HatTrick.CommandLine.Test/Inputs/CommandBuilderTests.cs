@@ -25,22 +25,6 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Build_WhenInput_ContainsExplicitAssignPatterns_WithColon_ShouldBuild_ExplicitAssignedOptions()
-        {
-            string input = "go -a : true -b:false -c: true -d :false -e:true";
-            Command cmd = CommandBuilder.Build(input);
-
-            Assert.Equal("go", cmd.Name);
-            Assert.Collection<Option>(cmd.Options,
-                (x) => { Assert.Equal("-a", x.Flag); Assert.Equal("true", x.Argument); },
-                (x) => { Assert.Equal("-b", x.Flag); Assert.Equal("false", x.Argument); },
-                (x) => { Assert.Equal("-c", x.Flag); Assert.Equal("true", x.Argument); },
-                (x) => { Assert.Equal("-d", x.Flag); Assert.Equal("false", x.Argument); },
-                (x) => { Assert.Equal("-e", x.Flag); Assert.Equal("true", x.Argument); }
-            );
-        }
-
-        [Fact]
         public void Build_WhenInput_ContainsExplicitAssignPatterns_WithEqual_ShouldBuild_ExplicitAssignedOptions()
         {
             string input = "go -a = true -b=false -c= true -d =false -e=true";
@@ -136,22 +120,6 @@ namespace HatTrick.CommandLine.Test
             Command cmd = CommandBuilder.Build(args);
             Assert.Equal("go", cmd.Name);
             Assert.Empty(cmd.Options);
-        }
-
-        [Fact]
-        public void Build_WhenInputArgs_ContainsExplicitAssignPatterns_WithColon_ShouldBuild_ExplicitAssignedOptions()
-        {
-            string[] args = new string[] { "go", "-a", ":", "true", "-b:false", "-c:", "true", "-d", ":false", "-e:true" };
-            Command cmd = CommandBuilder.Build(args);
-
-            Assert.Equal("go", cmd.Name);
-            Assert.Collection<Option>(cmd.Options,
-                (x) => { Assert.Equal("-a", x.Flag); Assert.Equal("true", x.Argument); },
-                (x) => { Assert.Equal("-b", x.Flag); Assert.Equal("false", x.Argument); },
-                (x) => { Assert.Equal("-c", x.Flag); Assert.Equal("true", x.Argument); },
-                (x) => { Assert.Equal("-d", x.Flag); Assert.Equal("false", x.Argument); },
-                (x) => { Assert.Equal("-e", x.Flag); Assert.Equal("true", x.Argument); }
-            );
         }
 
         [Fact]

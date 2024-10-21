@@ -88,11 +88,9 @@ namespace HatTrick.CommandLine
                 const char cr = '\r';
                 const char escape = '\\';
                 const char eq = '=';
-                const char colon = ':';
                 char previous = '\0';
 
                 Func<char, bool> isWhitespace = (c) => c == space || c == tab || c == nl || c == cr;
-                Func<char, bool> isExplicitAssign = (c) => c == eq || c == colon;
 
                 bool inDblQuote = false;
 
@@ -118,7 +116,7 @@ namespace HatTrick.CommandLine
 
                         at = 0;
                     }
-                    else if (isExplicitAssign(c) && !inDblQuote)
+                    else if (c == eq && !inDblQuote)
                     {
                         if (at > 0)
                             arguments.Add(new string(argument.Slice(0, at)));

@@ -30,16 +30,6 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Tokenize_WhenArg_IsExplicitAssignColon_ShouldTokenize_AsExplicitAssign()
-        {
-            string[] input = new string[] { ":" };
-            Token[] tokens = Tokenizer.Tokenize(input);
-            Assert.Collection<Token>(tokens,
-                (x) => Assert.IsAssignableFrom<ExplicitAssignToken>(x)
-            );
-        }
-
-        [Fact]
         public void Tokenize_WhenArgAtIndex_Zero_DoesNot_StartWithDash_ShouldTokenize_AsCommandToken()
         {
             string[] input = new string[] { "abc" };
@@ -77,18 +67,6 @@ namespace HatTrick.CommandLine.Test
             string[] input = new string[] { "-abc", "test" };
             Token[] tokens = Tokenizer.Tokenize(input);
             Assert.IsAssignableFrom<CompoundTerseFlagToken>(tokens[0]);
-        }
-
-        [Fact]
-        public void Tokenize_WhenArg_OriginallyQuoted_ContainsExplicitAssignColon_ShouldMerge_Colon_WithLeftAndOrRightArgument()
-        {
-            string[] input = new string[] { "-f", "ftp", ":", "//127.0.0.1", ":", "22" };
-            Token[] tokens = Tokenizer.Tokenize(input);
-            Assert.Equal(2, tokens.Length);
-            Assert.Collection<Token>(tokens,
-                (x) => Assert.Equal("-f", Assert.IsAssignableFrom<TerseFlagToken>(x).Value),
-                (x) => Assert.Equal("ftp://127.0.0.1:22", Assert.IsAssignableFrom<ArgumentToken>(x).Value)
-            );
         }
 
         [Fact]

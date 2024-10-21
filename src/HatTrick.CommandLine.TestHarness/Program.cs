@@ -41,6 +41,7 @@ namespace HatTrick.CommandLine.TestHarness
             RegisterFakePersonCommand();
             RegisterCapsCommand();
             RegisterSumCommand();
+            RegisterSnapshotListCommand();
         }
 
         static void RegisterNamespaces()
@@ -158,6 +159,24 @@ namespace HatTrick.CommandLine.TestHarness
             for (int i = 0; i < count; i++)
                 Console.WriteLine(Guid.NewGuid().ToString(format));
         }
+
+        #region register snapshot list command
+        private static void RegisterSnapshotListCommand()
+        {
+            var cmdDef = new CommandDefinition(name: "snapshot-list");
+            cmdDef.Help = "Retrieve and render locally persisted directory tree snapshots.";
+            cmdDef.Handler = (cmd) => {
+                var path = cmd["path"].GetValue<string>();
+                var per = cmd["period"].GetValue<string>();
+            };
+            cmdDef.AddOption<string>(key: "path", help: "Absolute root path of a local directory (directory tree root).", (terse: "-p", verbose: "--path"));
+            cmdDef.AddOption<string>(key: "period", defaultArg: "all", help: "Filter for snapshot build/refresh timestamp period (all, day, week to date, month to date, year to date).", (terse: null, verbose: "--period"));
+            cmdDef["path"].ApplyConstraint<string>(constraint: (path) => System.IO.Path.IsPathFullyQualified(path), name: "directory is fully qualified", description: "Argument must be a valid fully qualified directory path on the local machine.");
+            cmdDef["period"].AcceptedValues<string>("all", "day", "wtd", "mtd", "ytd");
+
+            DefinitionRegistry.GetInstance().Add(cmdDef);
+        }
+        #endregion
     }
 
     public class Person
