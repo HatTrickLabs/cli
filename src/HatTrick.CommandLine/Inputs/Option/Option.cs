@@ -2,7 +2,7 @@
 
 namespace HatTrick.CommandLine
 {
-    public class Option : IOption
+    public class Option : IOption, IPreEnsureOption
     {
         #region internals
         private string _key;
@@ -114,6 +114,13 @@ namespace HatTrick.CommandLine
         public T GetValue<T>()
         {
             return (T)_value;
+        }
+        #endregion
+
+        #region override argument
+        void IPreEnsureOption.OverrideArgument(string argument)
+        {
+            _arg = argument;
         }
         #endregion
     }

@@ -27,7 +27,9 @@ namespace HatTrick.CommandLine
             if (handler is null)
                 throw new CommandExecutionException($"Command definition '{_cmdDef.Name}' ... {_cmdDef.GetType().Name}.{nameof(CommandDefinition.Handler)} is null.");
 
+            _cmdDef.OnPreEnsure?.Invoke(_cmd);
             this.EnsureCommand(_cmd);
+            //_cmdDef.OnPostEnsure?.Invoke(_cmd);
 
             _cmdDef.Handler(_cmd);
         }

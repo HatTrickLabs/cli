@@ -5,7 +5,7 @@ using System.Transactions;
 
 namespace HatTrick.CommandLine
 {
-    public class Command : ICommand
+    public class Command : ICommand, IPreEnsureCommand
     {
         #region internals
         private string _name;
@@ -65,9 +65,22 @@ namespace HatTrick.CommandLine
             return ops;
         }
 
-        IOption[] ICommand.GetOptions(Predicate<Option> where)
+        IOption ICommand.GetOption(Predicate<IOption> where)
         {
-            return Array.ConvertAll(this.GetOptions(where), (o) => o as IOption);
+            if (where is null)
+                throw new ArgumentNullException(nameof(where));
+
+            var op = _ops.Find(where);
+            return (IOption)op;
+        }
+
+        IPreEnsureOption IPreEnsureCommand.GetOption(Predicate<IPreEnsureOption> where)
+        {
+            if (where is null)
+                throw new ArgumentNullException(nameof(where));
+
+            var op = _ops.Find(where);
+            return (IPreEnsureOption)op;
         }
         #endregion
 

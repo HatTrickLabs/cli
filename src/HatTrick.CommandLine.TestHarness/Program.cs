@@ -65,6 +65,13 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
             cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (terse: "-c", verbose: "--count"));
             cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "1..100.");
+            cmdDef.OnPreEnsure = (cmd) =>
+            {
+                var op = cmd.GetOption(o => o.Flag == "-f" || o.Flag == "--flag");
+                if (op is not null)
+                    op.OverrideArgument("X");
+            };
+
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
 
@@ -175,6 +182,18 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef["period"].AcceptedValues<string>("all", "day", "wtd", "mtd", "ytd");
 
             DefinitionRegistry.GetInstance().Add(cmdDef);
+        }
+        #endregion
+
+        #region register configured pass through commands
+        static void RegisterConfiguredPassThroughCommands()
+        {
+            var cmdDef = new CommandDefinition(name: "chrome.exe");
+            cmdDef.Help = "";
+            cmdDef.Handler = (cmd) => System.Diagnostics.Process.Start("chrome.exe");
+            cmdDef.AddOption<string>(key: "url", defaultArg: null, help: "", (terse: "-u", verbose: "--url"));
+            cmdDef.AddOption<bool>(key: "incognito", defaultArg: true, help: "", (terse: null, verbose: "--incognito"));
+            cmdDef.AddOption<bool>(key: "new-window", defaultArg: false, help: "", (terse: null, verbose: "--new-window"));
         }
         #endregion
     }

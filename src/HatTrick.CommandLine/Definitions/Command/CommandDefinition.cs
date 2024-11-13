@@ -14,6 +14,11 @@ namespace HatTrick.CommandLine
         public const string DefaultCommandName = "DEFAULT";
         #endregion
 
+        #region delegates
+        public delegate void OnPreEnsureDelegate(IPreEnsureCommand command);
+        //public delegate void OnPostEnsureDelegate(ICommand command);
+        #endregion
+
         #region internals
         private string _name;
         private string _help;
@@ -77,6 +82,10 @@ namespace HatTrick.CommandLine
         }
 
         public bool HasConstraints => _constraints.Length > 0;
+
+        public OnPreEnsureDelegate OnPreEnsure { get; set; }
+
+        //public OnPostEnsureDelegate OnPostEnsure { get; set; }
         #endregion
 
         #region constructors
