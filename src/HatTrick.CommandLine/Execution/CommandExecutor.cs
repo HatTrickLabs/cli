@@ -29,8 +29,6 @@ namespace HatTrick.CommandLine
 
             _cmdDef.OnPreEnsure?.Invoke(_cmd);
             this.EnsureCommand(_cmd);
-            //_cmdDef.OnPostEnsure?.Invoke(_cmd);
-
             _cmdDef.Handler(_cmd);
         }
         #endregion

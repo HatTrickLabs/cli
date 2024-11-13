@@ -65,12 +65,6 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
             cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (terse: "-c", verbose: "--count"));
             cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "1..100.");
-            cmdDef.OnPreEnsure = (cmd) =>
-            {
-                var op = cmd.GetOption(o => o.Flag == "-f" || o.Flag == "--flag");
-                if (op is not null)
-                    op.OverrideArgument("X");
-            };
 
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
