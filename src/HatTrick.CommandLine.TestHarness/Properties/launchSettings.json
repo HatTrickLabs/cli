@@ -2,7 +2,7 @@
   "profiles": {
     "HatTrick.CommandLine.TestHarness": {
       "commandName": "Project",
-      "commandLineArgs": "-r "
+      "commandLineArgs": "listen -tcp-endpoint 127.0.0.1:1980"
     }
   }
 }

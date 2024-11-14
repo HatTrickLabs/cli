@@ -25,7 +25,7 @@ namespace HatTrick.CommandLine
             if (value[1] == '?')//HACK: after much usage, this is an absolutely necessity...
                 return true;
 
-            if (!char.IsLetterOrDigit(value[1]))
+            if (!char.IsLetter(value[1]))
                 return false;
 
             return true;

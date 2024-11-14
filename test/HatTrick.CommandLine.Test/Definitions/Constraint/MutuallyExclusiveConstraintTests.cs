@@ -128,15 +128,15 @@ namespace HatTrick.CommandLine.Test
             var cmdDef = new CommandDefinition("go");
             cmdDef.Handler = (cmd) => { };
             cmdDef.Help = "help";
-            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
-            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
-            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
-            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-a", "--opa"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-b", "--opb"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-c", "--opc"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-d", "--opd"));
             cmdDef.MutuallyExclusiveSet("op3", "op4");
             var reg = DefinitionRegistry.GetInstance();
             reg.Add(cmdDef);
 
-            string input = "go --op1:y --op2:y";
+            string input = "go --opa=y --opb=y";
             Command cmd = CommandBuilder.Build(input);
             CommandExecutor exe = reg.GetCommandExecutor(cmd);
             exe.Execute();
@@ -149,15 +149,15 @@ namespace HatTrick.CommandLine.Test
             var cmdDef = new CommandDefinition("go");
             cmdDef.Handler = (cmd) => { };
             cmdDef.Help = "help";
-            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
-            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
-            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
-            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-a", "--opa"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-b", "--opb"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-c", "--opc"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-d", "--opd"));
             cmdDef.MutuallyExclusiveSet("op3", "op4");
             var reg = DefinitionRegistry.GetInstance();
             reg.Add(cmdDef);
 
-            string input = "go --op1:y --op2:y --op4:y";
+            string input = "go --opa=y --opb=y --opd=y";
             Command cmd = CommandBuilder.Build(input);
             CommandExecutor exe = reg.GetCommandExecutor(cmd);
             exe.Execute();
@@ -171,15 +171,15 @@ namespace HatTrick.CommandLine.Test
             var cmdDef = new CommandDefinition("go");
             cmdDef.Handler = (cmd) => { };
             cmdDef.Help = "help";
-            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", flags: ("-1", "--op1"));
-            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", flags: ("-2", "--op2"));
-            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", flags: ("-3", "--op3"));
-            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", flags: ("-4", "--op4"));
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", flags: ("-a", "--opa"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", flags: ("-b", "--opb"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", flags: ("-c", "--opc"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", flags: ("-d", "--opd"));
             cmdDef.MutuallyExclusiveSet("op3", "op4");
             var reg = DefinitionRegistry.GetInstance();
             reg.Add(cmdDef);
 
-            string input = "go --op1:y --op2:y --op4:y --op3:y";
+            string input = "go --opa=y --opb=y --opd=y --opc=y";
             Command cmd = CommandBuilder.Build(input);
             CommandExecutor exe = reg.GetCommandExecutor(cmd);
             Action action = () => exe.Execute();

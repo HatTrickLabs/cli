@@ -100,15 +100,15 @@ namespace HatTrick.CommandLine.Test
             var cmdDef = new CommandDefinition("go");
             cmdDef.Handler = (cmd) => { };
             cmdDef.Help = "help";
-            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
-            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
-            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
-            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-a", "--opa"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-b", "--opb"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-c", "--opc"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-d", "--opd"));
             cmdDef.MustAssignOneOf("op3", "op4");
             var reg = DefinitionRegistry.GetInstance();
             reg.Add(cmdDef);
 
-            string input = "go -2:yes -1:no";
+            string input = "go -b=yes -a=no";
             Command cmd = CommandBuilder.Build(input);
             CommandExecutor exe = reg.GetCommandExecutor(cmd);
             Action action = () => exe.Execute();
@@ -122,15 +122,15 @@ namespace HatTrick.CommandLine.Test
             var cmdDef = new CommandDefinition("go");
             cmdDef.Handler = (cmd) => { };
             cmdDef.Help = "help";
-            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-1", "--op1"));
-            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-2", "--op2"));
-            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-3", "--op3"));
-            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-4", "--op4"));
+            cmdDef.AddOption<string>(key: "op1", "a1", help: "help1", ("-a", "--opa"));
+            cmdDef.AddOption<string>(key: "op2", "a2", help: "help2", ("-b", "--opb"));
+            cmdDef.AddOption<string>(key: "op3", "a3", help: "help3", ("-c", "--opc"));
+            cmdDef.AddOption<string>(key: "op4", "a4", help: "help4", ("-d", "--opd"));
             cmdDef.MustAssignOneOf("op3", "op4");
             var reg = DefinitionRegistry.GetInstance();
             reg.Add(cmdDef);
 
-            string input = "go -2:yes -1:no --op4:yes";
+            string input = "go -b=yes -a=no --opd=yes";
             Command cmd = CommandBuilder.Build(input);
             CommandExecutor exe = reg.GetCommandExecutor(cmd);
             exe.Execute();

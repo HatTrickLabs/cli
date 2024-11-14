@@ -41,6 +41,7 @@ namespace HatTrick.CommandLine.TestHarness
             RegisterFakePersonCommand();
             RegisterCapsCommand();
             RegisterSumCommand();
+            RegisterAddCommand();
             RegisterSnapshotListCommand();
         }
 
@@ -160,6 +161,54 @@ namespace HatTrick.CommandLine.TestHarness
             for (int i = 0; i < count; i++)
                 Console.WriteLine(Guid.NewGuid().ToString(format));
         }
+
+        #region register add command
+        private static void RegisterAddCommand()
+        {
+            var cmdDef = new CommandDefinition(name: "add");
+            cmdDef.Help = "Adds a new time entry record.";
+            cmdDef.Handler = (cmd) =>
+            {
+                var billTO = cmd["bill-to"].GetValue<string>();
+                var day = cmd["day"].GetValue<DateOnly>();
+                var hrs = cmd["hours"].GetValue<double>();
+                var com = cmd["comment"].GetValue<string>();
+            };
+            cmdDef.AddOption<string>(key: "bill-to", help: "Bill to client key (case insensitive).", (terse: "-b", verbose: "--bill-to"));
+            cmdDef["bill-to"].AcceptedValues("apa", "ms");
+            cmdDef.AddOption<double>(key: "hours", help: "Billable hours for time entry.", (terse: "-h", verbose: "--hours"));
+            cmdDef["hours"].ApplyConstraint<double>(
+                constraint: (hours) => hours > 0,
+                name: "minimum value",
+                description: "Miminum hours value is 0.5."
+            );
+            cmdDef["hours"].ApplyConstraint<double>(
+                constraint: (hours) => 2 * hours == (int)(2 * hours) >> 0,
+                name: "valid hour increment",
+                description: "Argument must be a floating point value of 0.5 (half hour) increments."
+            );
+
+            cmdDef.AddOption<DateOnly>(key: "day", defaultArg: DateOnly.FromDateTime(DateTime.Now), help: "Date of billable hours for time entry.", (terse: "-d", "--day"));
+            cmdDef.AddOption<string>(key: "comment", help: "Comment releated to billable hours for time entry.", (terse: "-c", verbose: "--comment"));
+            cmdDef["comment"].ApplyConstraint<string>((comment) => !string.IsNullOrWhiteSpace(comment), "comment populated", "Comment must contain a non-whitespace value.");
+
+            cmdDef.OnPreEnsure = (preCmd) =>
+            {
+                var dayOp = preCmd.GetOption(o => o.Flag == "-d" || o.Flag == "--day");
+                if (dayOp is not null)
+                {
+                    if (int.TryParse(dayOp.Argument, out int shift))
+                    {
+                        var today = DateOnly.FromDateTime(DateTime.Now);
+                        var shifted = today.AddDays(shift);
+                        dayOp.OverrideArgument(shifted.ToString("yyyy-MM-dd"));
+                    }
+                }
+            };
+
+            DefinitionRegistry.GetInstance().Add(cmdDef);
+        }
+        #endregion
 
         #region register snapshot list command
         private static void RegisterSnapshotListCommand()

@@ -128,7 +128,7 @@ namespace HatTrick.CommandLine
             #region exception message helper
             private string ExceptionMessageHelper(string token)
             {
-                return $"Invalid command line argument provided: '{token}' at postition: {_index}";
+                return $"Invalid command line argument provided...unexpected token '{token}' at postition {_index}";
             }
             #endregion
         }
