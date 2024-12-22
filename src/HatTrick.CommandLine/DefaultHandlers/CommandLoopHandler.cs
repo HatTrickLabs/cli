@@ -78,6 +78,12 @@ namespace HatTrick.CommandLine
                     exe.Execute();
                     Console.WriteLine(string.Empty);
                 }
+                catch (IgnoreAndContinueException)
+                {
+                    //if consuming code needs to catch and handle a specific type of exception implementors
+                    //can throw ignore and continue exception to avoid the feedback rendering in the below
+                    //exception handler...
+                }
                 catch (Exception ex)
                 {
                     string name = ex.GetType().Name;
