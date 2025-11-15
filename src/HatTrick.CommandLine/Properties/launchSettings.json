@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HatTrick.CommandLine": {
+      "commandName": "Project",
+      "commandLineArgs": "cmd --input-format = -o"
+    }
+  }
+}

@@ -115,6 +115,16 @@ x Implement a 'PreEnsure' callback delegate to expose the built command BEFORE i
   as option argument that 'mean something' but are not ACTUAL typed args).  ex...  Option<IPEndpoint>(key: "endpoint" ......) could receive a value of 'default' to just use the default endpoint).
 x why does this command pass validation 'listen -tcp-endpoint 127.0.0.1:1980' it treats the -tcp-endpoint token as an argument even though it starts with a dash
 x this does NOT parse properly: add -b apa -d "-1" -h 2.0 -c "test 2"  ... the quotes around "-1" are lost and it thinks it is a flag...
+- Figure out why the following clock command renders pointless feedback:
+	clock>list -d 20250404
+	ArgumentOutOfRangeException:
+	Value to add was out of range. (Parameter 'value')
+- Figure out how to render a legit argument type in error feedback when the arg is nullable type:
+	clock>list -d xxxx
+	OptionArgumentException:
+	Option '-d' requires argument of type 'Nullable`1'...invalid value provided: 'xxxx'
+
+
 
 https://stackoverflow.com/questions/2041993/how-do-i-rename-a-git-repository
 https://docs.github.com/en/get-started/using-git/splitting-a-subfolder-out-into-a-new-repository

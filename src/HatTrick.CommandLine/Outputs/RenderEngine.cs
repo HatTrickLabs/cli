@@ -92,16 +92,14 @@ namespace HatTrick.CommandLine
                     output.Append(Environment.NewLine);//roll to next line
                     output.Append(pad);//pad to block start
                     linePostion = blockAt;
-                    output.Append(word);
-                    linePostion += word.Length;
                 }
                 else
                 {
                     output.Append(' ');//word spacing
                     linePostion += 1;
-                    output.Append(word);
-                    linePostion += word.Length;
                 }
+                output.Append(word);
+                linePostion += word.Length;
             }
 
             return output.ToString();

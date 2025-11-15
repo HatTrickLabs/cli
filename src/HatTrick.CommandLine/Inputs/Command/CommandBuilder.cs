@@ -24,11 +24,11 @@ namespace HatTrick.CommandLine
             //"abc""xyz""aaa" should tokenize as [ "abc", "xyz", "aaa" ]
             //main() will recieve from CLR [ "abc\"xyz\"aaa" ]
             //and that sucks, CLR allows doubling double quotes to act as escape
-            //also want to eloquently handle explicity assign chars = and :
-            //abc: 123
-            //abc :123
-            //abc : 123
-            //abc:123 
+            //also want to eloquently handle explicity assign char =
+            //abc= 123
+            //abc =123
+            //abc = 123
+            //abc=123 
             //all 4 of the above should tokenize equally into [ flag, expl_assign, arg ]
             if (args is null)
                 throw new ArgumentNullException(nameof(args));

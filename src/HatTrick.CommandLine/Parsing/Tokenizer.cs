@@ -68,9 +68,15 @@ namespace HatTrick.CommandLine
                 Token tkn = null;
                 while (this.Read(out string arg))
                 {
-                    if (ExplicitAssignToken.IsValid(arg))
+                    var left = tokens.Length > 0 ? tokens[^1] : null;
+                    if (left is ExplicitAssignToken)
                     {
-                        var left = tokens.Length > 0 ? tokens[^1] : null;
+                        //must be op arg
+                        tkn = new ArgumentToken(arg);
+                    }
+                    else if (ExplicitAssignToken.IsValid(arg))
+                    {
+                        //var left = tokens.Length > 0 ? tokens[^1] : null;
                         //if left is arg...because underlying framework strips dbl quotes, we assume it was originally quoted
                         if (left is ArgumentToken a)
                             a.Merge(arg);
@@ -92,9 +98,9 @@ namespace HatTrick.CommandLine
 
                     else if (ArgumentToken.IsValid(arg))
                     {
-                        var left = tokens.Length > 0 ?  tokens[^1] : null;
+                        //var left = tokens.Length > 0 ?  tokens[^1] : null;
                         //if left is flag or explicit assign, this is the arg
-                        if (left is FlagToken || left is ExplicitAssignToken)
+                        if (left is FlagToken/* || left is ExplicitAssignToken*/)
                             tkn = new ArgumentToken(arg);
 
                         //if left is arg token that has been merged, logical that this is just another part of the previous arg.

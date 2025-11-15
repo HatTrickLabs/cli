@@ -8,7 +8,7 @@ namespace HatTrick.CommandLine.TestHarness
 {
     internal class Program
     {
-        //string input = "htl.guid -u \"100 00\" --format X --silent:true    -abc=\"d:\\tmp\"  -xyz=abc -efg:-b   --quiet=true --force:true -p \"d:\tmp\abcdefg xyz\" ";
+        //string input = "htl.guid -u \"100 00\" --format X --silent:true    -abc=\"d:\\tmp\"  -xyz=abc -efg=-b   --quiet=true --force:true -p \"d:\tmp\abcdefg xyz\" ";
         //static async Task Main(string[] args)
         static void Main(string[] args)
         {
