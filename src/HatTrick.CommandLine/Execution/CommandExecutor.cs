@@ -139,7 +139,8 @@ namespace HatTrick.CommandLine
             catch
             {
                 var flag = option.Flag;
-                var name = optionDef.GenericType.Name;
+                var type = optionDef.GenericType;
+                var name = type.IsGenericType ? Nullable.GetUnderlyingType(type).Name + "?" : optionDef.GenericType.Name;
                 var arg = option.Argument;
                 throw new OptionArgumentException($"Option '{flag}' requires argument of type '{name}'...invalid value provided: '{arg}'");
             }

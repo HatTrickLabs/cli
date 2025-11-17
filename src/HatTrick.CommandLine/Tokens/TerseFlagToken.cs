@@ -22,7 +22,9 @@ namespace HatTrick.CommandLine
             if (value[1] == '-')
                 return false;
 
-            if (value[1] == '?')//HACK: after much usage, this is an absolutely necessity...
+            //HACK: after much usage, this is an absolutely necessity for ME...
+            //the -? will be reserved for the baked in -h|--help|-? flag
+            if (value[1] == '?')
                 return true;
 
             if (!char.IsLetter(value[1]))
