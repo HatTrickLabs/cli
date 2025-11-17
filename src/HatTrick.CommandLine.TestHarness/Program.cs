@@ -179,18 +179,18 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<double>(key: "hours", help: "Billable hours for time entry.", (terse: "-h", verbose: "--hours"));
             cmdDef["hours"].ApplyConstraint<double>(
                 constraint: (hours) => hours > 0,
-                name: "minimum value",
+                name: "Minimum value",
                 description: "Miminum hours value is 0.5."
             );
             cmdDef["hours"].ApplyConstraint<double>(
                 constraint: (hours) => 2 * hours == (int)(2 * hours) >> 0,
-                name: "valid hour increment",
+                name: "Valid hour increment",
                 description: "Argument must be a floating point value of 0.5 (half hour) increments."
             );
 
             cmdDef.AddOption<DateOnly>(key: "day", defaultArg: DateOnly.FromDateTime(DateTime.Now), help: "Date of billable hours for time entry.", (terse: "-d", "--day"));
             cmdDef.AddOption<string>(key: "comment", help: "Comment releated to billable hours for time entry.", (terse: "-c", verbose: "--comment"));
-            cmdDef["comment"].ApplyConstraint<string>((comment) => !string.IsNullOrWhiteSpace(comment), "comment populated", "Comment must contain a non-whitespace value.");
+            cmdDef["comment"].ApplyConstraint<string>((comment) => !string.IsNullOrWhiteSpace(comment), "Comment populated", "Comment must contain a non-whitespace value.");
 
             cmdDef.OnPreEnsure = (preCmd) =>
             {

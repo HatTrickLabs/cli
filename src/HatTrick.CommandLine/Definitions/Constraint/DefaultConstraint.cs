@@ -10,7 +10,7 @@
     internal class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
     {
         #region const
-        internal const string ConstraintName = "defaults to";
+        internal const string ConstraintName = "Defaults to";
         #endregion
 
         #region internals

@@ -5,7 +5,7 @@ namespace HatTrick.CommandLine
     internal class MutuallyExclusiveSetConstraint : CommandConstraint
     {
         #region const 
-        internal const string ConstraintName = "mutually exclusive";
+        internal const string ConstraintName = "Mutually exclusive";
         #endregion
 
         #region internals

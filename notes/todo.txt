@@ -119,10 +119,7 @@ x this does NOT parse properly: add -b apa -d "-1" -h 2.0 -c "test 2"  ... the q
 	clock>list -d 20250404
 	ArgumentOutOfRangeException:
 	Value to add was out of range. (Parameter 'value')
-- Figure out how to render a legit argument type in error feedback when the arg is nullable type:
-	clock>list -d xxxx
-	OptionArgumentException:
-	Option '-d' requires argument of type 'Nullable`1'...invalid value provided: 'xxxx'
+x Figure out how to render a legit argument type in error feedback when the arg is nullable type.
 
 
 

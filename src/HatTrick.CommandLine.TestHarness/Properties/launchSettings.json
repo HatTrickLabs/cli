@@ -2,7 +2,7 @@
   "profiles": {
     "HatTrick.CommandLine.TestHarness": {
       "commandName": "Project",
-      "commandLineArgs": "add -b apa -d xxxx -h 2.0 -c \"test 2\""
+      "commandLineArgs": "-? add"
     }
   }
 }
