@@ -20,7 +20,7 @@ namespace HatTrick.CommandLine
         {
             T val = option.HasValue ? option.GetValue<T>() : default(T);
             if (!_constraint(val))
-                throw new OptionArgumentException($"Constraint failed...flag: '{option.Flag}'  argument: '{option.Argument}'  {base.Name}: '{base.Description}'");
+                throw new OptionArgumentException($"Constraint failed...flag: '{option.Flag}'  Argument: '{option.Argument}'  {base.Name}: '{base.Description}'");
         }
         #endregion
     }

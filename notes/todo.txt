@@ -103,22 +103,13 @@ x Imple [Flagless|Unflagged] option arg IF AND ONLY IF command only accepts a si
   x open 'filename' vs open -f 'filename'  
 x Fix the capacity growth logic in SetOf<T>...the whole point was to slow growth as it grew.
 x Finalize --version output...
-- Rename argument to CommandDefinition.ApplyCOnstraint rename 'description' to 'failsIfDescription'
-  - example: (constraint: null,  name: "File Exists", failsIfDescription: "No file exists at provided path");
-- Rename argument to OptionDefinition.ApplyConstraint rename 'description' to 'failsIfDescription' or 'passesIfDescription'
-  - example: (constraint: null, name: "age restriction", failsIfDescription: "age provided < 21");
-  - example: (constraint: null, name: "age restriction", passesIfDescription: "age provided >= 21")
-- Render some type of 'No commands registered' message if -h is run and no commands have been registered.
+x Render some type of 'No commands registered' message if -h is run and no commands have been registered.
 x Completely remove the ':' explicit assign token.  Way too many arguments represetnt file paths that almost always contain the ':' and the arg then must be quoted.
 - Add config file based command wireup for pass through commands like:  notepad++, chrome.exe --incognito --new-window outlook.com, notepad, devenv, ssms, mstsc, 
 x Implement a 'PreEnsure' callback delegate to expose the built command BEFORE it has been ensured against the command definition (would allow for some type of special char values to be passed
   as option argument that 'mean something' but are not ACTUAL typed args).  ex...  Option<IPEndpoint>(key: "endpoint" ......) could receive a value of 'default' to just use the default endpoint).
 x why does this command pass validation 'listen -tcp-endpoint 127.0.0.1:1980' it treats the -tcp-endpoint token as an argument even though it starts with a dash
 x this does NOT parse properly: add -b apa -d "-1" -h 2.0 -c "test 2"  ... the quotes around "-1" are lost and it thinks it is a flag...
-- Figure out why the following clock command renders pointless feedback:
-	clock>list -d 20250404
-	ArgumentOutOfRangeException:
-	Value to add was out of range. (Parameter 'value')
 x Figure out how to render a legit argument type in error feedback when the arg is nullable type.
 
 

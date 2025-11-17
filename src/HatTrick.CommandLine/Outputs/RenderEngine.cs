@@ -137,11 +137,18 @@ namespace HatTrick.CommandLine
         #region render root help
         internal void RenderRootHelp()
         {
-            string template = TemplateAccessor.GetTemplate("root-help");
             var registry = DefinitionRegistry.GetInstance();
-
             var namespaces = registry.GetNamespaceDefinitions((nsd) => !nsd.Hidden && nsd.Depth == 0);
             var commands = registry.GetCommandDefinitions((cmd) => !cmd.Hidden && cmd.Depth == 0);
+
+            if (namespaces.Length == 0 && commands.Length == 0)
+            {
+                string noDefs = $"No {nameof(NamespaceDefinition)}s or {nameof(CommandDefinition)}s currently registered to the {nameof(DefinitionRegistry)}.";
+                Console.WriteLine(noDefs);
+                return;
+            }
+
+            string template = TemplateAccessor.GetTemplate("root-help");
 
             int maxNSLen = namespaces.Length > 0 ? namespaces.Max(ns => ns.Name.Length) : 0;
             int maxCmdLen = commands.Length > 0 ? commands.Max(cmd => cmd.Name.Length) : 0;

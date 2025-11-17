@@ -35,14 +35,14 @@ namespace HatTrick.CommandLine.TestHarness
 
         static void RegisterCommandDefinitions()
         {
-            RegisterNamespaces();
-            RegisterGuidCommand();
-            RegisterBase64Command();
-            RegisterFakePersonCommand();
-            RegisterCapsCommand();
-            RegisterSumCommand();
-            RegisterAddCommand();
-            RegisterSnapshotListCommand();
+            //RegisterNamespaces();
+            //RegisterGuidCommand();
+            //RegisterBase64Command();
+            //RegisterFakePersonCommand();
+            //RegisterCapsCommand();
+            //RegisterSumCommand();
+            //RegisterAddCommand();
+            //RegisterSnapshotListCommand();
         }
 
         static void RegisterNamespaces()
