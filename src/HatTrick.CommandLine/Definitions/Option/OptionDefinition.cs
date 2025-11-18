@@ -260,6 +260,17 @@ namespace HatTrick.CommandLine
 
             base.Constraints.Add(new DefaultConstraint<T>(key, base.Flags.Verbose, defaultArg));
         }
+
+        internal OptionDefinition(string key, (Func<T> getArg, string description) defaultArg, string help, Func<string, T> converter, (string terse, string verbose) flags)
+                   : base(key: key, help: help, converter: (string arg) => converter(arg), flags: flags)
+        {
+            if (converter is null)
+                throw new ArgumentNullException(nameof(converter));
+
+            _converter = converter;
+
+            base.Constraints.Add(new DefaultConstraint<T>(key, base.Flags.Verbose, defaultArg.getArg, defaultArg.description));
+        }
         #endregion
 
         #region get generic type

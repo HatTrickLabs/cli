@@ -156,6 +156,29 @@ namespace HatTrick.CommandLine
             );
             this.Options.Add(op);
         }
+
+        public void AddOption<T>(string key, (Func<T> getArg, string description) defaultArg, string help, (string terse, string verbose) flags)
+        {
+            this.AddOption<T>(
+                key: key,
+                defaultArg: defaultArg,
+                help: help,
+                converter: OptionTypeMap.ParseOptionArgument<T>,
+                flags: flags
+            );
+        }
+
+        public void AddOption<T>(string key, (Func<T> getArg, string description) defaultArg, string help, Func<string, T> converter, (string terse, string verbose) flags)
+        {
+            var op = new OptionDefinition<T>(
+                key: key,
+                defaultArg: defaultArg,
+                help: help,
+                converter: converter,
+                flags: flags
+            );
+            this.Options.Add(op);
+        }
         #endregion
 
         #region option exists

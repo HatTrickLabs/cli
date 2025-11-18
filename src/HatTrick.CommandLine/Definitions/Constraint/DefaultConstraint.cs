@@ -1,4 +1,6 @@
-﻿namespace HatTrick.CommandLine
+﻿using System;
+
+namespace HatTrick.CommandLine
 {
     #region i default constraint [interface]
     public interface IDefaultConstraint
@@ -16,11 +18,11 @@
         #region internals
         private string _optionKey;
         private string _verboseFlag;
-        private T _default;
+        private Func<T> _default;
         #endregion
 
         #region interface
-        internal T DefaultValue => _default;
+        internal T DefaultValue => _default();
         #endregion
 
         #region constructors
@@ -29,7 +31,15 @@
         {
             _optionKey = optionKey;
             _verboseFlag = verboseFlag;
-            _default = defaultValue;
+            _default = () => defaultValue;
+        }
+
+        internal DefaultConstraint(string optionKey, string verboseFlag, Func<T> getValue, string description)
+            : base(ConstraintName, description)
+        {
+            _optionKey = optionKey;
+            _verboseFlag = verboseFlag;
+            _default = getValue;
         }
         #endregion
 
@@ -40,7 +50,7 @@
             {
                 //type swap...this is WHY ref param is necessary.
                 option = new DefaultOption(_optionKey, _verboseFlag);
-                option.SetValue(_default);
+                option.SetValue(this.DefaultValue);
             }
         }
         #endregion

@@ -34,7 +34,6 @@ x Implement root command concept..Root command is command run when NO command pr
 x Implement command namespaces to alleviate pains in rendering help content.
 x Implement interactive mode...inner process command loop...will enable tab based command help in the future.
 x Vault.cs  public set value method adds passed char[] value (a ref) directly into the Dictionary<string, char[]>...that ref char[] could EASILY be corrupted
-- NO, this just makes everything 10 times more complicated...cannot just cr back to 0... Implement ability to pass in a prefix/prompt value into the masked input line reader ex: password:********** or password>****** or secret key:>
 x Ensure no name collisions between namespaces and commands.
 x Refactor BooleanConverter.  Just janky
 x Default option value???
@@ -43,7 +42,6 @@ x Implement the ability to hide entire commands and/or command options from help
 x one of a set of options (i.e. one of profile_id or product_id is required).
   x or is it a better practice to simply register 2 commands supporting the differing options ???
 x Rules: MustAssignOneOfRule, DefaultValueRule, ValidArgumentSetRule
-- Imple keyword that will generate a new GUID on command execution for 'generated' arg... i.e. a nonce for an api request.
 x IT DOES NOT MATTER::On signature mapping, what if the signature has a = null...Accounts(Guid id = null).  See GetAccounts
 x Make sure SetAccepted works with d@MN enums....
 x Environment.ProcessPath
@@ -78,7 +76,6 @@ x NO!!!! Can we generically type a command argument ???  It adds NO value and cr
 x ...NAI, we don't call get value for 'Empty' commmand options...Revisit GetValue<T>() on CommandOption...What about Non null value types... It pukes.
 x  Added default constraint of 'false' for empty bool command options...Getting 'must assign: yes' for boolean option that do not have a defaultArg.   bool is the exception, edge case...
 x TypeMap currently not using the custom boolean converter.
-- (related to previous 2 items).  Review Registery.EnsureCommandOptions lines 270 - 287.   Just doesn't seem right...like to squash the 4 op loops into max 2.
 x fix bool converter on default op args.
 x fix line hop (cursor jumps down when line on cls command).   Very noticable when cls is type and the screen is already clear.
 x impl explicit conversion of setof<T> to array<T> (return internal array).
@@ -87,7 +84,7 @@ x make setof default capacity static readonly
 - impl ability to explicity send null as an option argument.
 - impl ability to store local vars when running in command loop.
 x harden command parser...handle garbage input eloquently
-- Rework op constraint ... name and description work well for help, but not for the exception thrown.
+x Rework op constraint ... name and description work well for help, but not for the exception thrown.
 x Make Parser work like Tokenizer...static shell with private instance based internals.
 x Add unit tests to SetOf<T> for getting enumerators (specifically if the SetOf<T> is empty with null internal array).
 x CommandArgumentException can we get back to being able to bubble this out from on the OptionDef.Of<T> pattern ?

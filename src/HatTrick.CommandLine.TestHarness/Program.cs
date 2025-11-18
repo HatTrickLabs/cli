@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using HatTrick.CommandLine.Extensions;
@@ -9,6 +10,8 @@ namespace HatTrick.CommandLine.TestHarness
     internal class Program
     {
         //string input = "htl.guid -u \"100 00\" --format X --silent:true    -abc=\"d:\\tmp\"  -xyz=abc -efg=-b   --quiet=true --force:true -p \"d:\tmp\abcdefg xyz\" ";
+
+        #region main
         //static async Task Main(string[] args)
         static void Main(string[] args)
         {
@@ -32,24 +35,30 @@ namespace HatTrick.CommandLine.TestHarness
             Console.ReadLine();
 #endif
         }
+        #endregion
 
+        #region register command defintions
         static void RegisterCommandDefinitions()
         {
-            //RegisterNamespaces();
-            //RegisterGuidCommand();
-            //RegisterBase64Command();
-            //RegisterFakePersonCommand();
-            //RegisterCapsCommand();
-            //RegisterSumCommand();
-            //RegisterAddCommand();
-            //RegisterSnapshotListCommand();
+            RegisterNamespaces();
+            RegisterGuidCommand();
+            RegisterBase64Command();
+            RegisterFakePersonCommand();
+            RegisterCapsCommand();
+            RegisterSumCommand();
+            RegisterAddCommand();
+            RegisterSnapshotListCommand();
         }
+        #endregion
 
+        #region register namespaces
         static void RegisterNamespaces()
         {
             DefinitionRegistry.GetInstance().Add(new NamespaceDefinition("htl", "HatTrick Labs namespace"));
         }
+        #endregion
 
+        #region register guid command
         static void RegisterGuidCommand()
         {
             var cmdDef = new CommandDefinition(name: "htl.guid");
@@ -69,7 +78,9 @@ namespace HatTrick.CommandLine.TestHarness
 
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
+        #endregion
 
+        #region register base64 command
         static void RegisterBase64Command()
         {
             var cmdDef = new CommandDefinition(name: "htl.base64");
@@ -86,7 +97,9 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<bool>(key: "reverse", defaultArg: false, help: "Reverse the base 64 encoding (decode).", (terse: "-r", verbose: "--reverse"));
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
+        #endregion
 
+        #region register fake person command
         static void RegisterFakePersonCommand()
         {
             var reg = DefinitionRegistry.GetInstance();
@@ -99,6 +112,8 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.ApplyConstraint((cmd) => cmd["age"].GetValue<int>() > 21, "age restriction", "must be older than 21.");
 
             cmdDef.MapTo<Person>(("first","FirstName"),("last","LastName"), ("age","Age")).Then(Person.SavePerson);
+
+            cmdDef.MapTo<Person>(("first", "FirstName"), ("last", "LastName"), ("age", "Age")).Then((p) => Person.SavePerson(p));
 
             cmdDef.MapToSignature<Action<string, string, int>>(
                 ("first", "firstName"),
@@ -117,7 +132,9 @@ namespace HatTrick.CommandLine.TestHarness
 
             reg.Add(cmdDef);
         }
+        #endregion
 
+        #region register caps command
         static void RegisterCapsCommand()
         {
             var cmdDef = new CommandDefinition("htl.caps");
@@ -129,7 +146,9 @@ namespace HatTrick.CommandLine.TestHarness
             };
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
+        #endregion
 
+        #region register sum command
         static void RegisterSumCommand()
         {
             Func<string, int[]> split = (v) =>
@@ -155,12 +174,15 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.Handler += (cmd) => Console.WriteLine(sum(cmd["values"].GetValue<int[]>()));
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
+        #endregion
 
+        #region register guids command
         static void GenerateGuids(int count, string format)
         {
             for (int i = 0; i < count; i++)
                 Console.WriteLine(Guid.NewGuid().ToString(format));
         }
+        #endregion
 
         #region register add command
         private static void RegisterAddCommand()
@@ -176,7 +198,11 @@ namespace HatTrick.CommandLine.TestHarness
             };
             cmdDef.AddOption<string>(key: "bill-to", help: "Bill to client key (case insensitive).", (terse: "-b", verbose: "--bill-to"));
             cmdDef["bill-to"].AcceptedValues("apa", "ms");
-            cmdDef.AddOption<double>(key: "hours", help: "Billable hours for time entry.", (terse: "-h", verbose: "--hours"));
+            cmdDef.AddOption<double>(
+                key: "hours", 
+                help: "Billable hours for time entry.", 
+                flags: (terse: "-h", verbose: "--hours")
+            );
             cmdDef["hours"].ApplyConstraint<double>(
                 constraint: (hours) => hours > 0,
                 name: "Minimum value",
@@ -188,9 +214,22 @@ namespace HatTrick.CommandLine.TestHarness
                 description: "Argument must be a floating point value of 0.5 (half hour) increments."
             );
 
-            cmdDef.AddOption<DateOnly>(key: "day", defaultArg: DateOnly.FromDateTime(DateTime.Now), help: "Date of billable hours for time entry.", (terse: "-d", "--day"));
-            cmdDef.AddOption<string>(key: "comment", help: "Comment releated to billable hours for time entry.", (terse: "-c", verbose: "--comment"));
-            cmdDef["comment"].ApplyConstraint<string>((comment) => !string.IsNullOrWhiteSpace(comment), "Comment populated", "Comment must contain a non-whitespace value.");
+            cmdDef.AddOption<DateOnly>(
+                key: "day", 
+                defaultArg: (() => DateOnly.FromDateTime(DateTime.Now), "Current date."), 
+                help: "Date of billable hours for time entry.", 
+                flags: (terse: "-d", "--day")
+            );
+            cmdDef.AddOption<string>(
+                key: "comment", 
+                help: "Comment releated to billable hours for time entry.", 
+                flags: (terse: "-c", verbose: "--comment")
+            );
+            cmdDef["comment"].ApplyConstraint<string>(
+                constraint: (comment) => !string.IsNullOrWhiteSpace(comment), 
+                name: "Comment populated", 
+                description: "Comment must contain a non-whitespace value."
+            );
 
             cmdDef.OnPreEnsure = (preCmd) =>
             {
@@ -241,6 +280,7 @@ namespace HatTrick.CommandLine.TestHarness
         #endregion
     }
 
+    #region person [class]
     public class Person
     {
         public string FirstName { get; set; }
@@ -267,4 +307,5 @@ namespace HatTrick.CommandLine.TestHarness
             Console.WriteLine(firstName + " " + "'" + lastName + "'" + " " + age);
         }
     }
+    #endregion
 }
