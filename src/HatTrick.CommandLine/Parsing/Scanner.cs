@@ -12,6 +12,9 @@ namespace HatTrick.CommandLine
             if (input is null)
                 throw new ArgumentNullException(nameof(input));
 
+            if (input.Length == 0)
+                return Array.Empty<string>();
+
             //no sense in holding a scanner for multi-generations of GC...just use and release.
             var instance = new Instance(input);
 
@@ -26,7 +29,6 @@ namespace HatTrick.CommandLine
             private static readonly char _null;
             private static readonly int _maxSrcLength;
             private static readonly int _maxStackallocLength;
-            private static readonly string[] _empty;
             private string _src;
             private int _srcLength;
             private int _index;
@@ -38,7 +40,6 @@ namespace HatTrick.CommandLine
                 _null = '\0';//null char
                 _maxSrcLength = 2_048;//0x800
                 _maxStackallocLength = 1_024;//0x400
-                _empty = Array.Empty<string>();
             }
 
             internal Instance(string input)
@@ -78,9 +79,6 @@ namespace HatTrick.CommandLine
             #region scan
             public string[] Scan()
             {
-                if (_srcLength == 0)
-                    return _empty;
-
                 const char dblQuote = '\"';
                 const char space = ' ';
                 const char tab = '\t';

@@ -10,6 +10,9 @@ namespace HatTrick.CommandLine
             if (tokens is null)
                 throw new ArgumentNullException(nameof(tokens));
 
+            if (tokens.Length == 0)//optionless default command...
+                return new Command(CommandDefinition.DefaultCommandName);
+
             //no sense in holding a parser for multi-generations of GC...just use and release.
             var instance = new Instance(tokens);
 
@@ -60,9 +63,6 @@ namespace HatTrick.CommandLine
             internal Command ParseCommand()
             {
                 Token[] tokens = _tokens;
-
-                if (tokens.Length == 0)//optionless default command...
-                    return new Command(CommandDefinition.DefaultCommandName);
 
                 CommandToken cmdToken = null;
                 SetOf<Option> options = new SetOf<Option>();
