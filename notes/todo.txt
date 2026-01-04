@@ -81,8 +81,8 @@ x fix line hop (cursor jumps down when line on cls command).   Very noticable wh
 x impl explicit conversion of setof<T> to array<T> (return internal array).
 x replace list with setof anywhere possible.
 x make setof default capacity static readonly
-- impl ability to explicity send null as an option argument.
-- impl ability to store local vars when running in command loop.
+x xxx NOPE ... impl ability to explicity send null as an option argument.
+x xxx NOPE ... impl ability to store local vars when running in command loop.
 x harden command parser...handle garbage input eloquently
 x Rework op constraint ... name and description work well for help, but not for the exception thrown.
 x Make Parser work like Tokenizer...static shell with private instance based internals.
@@ -102,12 +102,14 @@ x Fix the capacity growth logic in SetOf<T>...the whole point was to slow growth
 x Finalize --version output...
 x Render some type of 'No commands registered' message if -h is run and no commands have been registered.
 x Completely remove the ':' explicit assign token.  Way too many arguments represetnt file paths that almost always contain the ':' and the arg then must be quoted.
-- Add config file based command wireup for pass through commands like:  notepad++, chrome.exe --incognito --new-window outlook.com, notepad, devenv, ssms, mstsc, 
+x xxx NOPE... Add config file based command wireup for pass through commands like:  notepad++, chrome.exe --incognito --new-window outlook.com, notepad, devenv, ssms, mstsc, 
 x Implement a 'PreEnsure' callback delegate to expose the built command BEFORE it has been ensured against the command definition (would allow for some type of special char values to be passed
   as option argument that 'mean something' but are not ACTUAL typed args).  ex...  Option<IPEndpoint>(key: "endpoint" ......) could receive a value of 'default' to just use the default endpoint).
 x why does this command pass validation 'listen -tcp-endpoint 127.0.0.1:1980' it treats the -tcp-endpoint token as an argument even though it starts with a dash
 x this does NOT parse properly: add -b apa -d "-1" -h 2.0 -c "test 2"  ... the quotes around "-1" are lost and it thinks it is a flag...
 x Figure out how to render a legit argument type in error feedback when the arg is nullable type.
+- The logic behind the concept of IgnoreAndContinueException does not work at all...no exception can bubble out of the command loop, so consuming devs MUST catch
+  their own exceptions within the command execution handler.  
 
 
 

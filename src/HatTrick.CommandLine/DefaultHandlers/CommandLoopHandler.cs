@@ -78,14 +78,10 @@ namespace HatTrick.CommandLine
                     exe.Execute();
                     Console.WriteLine(string.Empty);
                 }
-                catch (IgnoreAndContinueException)
-                {
-                    //if consuming code needs to catch and handle a specific type of exception implementors
-                    //can throw ignore and continue exception to avoid the feedback rendering in the below
-                    //exception handler...
-                }
                 catch (Exception ex)
                 {
+                    //TODO: allow consumers to control HOW this exception get rendered...
+                    //this fmt may be acceptable, they may just want a message, they may ALWAYS want the stack trace...
                     string name = ex.GetType().Name;
                     string nl = Environment.NewLine;
                     string msg = $"{name}:{nl}{ex.Message}{nl}";
