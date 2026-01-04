@@ -108,7 +108,7 @@ x Implement a 'PreEnsure' callback delegate to expose the built command BEFORE i
 x why does this command pass validation 'listen -tcp-endpoint 127.0.0.1:1980' it treats the -tcp-endpoint token as an argument even though it starts with a dash
 x this does NOT parse properly: add -b apa -d "-1" -h 2.0 -c "test 2"  ... the quotes around "-1" are lost and it thinks it is a flag...
 x Figure out how to render a legit argument type in error feedback when the arg is nullable type.
-- The logic behind the concept of IgnoreAndContinueException does not work at all...no exception can bubble out of the command loop, so consuming devs MUST catch
+x The logic behind the concept of IgnoreAndContinueException does not work at all...no exception can bubble out of the command loop, so consuming devs MUST catch
   their own exceptions within the command execution handler.  
 
 
