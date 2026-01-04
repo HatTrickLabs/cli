@@ -55,16 +55,15 @@ namespace HatTrick.CommandLine
         #region constructors
         static SetOf()
         {
+            _allowedCapacities = new[]//0 to 0x100000;
+            {
+                0,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,
+                262144,524288,589824,655360,720896,786432,851968,917504,983040,1048576
+            };
+
             _empty = Array.Empty<T>();
             _initialCapacity = 4;//0x4
-            _maxCapacity = 1048576;//0x100000;
-            
-            _allowedCapacities = new[] 
-            { 
-                0,4,8,16,32,64,128,256,512,1024,2048,4096,8192,
-                16384,32768,65536,131072,262144,524288,589824,
-                655360,720896,786432,851968,917504,983040,1048576 
-            };
+            _maxCapacity = _allowedCapacities[^1];
         }
 
         public SetOf()
