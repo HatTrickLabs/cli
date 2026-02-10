@@ -12,7 +12,7 @@ namespace HatTrick.CommandLine
     internal class MustAssignConstraint<T> : ArgumentConstraint<T>, IMustAssignConstraint
     {
         #region const
-        public const string ConstraintName = "Must assign";
+        public const string ConstraintName = "Must Assign";
         #endregion
 
         #region internals

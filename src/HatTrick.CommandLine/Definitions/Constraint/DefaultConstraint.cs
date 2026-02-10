@@ -12,7 +12,7 @@ namespace HatTrick.CommandLine
     internal class DefaultConstraint<T> : ArgumentConstraint<T>, IDefaultConstraint
     {
         #region const
-        internal const string ConstraintName = "Defaults to";
+        internal const string ConstraintName = "Defaults To";
         #endregion
 
         #region internals

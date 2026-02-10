@@ -3,7 +3,7 @@
 {$.Target.Name}{($.Target.Help, :blockAt, $.Target.Name.Length, '.') => GetBlockedContent}
 
 {#if $.Commands}
-Descendent commands:
+Descendent Commands:
 {#each $.Commands}
 {($) => GetCommandHelp}
 {/each}

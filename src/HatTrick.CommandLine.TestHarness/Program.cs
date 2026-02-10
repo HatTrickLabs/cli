@@ -74,7 +74,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "The Guid format specifier.", (terse: "-f", verbose: "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
             cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "The number of Guids to generate.", (terse: "-c", verbose: "--count"));
-            cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "allowed range", "1..100.");
+            cmdDef["count"].ApplyConstraint<int>((cnt) => cnt > 0 && cnt <= 100, "Allowed Range", "1..100.");
 
             DefinitionRegistry.GetInstance().Add(cmdDef);
         }
@@ -109,7 +109,7 @@ namespace HatTrick.CommandLine.TestHarness
             cmdDef.AddOption<string>(key: "last", help: "Person's first name.", ("-l", "--last"));
             cmdDef.AddOption<int>(key: "age", help: "Person's first name.", ("-a", "--age"));
 
-            cmdDef.ApplyConstraint((cmd) => cmd["age"].GetValue<int>() > 21, "age restriction", "must be older than 21.");
+            cmdDef.ApplyConstraint((cmd) => cmd["age"].GetValue<int>() > 21, "Age Restriction", "must be older than 21.");
 
             cmdDef.MapTo<Person>(("first","FirstName"),("last","LastName"), ("age","Age")).Then(Person.SavePerson);
 
@@ -138,6 +138,7 @@ namespace HatTrick.CommandLine.TestHarness
         static void RegisterCapsCommand()
         {
             var cmdDef = new CommandDefinition("htl.caps");
+            cmdDef.Help = "Capitalize input.";
             cmdDef.AddOption<string>(key: "value", help: "Value to capitalize.", ("-v", "--value"));
             cmdDef.Handler += (cmd) =>
             {
@@ -170,6 +171,7 @@ namespace HatTrick.CommandLine.TestHarness
                 return sum;
             };
             var cmdDef = new CommandDefinition("htl.sum");
+            cmdDef.Help = "Sum input.";
             cmdDef.AddOption<int[]>(key: "values", "Comma delimited list of values to sum.", split, ("-v", "--values"));
             cmdDef.Handler += (cmd) => Console.WriteLine(sum(cmd["values"].GetValue<int[]>()));
             DefinitionRegistry.GetInstance().Add(cmdDef);
@@ -205,12 +207,12 @@ namespace HatTrick.CommandLine.TestHarness
             );
             cmdDef["hours"].ApplyConstraint<double>(
                 constraint: (hours) => hours > 0,
-                name: "Minimum value",
+                name: "Min Value",
                 description: "Miminum hours value is 0.5."
             );
             cmdDef["hours"].ApplyConstraint<double>(
                 constraint: (hours) => 2 * hours == (int)(2 * hours) >> 0,
-                name: "Valid hour increment",
+                name: "Valid Increment",
                 description: "Argument must be a floating point value of 0.5 (half hour) increments."
             );
 
@@ -227,7 +229,7 @@ namespace HatTrick.CommandLine.TestHarness
             );
             cmdDef["comment"].ApplyConstraint<string>(
                 constraint: (comment) => !string.IsNullOrWhiteSpace(comment), 
-                name: "Comment populated", 
+                name: "Not Whitespace", 
                 description: "Comment must contain a non-whitespace value."
             );
 

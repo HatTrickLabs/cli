@@ -296,6 +296,9 @@ namespace HatTrick.CommandLine
             if (_handler is null && _asyncHandler is null)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for one of: {nameof(Handler)}, {nameof(AsyncHandler)}.");
 
+            if (_help is null)
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Help)}.");
+
             int depth = 0;
             for (int i = 1; i < _name.Length; i++)
             {

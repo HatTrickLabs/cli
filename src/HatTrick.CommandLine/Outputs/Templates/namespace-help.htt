@@ -3,14 +3,14 @@
 {$.Target.Name}{($.Target.Help, :blockAt,  $.Target.Name.Length, '.') => GetBlockedContent}
 
 {#if $.Namespaces}
-Child namespaces:
+Child Namespaces:
 {#each $.Namespaces}
 {($) => GetNamespaceHelp}
 {/each}
 {/if}
 
 {#if $.Commands}
-Child commands:
+Child Commands:
 {#each $.Commands}
 {($) => GetCommandHelp}
 {/each}

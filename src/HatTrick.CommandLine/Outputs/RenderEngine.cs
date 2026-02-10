@@ -313,7 +313,7 @@ namespace HatTrick.CommandLine
             Func<CommandConstraint, string> GetCommandConstraintHelp = (c) =>
             {
                 int startAt = indent.Length + c.Name.Length;
-                return $"{indent}{c.Name}{this.GetBlockedContent(c.Description, cmdConstBlockStart, startAt, ' ')}";
+                return $"{indent}{c.Name}{this.GetBlockedContent(c.Description, cmdConstBlockStart, startAt)}";
             };
 
             TemplateEngine ngin = new TemplateEngine(template);

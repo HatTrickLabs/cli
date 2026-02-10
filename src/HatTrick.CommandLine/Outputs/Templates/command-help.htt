@@ -17,7 +17,7 @@ Options:
 {/each}
 {/if+}
 {#if $.HasConstraints}
-Command constraints:
+Command Constraints:
 {#each () => GetCmdDefConstraints}
 {($) => GetCommandConstraintHelp}
 {/each+}
