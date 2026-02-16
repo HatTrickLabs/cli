@@ -380,22 +380,27 @@ namespace HatTrick.CommandLine.Test
         public void Validate_WhenNameContainsOneOrMoreDots_ShouldExposeDepthAsDotCount()
         {
             var cmdDef1 = new CommandDefinition("abc.xyz");
+            cmdDef1.Help = "help!";
             cmdDef1.Handler = (c) => { };
             cmdDef1.Validate();
 
             var cmdDef2 = new CommandDefinition("abc.xyz.xxx");
+            cmdDef2.Help = "help!";
             cmdDef2.Handler = (c) => { };
             cmdDef2.Validate();
 
             var cmdDef3 = new CommandDefinition("abc.xyz.xxx.aaa");
+            cmdDef3.Help = "help!";
             cmdDef3.Handler = (c) => { };
             cmdDef3.Validate();
 
             var cmdDef4 = new CommandDefinition("abc.xyz.xxx.aaa.bbb");
+            cmdDef4.Help = "help!";
             cmdDef4.Handler = (c) => { };
             cmdDef4.Validate();
 
             var cmdDef5 = new CommandDefinition("abc.xyz.xxx.aaa.bbb.ccc");
+            cmdDef5.Help = "help!";
             cmdDef5.Handler = (c) => { };
             cmdDef5.Validate();
 
@@ -410,6 +415,7 @@ namespace HatTrick.CommandLine.Test
         public void Validate_WhenNameEndsWithDot_ShouldThrow_NamespaceDefinitionException()
         {
             var cmdDef = new CommandDefinition("abc.xyz.");
+            cmdDef.Help = "help!";
             Action action = () => cmdDef.Validate();
             Assert.Throws<CommandDefinitionException>(action);
         }

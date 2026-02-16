@@ -75,6 +75,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "fn", help: "fn help", ("-f", "--fn"));
             cmdDef.AddOption<string>(key: "ln", help: "ln help", ("-l", "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "age help", ("-a", "--age"));
@@ -101,6 +102,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "fn", help: "fn help", ("-f", "--fn"));
             cmdDef.AddOption<string>(key: "ln", help: "ln help", ("-l", "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "age help", ("-a", "--age"));

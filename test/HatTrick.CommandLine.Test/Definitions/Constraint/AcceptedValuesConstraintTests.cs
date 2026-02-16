@@ -71,6 +71,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("guid");
+            cmdDef.Help = "Gens guids.";
             cmdDef.AddOption<int>(key: "count", 1, "Number of guids to generate.", ("-c", "--count"));
             cmdDef.AddOption<string>(key: "format", "N", "Guid output format string.", ("-f", "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
@@ -90,6 +91,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("guid");
+            cmdDef.Help = "Gens guids.";
             cmdDef.AddOption<int>(key: "count", 1, "Number of guids to generate.", ("-c", "--count"));
             cmdDef.AddOption<string>(key: "format", "N", "Guid output format string.", ("-f", "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
@@ -107,6 +109,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("guid");
+            cmdDef.Help = "Gens guids.";
             cmdDef.AddOption<int>(key: "count", 1, "Number of guids to generate.", ("-c", "--count"));
             cmdDef.AddOption<string>(key: "format", "N", "Guid output format string.", ("-f", "--format"));
             cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
@@ -124,6 +127,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("guid");
+            cmdDef.Help = "Gens guids.";
             cmdDef.AddOption<int>(key: "count", 1, "Number of guids to generate.", ("-c", "--count"));
             cmdDef.AddOption<string>(key: "format", "N", "Guid output format string.", ("-f", "--format"));
             cmdDef["format"].AcceptedValues(StringComparer.OrdinalIgnoreCase, "N", "D", "B", "P", "X");

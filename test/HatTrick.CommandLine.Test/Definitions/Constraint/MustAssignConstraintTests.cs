@@ -33,6 +33,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("copy");
+            cmdDef.Help = "Help!";
             //the following WILL have a must assign constraint applied internall because no default arg is provided here.
             cmdDef.AddOption<string>(key: "path", "Path of file or directory to copy.", ("-p", "--path"));
             cmdDef.Handler += (cmd) => { };
@@ -52,6 +53,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var cmdDef = new CommandDefinition("copy");
+            cmdDef.Help = "Help!";
             //the following WILL have a must assign constraint applied internall because no default arg is provided here.
             cmdDef.AddOption<string>(key: "path", "Path of file or directory to copy.", ("-p", "--path"));
             cmdDef.Handler += (cmd) => { };

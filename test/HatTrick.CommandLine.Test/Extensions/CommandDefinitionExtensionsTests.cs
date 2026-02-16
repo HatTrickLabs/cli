@@ -13,6 +13,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -30,6 +31,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -48,6 +50,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -67,6 +70,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "FirstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "LastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "Age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -85,6 +89,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "FirstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "LastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             //typeing the age op as string to force validation exception
@@ -106,6 +111,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "FirstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "LastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             //typeing the age op as string to force validation exception
@@ -127,6 +133,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "FirstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "LastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "Age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -146,6 +153,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "FirstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "LastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "Age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -167,6 +175,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var regiistry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("create-person");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "first-name", help: "Person's first name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "last-name", help: "Person's last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Person's age.", (terse: "-a", verbose: "--age"));
@@ -196,6 +205,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             //misspell age to cause mapping conflict
@@ -212,6 +222,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -230,6 +241,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -249,6 +261,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -265,6 +278,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             //typeing the age op as string to force validation exception
@@ -284,6 +298,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             //typeing the age op as string to force validation exception
@@ -303,6 +318,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -322,6 +338,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
@@ -341,6 +358,7 @@ namespace HatTrick.CommandLine.Test
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
             var cmdDef = new CommandDefinition("go");
+            cmdDef.Help = "help!";
             cmdDef.AddOption<string>(key: "firstName", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));

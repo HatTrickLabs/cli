@@ -23,7 +23,7 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
-            registry.Add(new CommandDefinition("name") { Handler = (cmd) => { } });
+            registry.Add(new CommandDefinition("name") { Handler = (cmd) => { }, Help = "Help!" });
             Action action = () => registry.Add(new NamespaceDefinition("name", "help"));
             Assert.Throws<NamespaceDefinitionException>(action);
         }
@@ -45,10 +45,10 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
-            registry.Add(new CommandDefinition("name1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("name2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("name3") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("name4") { Handler = (cmd) => { } });
+            registry.Add(new CommandDefinition("name1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("name2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("name3") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("name4") { Handler = (cmd) => { }, Help = "Help!" });
 
             var result = registry.GetCommandDefinitions(null);
 
@@ -68,10 +68,10 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
-            registry.Add(new CommandDefinition("abc1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("name2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("name3") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("abc4") { Handler = (cmd) => { } });
+            registry.Add(new CommandDefinition("abc1")  { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("name2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("name3") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("abc4")  { Handler = (cmd) => { }, Help = "Help!" });
 
             var result = registry.GetCommandDefinitions((cmd) => cmd.Name.StartsWith("abc"));
 
@@ -156,10 +156,10 @@ namespace HatTrick.CommandLine.Test
         {
             DefinitionRegistry.Clear();
             var registry = DefinitionRegistry.GetInstance();
-            registry.Add(new CommandDefinition("name1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("name2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("name3") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("name4") { Handler = (cmd) => { } });
+            registry.Add(new CommandDefinition("name1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("name2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("name3") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("name4") { Handler = (cmd) => { }, Help = "Help!" });
 
             bool result1 = registry.TryGetCommandDefinition("name3", out CommandDefinition cmd1);
             bool result2 = registry.TryGetCommandDefinition("name5", out CommandDefinition cmd2);
@@ -183,10 +183,10 @@ namespace HatTrick.CommandLine.Test
             registry.Add(new NamespaceDefinition("ccc", "help"));
             registry.Add(new NamespaceDefinition("aaa.xyz", "help"));
 
-            registry.Add(new CommandDefinition("aaa.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("aaa.cmd2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("bbb.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("bbb.cmd2") { Handler = (cmd) => { } });
+            registry.Add(new CommandDefinition("aaa.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("aaa.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("bbb.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("bbb.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
 
             Action action = () => registry.GetChildCommandDefinitions(null);
             Assert.Throws<ArgumentNullException>(action);
@@ -203,14 +203,14 @@ namespace HatTrick.CommandLine.Test
             var ns = new NamespaceDefinition("aaa.xyz", "help");
             registry.Add(ns);
 
-            registry.Add(new CommandDefinition("aaa.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("aaa.cmd2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("bbb.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("bbb.cmd2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("ccc.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("ccc.cmd2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("aaa.xyz.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("aaa.xyz.cmd2") { Handler = (cmd) => { } });
+            registry.Add(new CommandDefinition("aaa.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("aaa.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("bbb.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("bbb.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("ccc.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("ccc.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("aaa.xyz.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("aaa.xyz.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
 
             CommandDefinition[] result = registry.GetChildCommandDefinitions(ns);
 
@@ -233,10 +233,10 @@ namespace HatTrick.CommandLine.Test
             registry.Add(new NamespaceDefinition("ccc", "help"));
             registry.Add(new NamespaceDefinition("aaa.xyz", "help"));
 
-            registry.Add(new CommandDefinition("aaa.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("aaa.cmd2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("bbb.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("bbb.cmd2") { Handler = (cmd) => { } });
+            registry.Add(new CommandDefinition("aaa.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("aaa.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("bbb.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("bbb.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
 
             Action action = () => registry.GetDescendentCommandDefinitions(null);
             Assert.Throws<ArgumentNullException>(action);
@@ -253,14 +253,14 @@ namespace HatTrick.CommandLine.Test
             registry.Add(new NamespaceDefinition("ccc", "help"));
             registry.Add(new NamespaceDefinition("aaa.xyz", "help"));
 
-            registry.Add(new CommandDefinition("aaa.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("aaa.cmd2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("bbb.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("bbb.cmd2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("ccc.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("ccc.cmd2") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("aaa.xyz.cmd1") { Handler = (cmd) => { } });
-            registry.Add(new CommandDefinition("aaa.xyz.cmd2") { Handler = (cmd) => { } });
+            registry.Add(new CommandDefinition("aaa.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("aaa.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("bbb.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("bbb.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("ccc.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("ccc.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("aaa.xyz.cmd1") { Handler = (cmd) => { }, Help = "Help!" });
+            registry.Add(new CommandDefinition("aaa.xyz.cmd2") { Handler = (cmd) => { }, Help = "Help!" });
 
             CommandDefinition[] result = registry.GetDescendentCommandDefinitions(ns);
 

@@ -9,10 +9,10 @@ namespace HatTrick.CommandLine.Test
         public void IndexerOnKeyString_WhenKeyExists_ShouldReturn_IndexedNamespace()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new(name: "abc") { Handler = (cmd) => { } });
-            set.Add(new(name: "abcd") { Handler = (cmd) => { } });
-            set.Add(new(name: "abcde") { Handler = (cmd) => { } });
-            set.Add(new(name: "abcdef") { Handler = (cmd) => { } });
+            set.Add(new(name: "abc") { Handler = (cmd) =>    { }, Help = "Help!" });
+            set.Add(new(name: "abcd") { Handler = (cmd) =>   { }, Help = "Help!" });
+            set.Add(new(name: "abcde") { Handler = (cmd) =>  { }, Help = "Help!" });
+            set.Add(new(name: "abcdef") { Handler = (cmd) => { }, Help = "Help!" });
 
             CommandDefinition cd = set["abcde"];
 
@@ -23,9 +23,9 @@ namespace HatTrick.CommandLine.Test
         public void IndexerOnKeyString_WhenKeyDoesNotExists_ShouldThrow_KeyNotFoundException()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new(name: "abcd") { Handler = (cmd) => { } });
-            set.Add(new(name: "abcde") { Handler = (cmd) => { } });
-            set.Add(new(name: "abcdef") { Handler = (cmd) => { } });
+            set.Add(new(name: "abcd")   { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new(name: "abcde")  { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new(name: "abcdef") { Handler = (cmd) => { }, Help = "Help!" });
 
             CommandDefinition? cd = null;
             Action action = () => cd = set["abcdefg"];
@@ -46,7 +46,7 @@ namespace HatTrick.CommandLine.Test
         public void ContainsName_WhenSetContainsName_ShouldReturn_True()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("abc") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("abc") { Handler = (cmd) => { }, Help = "Help!" });
             bool result = set.ContainsName("abc");
             Assert.True(result);
         }
@@ -55,7 +55,7 @@ namespace HatTrick.CommandLine.Test
         public void ContainsName_WhenNullArgumentProvided_ShouldThrow_ArgumentNullException()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("abc") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("abc") { Handler = (cmd) => { }, Help = "Help!" });
             Action action = () => set.ContainsName(null);
             Assert.Throws<ArgumentNullException>(action);
         }
@@ -74,10 +74,10 @@ namespace HatTrick.CommandLine.Test
         public void Add_WhenNameIsDuplicate_ShouldThrow_CommandDefinitionException()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name3") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name4") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name3") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name4") { Handler = (cmd) => { }, Help = "Help!" });
             Action action = () => set.Add(new CommandDefinition("name2") { Handler = (cmd) => { } });
             Assert.Throws<CommandDefinitionException>(action);
         }
@@ -86,10 +86,10 @@ namespace HatTrick.CommandLine.Test
         public void Add_WhenArgumentIsValid_ShouldResultIn_AddedCommandDefinition()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name3") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name4") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name3") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name4") { Handler = (cmd) => { }, Help = "Help!" });
 
             Assert.Collection<CommandDefinition>(set,
                 (x) => Assert.Equal("name1", x.Name),
@@ -105,11 +105,11 @@ namespace HatTrick.CommandLine.Test
         public void TryGet_WhenProvidedNameExists_ShouldReturn_True_And_OutputFoundNamespace()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name3") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name4") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name5") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name3") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name4") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name5") { Handler = (cmd) => { }, Help = "Help!" });
 
             Assert.True(set.TryGet("name4", out CommandDefinition cd));
             Assert.Equal("name4", cd.Name);
@@ -119,11 +119,11 @@ namespace HatTrick.CommandLine.Test
         public void TryGet_WhenProvidedNameExists_ShouldReturn_False_And_OutputNull()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name3") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name4") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("name5") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name3") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name4") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("name5") { Handler = (cmd) => { }, Help = "Help!" });
 
             Assert.False(set.TryGet("name6", out CommandDefinition cd));
             Assert.Null(cd);
@@ -135,9 +135,9 @@ namespace HatTrick.CommandLine.Test
         public void GetDescendents_WhenOfNamespace_IsNull_ShouldThrow_ArgumentNullException()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("htl.name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.name3") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("htl.name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.name3") { Handler = (cmd) => { }, Help = "Help!" });
 
             Action action = () => set.GetDescendents(null);
             Assert.Throws<ArgumentNullException>(action);
@@ -147,9 +147,9 @@ namespace HatTrick.CommandLine.Test
         public void GetDescendents_WhenOfNamespace_IsEmpty_ShouldReturn_EmptyArrayOfCommandDefinition()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("htl.name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.name3") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("htl.name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.name3") { Handler = (cmd) => { }, Help = "Help!" });
 
             Action action = () => set.GetDescendents(null);
             Assert.Throws<ArgumentNullException>(action);
@@ -159,15 +159,15 @@ namespace HatTrick.CommandLine.Test
         public void GetDescendents_ShouldReturn_AllDescendentsOf_ProvidedNamespace()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("htl.abc.name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.abc.name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.aaa.name3") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.xyz.name4") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.name5") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.name6") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.aaa.name7") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.ccc.name8") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.ccc.xxx.name9") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("htl.abc.name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.abc.name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.aaa.name3") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.xyz.name4") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.name5") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.name6") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.aaa.name7") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.ccc.name8") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.ccc.xxx.name9") { Handler = (cmd) => { }, Help = "Help!" });
 
             CommandDefinition[] result = set.GetDescendents("htl.bbb");
 
@@ -183,15 +183,15 @@ namespace HatTrick.CommandLine.Test
         public void GetDescendents_ShouldReturn_AllDescendentsOf_ProvidedNamespace_WhenNotHidden()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("htl.abc.name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.abc.name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.aaa.name3") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.xyz.name4") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.name5") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.name6") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.aaa.name7") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.ccc.name8") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.ccc.xxx.name9") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("htl.abc.name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.abc.name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.aaa.name3") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.xyz.name4") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.name5") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.name6") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.aaa.name7") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.ccc.name8") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.ccc.xxx.name9") { Handler = (cmd) => { }, Help = "Help!" });
 
             set["htl.bbb.ccc.name8"].Hide();
 
@@ -209,15 +209,15 @@ namespace HatTrick.CommandLine.Test
         public void GetDescendents_WithIncludeHiddenFlag_ShouldReturn_AllDescendentsOf_ProvidedNamespace_EvenWhenHidden()
         {
             var set = new SetOfCommandDefinition();
-            set.Add(new CommandDefinition("htl.abc.name1") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.abc.name2") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.aaa.name3") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.xyz.name4") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.name5") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.name6") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.aaa.name7") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.ccc.name8") { Handler = (cmd) => { } });
-            set.Add(new CommandDefinition("htl.bbb.ccc.xxx.name9") { Handler = (cmd) => { } });
+            set.Add(new CommandDefinition("htl.abc.name1") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.abc.name2") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.aaa.name3") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.xyz.name4") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.name5") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.name6") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.aaa.name7") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.ccc.name8") { Handler = (cmd) => { }, Help = "Help!" });
+            set.Add(new CommandDefinition("htl.bbb.ccc.xxx.name9") { Handler = (cmd) => { }, Help = "Help!" });
 
             set["htl.bbb.ccc.name8"].Hide();
 
