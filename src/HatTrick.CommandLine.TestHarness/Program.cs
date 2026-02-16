@@ -262,7 +262,7 @@ namespace HatTrick.CommandLine.TestHarness
             };
             cmdDef.AddOption<string>(key: "path", help: "Absolute root path of a local directory (directory tree root).", (terse: "-p", verbose: "--path"));
             cmdDef.AddOption<string>(key: "period", defaultArg: "all", help: "Filter for snapshot build/refresh timestamp period (all, day, week to date, month to date, year to date).", (terse: null, verbose: "--period"));
-            cmdDef["path"].ApplyConstraint<string>(constraint: (path) => System.IO.Path.IsPathFullyQualified(path), name: "directory is fully qualified", description: "Argument must be a valid fully qualified directory path on the local machine.");
+            cmdDef["path"].ApplyConstraint<string>(constraint: (path) => System.IO.Path.IsPathFullyQualified(path), name: "Full Qualified Path", description: "Argument must be a valid fully qualified directory path on the local machine.");
             cmdDef["period"].AcceptedValues<string>("all", "day", "wtd", "mtd", "ytd");
 
             DefinitionRegistry.GetInstance().Add(cmdDef);
