@@ -44,23 +44,13 @@ namespace HatTrick.CommandLine
         #region string to boolean
         private static bool StringToBoolean(string value)
         {
-            switch (value)
+            switch (value.ToLowerInvariant())
             {
                 case "false":
-                    return false;
-                case "true":
-                    return true;
-                case "False":
-                    return false;
-                case "True":
-                    return true;
                 case "no":
                     return false;
+                case "true":
                 case "yes":
-                    return true;
-                case "No":
-                    return false;
-                case "Yes":
                     return true;
                 default:
                     throw new FormatException($"Cannot convert value to bool: '{value}'");
