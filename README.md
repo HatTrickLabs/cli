@@ -13,10 +13,13 @@ registry.Add(new NamespaceDefinition("htl", "HatTrick Labs namespace"));
 
 var cmdDef = new CommandDefinition("htl.guid");
 cmdDef.Help = "Generates one or many GUID values.";
+
 cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "GUID format specifier.", (terse: "-f", verbose: "--format"));
 cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
+
 cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "Number of GUIDs to generate.", (terse: "-c", verbose: "--count"));
 cmdDef["count"].ApplyConstraint<int>(cnt => cnt > 0 && cnt <= 100, "Allowed Range", "1..100.");
+
 cmdDef.Handler = (cmd) =>
 {
     int count = cmd["count"].GetValue<int>();
@@ -24,7 +27,32 @@ cmdDef.Handler = (cmd) =>
     for (int i = 0; i < count; i++)
         Console.WriteLine(Guid.NewGuid().ToString(format));
 };
+
 registry.Add(cmdDef);
+
+Command cmd = CommandBuilder.Build(args);
+CommandExecutor executor = registry.GetCommandExecutor(cmd);
+executor.Execute();
+```
+
+---
+
+## Definition and Registry
+
+`DefinitionRegistry` is a singleton. All `CommandDefinition` and `NamespaceDefinition` objects are registered before execution begins. The registry validates naming collisions between commands and namespaces.
+
+```csharp
+var registry = DefinitionRegistry.GetInstance();
+
+registry.Add(new NamespaceDefinition("netsh", "Network shell commands"));
+registry.Add(new NamespaceDefinition("netsh.wlan", "Wireless LAN commands"));
+
+var connectDef = new CommandDefinition("netsh.wlan.connect");
+connectDef.Help = "Connect to a wireless network.";
+connectDef.AddOption<string>(key: "name", help: "Network name", flags: ("-n", "--name"));
+connectDef["name"].MustAssign();
+connectDef.Handler = (cmd) => { /* ... */ };
+registry.Add(connectDef);
 
 Command cmd = CommandBuilder.Build(args);
 CommandExecutor executor = registry.GetCommandExecutor(cmd);
@@ -88,9 +116,16 @@ myapp.copy --overwrite
 myapp.copy --overwrite true
 ```
 
+When an explicit argument is provided, the following literals are accepted (case-insensitive):
+
+| Value | Interpretation |
+|:---|:---|
+| `true` `yes` `y` `1` | `true` |
+| `false` `no` `n` `0` | `false` |
+
 ### Terse Flag Chaining
 
-Terse boolean flags can be chained Unix-style. The last flag in the chain may take an argument; all preceding flags are treated as boolean `true`. The following three forms are equivalent:
+Terse flags can be chained Unix-style. The last flag in the chain may take an argument; all preceding flags must be boolean options and are resolved as `true`. The following three forms are equivalent:
 
 ```
 myapp.copy -osf c:\tmp\hello.txt -t c:\tmp2\hello.txt
@@ -123,11 +158,10 @@ Command cmd = CommandBuilder.Build("myapp.copy --from c:\\tmp\\a.txt --to c:\\tm
 
 Options are generic — `OptionDefinition<T>`. Built-in conversion is handled by `OptionTypeMap` for:
 
-- Primitives: `string`, `int`, `double`, `bool`, `char`
-- Nullables: `int?`, `bool?`, `DateTime?`, etc.
-- Common BCL types: `DateTime`, `DateOnly`, `TimeOnly`, `DateTimeOffset`, `Guid`, `TimeSpan`
+- Any type implementing `IConvertible`: all numeric primitives (`byte`, `sbyte`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`, `nint`, `nuint`, `float`, `double`, `decimal`), `char`, `bool`, `string`, `DateTime`, and nullable variants of each
+- BCL types with dedicated parsers: `DateOnly`, `TimeOnly`, `DateTimeOffset`, `TimeSpan`, `Guid`, and nullable variants of each
 
-For any other type — arrays, custom domain types, etc. — a `Func<string, T>` converter must be provided:
+For any other type — arrays, enums, custom domain types — a `Func<string, T>` converter must be provided:
 
 ```csharp
 // Static default
@@ -158,7 +192,7 @@ cmdDef.AddOption<FileMode>(key: "mode", help: "File open mode.", arg => Enum.Par
 
 ## Constraints
 
-Constraints run after parsing, before handler invocation.
+Constraints run after parsing, before handler invocation. Execution order: defaults first (may promote `EmptyOption` to `DefaultOption`), then option-level constraints, then command-level constraints.
 
 ### Option-Level Constraints
 
@@ -171,6 +205,45 @@ Applied to a single option's value:
 | `AcceptedValues` | Restricts the option to a whitelist of values |
 | `CustomArgumentConstraint` | User-supplied predicate: `Func<T, bool>` |
 
+```csharp
+// MustAssign
+cmdDef.AddOption<string>(key: "path", help: "Target path.", ("-p", "--path"));
+cmdDef["path"].MustAssign();
+```
+
+```csharp
+// AcceptedValues
+cmdDef.AddOption<string>(key: "format", defaultArg: "D", help: "GUID format specifier.", ("-f", "--format"));
+cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
+```
+
+```csharp
+// CustomArgumentConstraint
+cmdDef.AddOption<int>(key: "count", defaultArg: 1, help: "Number of items.", ("-c", "--count"));
+cmdDef["count"].ApplyConstraint<int>(cnt => cnt > 0 && cnt <= 100, "Allowed Range", "1..100.");
+
+cmdDef.AddOption<double>(key: "hours", help: "Hours logged.", ("-h", "--hours"));
+cmdDef["hours"].ApplyConstraint<double>(
+    h => h > 0 && 2 * h == (int)(2 * h),
+    "Valid Increment",
+    "Must be a positive multiple of 0.5."
+);
+
+cmdDef.AddOption<string>(key: "path", help: "Target path.", ("-p", "--path"));
+cmdDef["path"].ApplyConstraint<string>(
+    Path.IsPathFullyQualified,
+    "Fully Qualified Path",
+    "Must be a valid fully qualified path."
+);
+
+cmdDef.AddOption<string>(key: "comment", help: "Entry comment.", ("-c", "--comment"));
+cmdDef["comment"].ApplyConstraint<string>(
+    s => !string.IsNullOrWhiteSpace(s),
+    "Not Whitespace",
+    "Must contain a non-whitespace value."
+);
+```
+
 ### Command-Level Constraints
 
 Applied across the full set of parsed options:
@@ -181,48 +254,29 @@ Applied across the full set of parsed options:
 | `MutuallyExclusiveSet` | At most one option from a named set may be present |
 | `CustomCommandConstraint` | User-supplied predicate over the full `ICommand` |
 
-Constraint execution order: defaults first (may promote `EmptyOption` to `DefaultOption`), then option-level constraints, then command-level constraints.
-
 ```csharp
-// Accepted values
-cmdDef["format"].AcceptedValues("N", "D", "B", "P", "X");
-cmdDef["period"].AcceptedValues("all", "day", "wtd", "mtd", "ytd");
-
-// Range check
-cmdDef["count"].ApplyConstraint<int>(cnt => cnt > 0 && cnt <= 100, "Allowed Range", "1..100.");
-
-// Half-hour increment
-cmdDef["hours"].ApplyConstraint<double>(
-    h => h > 0 && 2 * h == (int)(2 * h),
-    "Valid Increment",
-    "Must be a positive multiple of 0.5."
-);
-
-// Path validation
-cmdDef["path"].ApplyConstraint<string>(
-    Path.IsPathFullyQualified,
-    "Fully Qualified Path",
-    "Must be a valid fully qualified path."
-);
-
-// Non-empty string
-cmdDef["comment"].ApplyConstraint<string>(
-    s => !string.IsNullOrWhiteSpace(s),
-    "Not Whitespace",
-    "Must contain a non-whitespace value."
-);
-
-// Command-level: cross-option validation
+// CustomCommandConstraint
+cmdDef.AddOption<int>(key: "age", help: "Applicant age.", ("-a", "--age"));
 cmdDef.ApplyConstraint(
     cmd => cmd["age"].GetValue<int>() >= 18,
     "Age Restriction",
     "Must be 18 or older."
 );
+```
 
-// At least one of a set must be assigned
+```csharp
+// MustAssignOneOf
+cmdDef.AddOption<bool>(key: "json", help: "Output as JSON.", (null, "--json"));
+cmdDef.AddOption<bool>(key: "xml", help: "Output as XML.", (null, "--xml"));
+cmdDef.AddOption<bool>(key: "csv", help: "Output as CSV.", (null, "--csv"));
 cmdDef.MustAssignOneOf("json", "xml", "csv");
+```
 
-// At most one of a set may be assigned
+```csharp
+// MutuallyExclusiveSet
+cmdDef.AddOption<bool>(key: "json", help: "Output as JSON.", (null, "--json"));
+cmdDef.AddOption<bool>(key: "xml", help: "Output as XML.", (null, "--xml"));
+cmdDef.AddOption<bool>(key: "csv", help: "Output as CSV.", (null, "--csv"));
 cmdDef.MutuallyExclusiveSet("json", "xml", "csv");
 ```
 
@@ -257,6 +311,7 @@ cmdDef.AsyncHandler = async (cmd) =>
 `OnPreEnsure` fires after parsing but before constraint evaluation. Use it to manipulate raw argument strings before type conversion runs:
 
 ```csharp
+//if cmd takes a date, command designer could allow an integer to avoid the user having to type out a full date: 0: today, -1: yesterday, 1: tomorrow, etc...
 cmdDef.OnPreEnsure = (cmd) =>
 {
     var dayOpt = cmd.GetOption(o => o.Flag == "--day");
@@ -267,9 +322,19 @@ cmdDef.OnPreEnsure = (cmd) =>
 
 ---
 
-## Help System
+## Default Command
 
-Generated help output is accessible by passing the `-h|-?|--help` option to the default command. The namespace or command name is passed as the argument to scope the output.
+The default command runs when no command name is passed. It provides three built-in options, which are mutually exclusive — only one may be provided per invocation:
+
+| Option | Flags | Behavior |
+|:---|:---|:---|
+| `help` | `-h` \| `-?` \| `--help` | Renders help output scoped to a command or namespace |
+| `version` | `-v` \| `--version` | Displays assembly version information |
+| `run` | `-r` \| `--run` | Starts an interactive command loop |
+
+### Help
+
+The argument scopes the output to a command, namespace, or wildcard:
 
 ```
 myapp --help                        # root help (no argument = default command)
@@ -279,6 +344,36 @@ myapp --help netsh.*                # all commands under a namespace
 ```
 
 Help output is template-rendered using embedded resources. The `Help` string on each `CommandDefinition` and `NamespaceDefinition` feeds into the rendered output. Individual options can be excluded via `Hide()`.
+
+### Version
+
+Reflects over the entry assembly and all referenced assemblies, excluding system assemblies. Each assembly name and version is printed in `Major.Minor.Build` format, with names dot-padded for alignment:
+
+```
+myapp --version
+```
+
+```
+MyApp........................1.0.0
+HatTrick.CommandLine.........2.4.1
+```
+
+### Run
+
+Starts a continuous command execution loop — the application accepts repeated commands without exiting.
+
+```
+myapp --run
+```
+
+```
+myapp> netsh.wlan.connect --name MyNetwork
+myapp> netsh.wlan.disconnect
+myapp> cls
+myapp> exit
+```
+
+Three built-in loop commands are reserved: `exit` and `bye` terminate the loop; `cls` clears the screen.
 
 ---
 
@@ -312,43 +407,6 @@ cmdDef.MapToSignature<Action<string, string, int>>(
     ("last",  "lastName"),
     ("age",   "age")
 ).Then(PersonService.Save);
-```
-
----
-
-## Interactive Loop
-
-`CommandLoopHandler` supports a continuous command execution mode — the application accepts repeated commands without restarting. Three built-in commands are reserved: `exit` and `bye` terminate the loop; `cls` clears the screen.
-
-```
-> netsh.wlan.connect --name MyNetwork
-> netsh.wlan.disconnect
-> cls
-> exit
-```
-
----
-
-## Definition and Registry
-
-`DefinitionRegistry` is a singleton. All `CommandDefinition` and `NamespaceDefinition` objects are registered before execution begins. The registry validates naming collisions between commands and namespaces.
-
-```csharp
-var registry = DefinitionRegistry.GetInstance();
-
-registry.Add(new NamespaceDefinition("netsh", "Network shell commands"));
-registry.Add(new NamespaceDefinition("netsh.wlan", "Wireless LAN commands"));
-
-var connectDef = new CommandDefinition("netsh.wlan.connect");
-connectDef.Help = "Connect to a wireless network.";
-connectDef.AddOption<string>(key: "name", help: "Network name", flags: ("-n", "--name"));
-connectDef["name"].MustAssign();
-connectDef.Handler = (cmd) => { /* ... */ };
-registry.Add(connectDef);
-
-Command cmd = CommandBuilder.Build(args);
-CommandExecutor executor = registry.GetCommandExecutor(cmd);
-executor.Execute();
 ```
 
 ---
