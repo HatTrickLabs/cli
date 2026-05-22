@@ -401,12 +401,20 @@ cmdDef.MapTo<Person>(
     ("gender", "~")
 ).Then(person => PersonService.Save(person));
 
-// Map to a method signature (option key → parameter name)
-cmdDef.MapToSignature<Action<string, string, int>>(
+// Map to a method signature — T inferred when the target is unambiguous
+// static void Save(string firstName, string lastName, int age) { ... }
+cmdDef.MapToSignature(PersonService.Save,
     ("first", "firstName"),
-    ("last",  "lastName"),
-    ("age",   "age")
-).Then(PersonService.Save);
+    ("last",  "lastName")
+).Go();
+
+// When the target is overloaded, provide the Action type to select the overload
+// static void Save(Person person) { ... }
+// static void Save(string firstName, string lastName, int age) { ... }
+cmdDef.MapToSignature<Action<string, string, int>>(PersonService.Save,
+    ("first", "firstName"),
+    ("last",  "lastName")
+).Go();
 ```
 
 ---

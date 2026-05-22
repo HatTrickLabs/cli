@@ -210,7 +210,7 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             //misspell age to cause mapping conflict
             cmdDef.AddOption<int>(key: "agee", help: "Age.", (terse: "-a", verbose: "--age"));
-            cmdDef.MapToSignature<Action<string,string,int>>().Then(Person.Create);
+            cmdDef.MapToSignature(Person.Create).Go();
 
             Action action = () => registry.Add(cmdDef);
             Assert.Contains("No parameter found on signature for option", Assert.Throws<CommandMappingException>(action).Message);
@@ -226,11 +226,11 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
-            cmdDef.MapToSignature<Action<string, string, int>>(
+            cmdDef.MapToSignature(Person.Create,
                 (optionKey: "first-name", parameterName: "firstName"),
                 (optionKey: "last-name", parameterName: "lastNm"),//LastNm does not exist on Person..
                 (optionKey: "age", parameterName: "Age")
-            ).Then(Person.Create);
+            ).Go();
             Action action = () => registry.Add(cmdDef);
             Assert.Contains("via correlation", Assert.Throws<CommandMappingException>(action).Message);
         }
@@ -245,11 +245,11 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "first-name", help: "First name.", (terse: "-f", verbose: "--fn"));
             cmdDef.AddOption<string>(key: "last-name", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
-            cmdDef.MapToSignature<Action<string,string,int>>(
+            cmdDef.MapToSignature(Person.Create,
                 (optionKey: "first-name", parameterName: "firstName"),
                 (optionKey: "last-name", parameterName: "lastName"),
                 (optionKey: "age", parameterName: "age")
-            ).Then(Person.Create);
+            ).Go();
 
             //correlation maps should all align, should pass validation
             registry.Add(cmdDef);
@@ -266,7 +266,7 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
 
-            cmdDef.MapToSignature<Action<string,string,int>>().Then(Person.Create);
+            cmdDef.MapToSignature(Person.Create).Go();
 
             //all of the option keys match directly with signature parameters.  Add should pass validation.
             registry.Add(cmdDef);
@@ -284,7 +284,7 @@ namespace HatTrick.CommandLine.Test
             //typeing the age op as string to force validation exception
             cmdDef.AddOption<string>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
 
-            cmdDef.MapToSignature<Action<string, string, int>>().Then(Person.Create);
+            cmdDef.MapToSignature(Person.Create).Go();
 
             //Age parameter of int is not assignable from age option type of string
             Action action = () => registry.Add(cmdDef);
@@ -304,7 +304,7 @@ namespace HatTrick.CommandLine.Test
             //typeing the age op as string to force validation exception
             cmdDef.AddOption<string>(key: "Age", help: "Age.", (terse: "-a", verbose: "--age"));
 
-            cmdDef.MapToSignature<Action<string, string, int>>(("Age", "age")).Then(Person.Create);
+            cmdDef.MapToSignature(Person.Create, ("Age", "age")).Go();
 
             //Age property of int is not assignable from Age option type of string
             Action action = () => registry.Add(cmdDef);
@@ -325,7 +325,7 @@ namespace HatTrick.CommandLine.Test
             //add an unmappable option
             cmdDef.AddOption<string>(key: "gender", help: "Person's gender.", (terse: "-g", verbose: "--gender"));
 
-            cmdDef.MapToSignature<Action<string, string, int>>().Then(Person.Create);
+            cmdDef.MapToSignature(Person.Create).Go();
 
             //Age property of int is not assignable from Age option type of string
             Action action = () => registry.Add(cmdDef);
@@ -346,7 +346,7 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "gender", help: "Person's gender.", (terse: "-g", verbose: "--gender"));
 
             //inform the mapper to ignore the Gender option...~ marks it as un-mappable...
-            cmdDef.MapToSignature<Action<string, string, int>>((optionKey: "gender", parameterName: "~")).Then(Person.Create);
+            cmdDef.MapToSignature(Person.Create, (optionKey: "gender", parameterName: "~")).Go();
 
             //should pass validation
             registry.Add(cmdDef);
@@ -363,7 +363,7 @@ namespace HatTrick.CommandLine.Test
             cmdDef.AddOption<string>(key: "lastName", help: "Last name.", (terse: "-l", verbose: "--ln"));
             cmdDef.AddOption<int>(key: "age", help: "Age.", (terse: "-a", verbose: "--age"));
 
-            cmdDef.MapToSignature<Action<string, string, string, int>>().Then((string fn, string ln, string mn, int age) => { });
+            cmdDef.MapToSignature((string fn, string ln, string mn, int age) => { }).Go();
 
             //Age property of int is not assignable from Age option type of string
             Action action = () => registry.Add(cmdDef);

@@ -19,14 +19,14 @@ namespace HatTrick.CommandLine.Extensions
         #endregion
 
         #region map to signature
-        public static ISignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef) where T : Delegate
+        public static ISignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef, T target) where T : Delegate
         {
-            return new SignatureMapOf<T>(cmdDef);
+            return new SignatureMapOf<T>(cmdDef, target);
         }
 
-        public static ISignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef, params (string optionKey, string parameterName)[] correlations) where T : Delegate
+        public static ISignatureContinuation<T> MapToSignature<T>(this CommandDefinition cmdDef, T target, params (string optionKey, string parameterName)[] correlations) where T : Delegate
         {
-            return new SignatureMapOf<T>(cmdDef, correlations);
+            return new SignatureMapOf<T>(cmdDef, target, correlations);
         }
         #endregion
 
@@ -41,8 +41,8 @@ namespace HatTrick.CommandLine.Extensions
         #region i signature continuation of T
         public interface ISignatureContinuation<T>
         {
-            public void Then(T target);
-            public void ThenAsync(T target);
+            public void Go();
+            public void GoAsync();
         }
         #endregion
 
@@ -253,27 +253,14 @@ namespace HatTrick.CommandLine.Extensions
             #endregion
 
             #region constructors
-            public SignatureMapOf(CommandDefinition cmdDef) : this(cmdDef, null)
+            public SignatureMapOf(CommandDefinition cmdDef, T target) : this(cmdDef, target, null)
             {
             }
 
-            public SignatureMapOf(CommandDefinition cmdDef, (string optionKey, string parameterName)[] correlations) : base(cmdDef, correlations)
+            public SignatureMapOf(CommandDefinition cmdDef, T target, (string optionKey, string parameterName)[] correlations) : base(cmdDef, correlations)
             {
+                _target = target ?? throw new ArgumentNullException(nameof(target));
                 base.RegisterValidator(this.Validate);
-            }
-            #endregion
-
-            #region set target
-            internal void SetTarget(T target)
-            {
-                _target = target;
-            }
-            #endregion
-
-            #region get target
-            internal T GetTarget()
-            {
-                return _target;
             }
             #endregion
 
@@ -351,29 +338,25 @@ namespace HatTrick.CommandLine.Extensions
             }
             #endregion
 
-            #region then
-            public void Then(T target)
+            #region go
+            public void Go()
             {
-                this.SetTarget(target);
-
                 Action<ICommand> action = (cmd) =>
                 {
                     this.Map(cmd as Command, out object[] parameters);
-                    this.GetTarget().DynamicInvoke(parameters);
+                    _target.DynamicInvoke(parameters);
                 };
                 base.CommandDefinition.Handler += action;
             }
             #endregion
 
-            #region then async
-            public void ThenAsync(T target)
+            #region go async
+            public void GoAsync()
             {
-                this.SetTarget(target);
-
                 Func<ICommand, Task> function = async (cmd) =>
                 {
                     this.Map(cmd as Command, out object[] parameters);
-                    await (Task)this.GetTarget().DynamicInvoke(parameters);
+                    await (Task)_target.DynamicInvoke(parameters);
                 };
                 base.CommandDefinition.AsyncHandler += function;
             }

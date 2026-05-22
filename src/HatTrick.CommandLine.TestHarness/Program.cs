@@ -115,10 +115,10 @@ namespace HatTrick.CommandLine.TestHarness
 
             cmdDef.MapTo<Person>(("first", "FirstName"), ("last", "LastName"), ("age", "Age")).Then((p) => Person.SavePerson(p));
 
-            cmdDef.MapToSignature<Action<string, string, int>>(
+            cmdDef.MapToSignature<Action<string, string, int>>(Person.SavePerson,
                 ("first", "firstName"),
                 ("last", "lastName")
-                ).Then(Person.SavePerson);
+                ).Go();
 
 
             cmdDef.Handler += (cmd) =>
