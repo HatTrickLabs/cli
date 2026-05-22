@@ -110,7 +110,7 @@ x this does NOT parse properly: add -b apa -d "-1" -h 2.0 -c "test 2"  ... the q
 x Figure out how to render a legit argument type in error feedback when the arg is nullable type.
 x The logic behind the concept of IgnoreAndContinueException does not work at all...no exception can bubble out of the command loop, so consuming devs MUST catch
   their own exceptions within the command execution handler.
-- Validate that Help is supplied for the command definition...if not it causes null ref exception when rendering command level help....
+x Validate that Help is supplied for the command definition...if not it causes null ref exception when rendering command level help....
 
 
 
