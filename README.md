@@ -322,6 +322,34 @@ cmdDef.OnPreEnsure = (cmd) =>
 
 ---
 
+## Masked Input
+
+`MaskedInputLineReader` reads sensitive console input with `*` masking. Construct it immediately after writing a prompt — the cursor must be at the left margin when the reader is created.
+
+```csharp
+cmdDef.Handler = (cmd) =>
+{
+    Console.WriteLine("Password: ");
+    var reader = new MaskedInputLineReader();
+    string password = reader.ReadMaskedInput();
+    if (password is null)
+        return; // user cancelled with Escape
+    // use password...
+};
+```
+
+| Key | Behavior |
+|:---|:---|
+| `Enter` | Submit input |
+| `Escape` | Cancel — clears the line, returns `null` |
+| `↑` / `↓` | Toggle mask visibility |
+| `←` / `→` | Move cursor |
+| `Home` / `End` | Jump to start / end |
+| `Backspace` / `Delete` | Delete character before / at cursor |
+| `Insert` | Toggle insert / overwrite mode |
+
+---
+
 ## Default Command
 
 The default command runs when no command name is passed. It provides three built-in options, which are mutually exclusive — only one may be provided per invocation:
