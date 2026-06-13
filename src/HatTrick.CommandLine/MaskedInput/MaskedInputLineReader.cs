@@ -9,7 +9,7 @@ namespace HatTrick.CommandLine
         #endregion
 
         #region internals
-        private readonly int _maxLength;
+        private int _maxLength;
 
         private char[] _buffer;
 
@@ -23,8 +23,17 @@ namespace HatTrick.CommandLine
         #region constructors
         public MaskedInputLineReader()
         {
-            int left = Console.GetCursorPosition().Left;
-            if (left > 0)
+            //no console access at construction — all console-dependent setup and per-read state
+            //is initialized in ReadMaskedInput, so a single instance can be constructed anywhere
+            //(e.g. globally / via DI) and reused across multiple reads.
+        }
+        #endregion
+
+        #region initialize
+        //validate console state and reset per-read state so the reader can be reused across calls.
+        private void Initialize()
+        {
+            if (Console.GetCursorPosition().Left > 0)
                 throw new InvalidOperationException("Masked line input reader must start at console left position of 0.");
 
             _maxLength = Console.BufferWidth - 1; //CANNOT get to actual buffer width without exception...
@@ -39,6 +48,8 @@ namespace HatTrick.CommandLine
         #region read masked input
         public string ReadMaskedInput()
         {
+            this.Initialize();
+
             ConsoleKeyInfo input;
 
             while ((input = Console.ReadKey(true)).Key != ConsoleKey.Enter)
