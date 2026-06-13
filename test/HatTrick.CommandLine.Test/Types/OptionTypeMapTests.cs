@@ -510,5 +510,97 @@ namespace HatTrick.CommandLine.Test
             Assert.Throws<FormatException>(action);
         }
         #endregion
+
+        #region get typed argument [nint]
+        [Fact]
+        public void ParseOptionArgument_ForNint_ShouldThrow_InvalidCastException_WhenNullProvided()
+        {
+            Action action = () => OptionTypeMap.ParseOptionArgument<nint>(null);
+            Assert.Throws<InvalidCastException>(action);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNint_ShouldThrow_FormatException_WhenEmptyProvided()
+        {
+            Action action = () => OptionTypeMap.ParseOptionArgument<nint>(string.Empty);
+            Assert.Throws<FormatException>(action);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNint_ShouldReturn_ConvertedType_WhenInputIsValid()
+        {
+            nint target = 123;
+            nint result = OptionTypeMap.ParseOptionArgument<nint>("123");
+            Assert.Equal(target, result);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNint_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        {
+            Action action = () => OptionTypeMap.ParseOptionArgument<nint>("abcdef");
+            Assert.Throws<FormatException>(action);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNullableNint_ShouldReturn_Null_WhenNullProvided()
+        {
+            nint? result = OptionTypeMap.ParseOptionArgument<nint?>(null);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNullableNint_ShouldReturn_ConvertedType_WhenInputIsValid()
+        {
+            nint? target = 123;
+            nint? result = OptionTypeMap.ParseOptionArgument<nint?>("123");
+            Assert.Equal(target, result);
+        }
+        #endregion
+
+        #region get typed argument [nuint]
+        [Fact]
+        public void ParseOptionArgument_ForNuint_ShouldThrow_InvalidCastException_WhenNullProvided()
+        {
+            Action action = () => OptionTypeMap.ParseOptionArgument<nuint>(null);
+            Assert.Throws<InvalidCastException>(action);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNuint_ShouldThrow_FormatException_WhenEmptyProvided()
+        {
+            Action action = () => OptionTypeMap.ParseOptionArgument<nuint>(string.Empty);
+            Assert.Throws<FormatException>(action);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNuint_ShouldReturn_ConvertedType_WhenInputIsValid()
+        {
+            nuint target = 456;
+            nuint result = OptionTypeMap.ParseOptionArgument<nuint>("456");
+            Assert.Equal(target, result);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNuint_ShouldThrow_FormatException_WhenInvalidValueProvide()
+        {
+            Action action = () => OptionTypeMap.ParseOptionArgument<nuint>("abcdef");
+            Assert.Throws<FormatException>(action);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNullableNuint_ShouldReturn_Null_WhenNullProvided()
+        {
+            nuint? result = OptionTypeMap.ParseOptionArgument<nuint?>(null);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void ParseOptionArgument_ForNullableNuint_ShouldReturn_ConvertedType_WhenInputIsValid()
+        {
+            nuint? target = 456;
+            nuint? result = OptionTypeMap.ParseOptionArgument<nuint?>("456");
+            Assert.Equal(target, result);
+        }
+        #endregion
     }
 }

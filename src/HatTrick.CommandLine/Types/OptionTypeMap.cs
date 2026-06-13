@@ -93,6 +93,14 @@ namespace HatTrick.CommandLine
             if (typeof(IConvertible).IsAssignableFrom(underlying))
                 return Convert.ChangeType(value, underlying);
 
+            //IntPtr 
+            if (underlying == typeof(nint))
+                return nint.Parse(value);
+
+            //UIntPtr
+            if (underlying == typeof(nuint))
+                return nuint.Parse(value);
+
             if (underlying == typeof(DateOnly))
                 return DateOnly.Parse(value);
 
