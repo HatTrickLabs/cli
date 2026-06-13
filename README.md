@@ -50,7 +50,6 @@ registry.Add(new NamespaceDefinition("netsh.wlan", "Wireless LAN commands"));
 var connectDef = new CommandDefinition("netsh.wlan.connect");
 connectDef.Help = "Connect to a wireless network.";
 connectDef.AddOption<string>(key: "name", help: "Network name", flags: ("-n", "--name"));
-connectDef["name"].MustAssign();
 connectDef.Handler = (cmd) => { /* ... */ };
 registry.Add(connectDef);
 
