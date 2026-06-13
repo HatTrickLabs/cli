@@ -13,6 +13,7 @@ namespace HatTrick.CommandLine
         private const int Indent = 2;
         private const int HelpBlockLeftPad = 5;
         private const int MinHelpBlockStartPosition = 20;
+        private const int DefaultBufferWidth = 80;
         #endregion
 
         #region internals
@@ -28,7 +29,12 @@ namespace HatTrick.CommandLine
         #region constructors
         internal HelpRenderEngine()
         {
-            _bufferLen = Console.BufferWidth - 1;
+            //Console.BufferWidth is only valid when stdout is attached to a real console buffer.
+            //when output is redirected (file/pipe), e.g. `myapp --help > out.txt` or `| more`,
+            //there is no buffer to query, so fall back to a sane default.
+            int width = Console.IsOutputRedirected ? DefaultBufferWidth : Console.BufferWidth;
+
+            _bufferLen = (width > 0 ? width : DefaultBufferWidth) - 1;
         }
         #endregion
 
@@ -203,9 +209,14 @@ namespace HatTrick.CommandLine
             int blockStart = this.ResolveBlockStartPosition(maxLen);
             string indent = new string(' ', HelpRenderEngine.Indent);
 
+            //precompute the target's own help line in C# — target.Help is null for a synthetic
+            //namespace, and the template engine cannot bind a null lambda argument.
+            string targetHelp = this.GetBlockedContent(target.Help ?? string.Empty, blockStart, target.Name.Length);
+
             var bindTo = new Dictionary<string, object>()
             {
                 { "Target",         target      },
+                { "TargetHelp",     targetHelp  },
                 { "Indent",         indent      },
                 { "BlockStart",     blockStart  },
                 { "Namespaces",     namespaces  },
@@ -253,9 +264,14 @@ namespace HatTrick.CommandLine
             int blockStart = this.ResolveBlockStartPosition(maxLen);
             string indent = new string(' ', HelpRenderEngine.Indent);
 
+            //precompute the target's own help line in C# — target.Help is null for a synthetic
+            //namespace, and the template engine cannot bind a null lambda argument.
+            string targetHelp = this.GetBlockedContent(target.Help ?? string.Empty, blockStart, target.Name.Length);
+
             var bindTo = new Dictionary<string, object>()
             {
                 { "Target",         target      },
+                { "TargetHelp",     targetHelp  },
                 { "BlockStart",     blockStart  },
                 { "Namespaces",     namespaces  },
                 { "Commands",       commands    }
@@ -271,7 +287,7 @@ namespace HatTrick.CommandLine
             ngin.TrimWhitespace = true;
             ngin.LambdaRepo.Register(nameof(this.GetExecutableName), this.GetExecutableName);
             ngin.LambdaRepo.Register(nameof(this.GetBlockedContent), this.GetBlockedContent);
-            
+
             ngin.LambdaRepo.Register(nameof(GetCommandHelp), GetCommandHelp);
 
             string output = ngin.Merge(bindTo);

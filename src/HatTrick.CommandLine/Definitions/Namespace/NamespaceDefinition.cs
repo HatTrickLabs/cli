@@ -9,6 +9,7 @@ namespace HatTrick.CommandLine
         private string _help;
         private int _depth;
         private bool _hidden;
+        private bool _synthetic;
         #endregion
 
         #region interface
@@ -21,6 +22,8 @@ namespace HatTrick.CommandLine
         internal int Depth => _depth;
 
         public bool Hidden => _hidden;
+
+        internal bool Synthetic => _synthetic;
         #endregion
 
         #region constructors
@@ -39,6 +42,37 @@ namespace HatTrick.CommandLine
 
             _name = name;
             _help = help;
+        }
+
+        private NamespaceDefinition(string name, int depth)
+        {
+            _name = name;
+            _depth = depth;
+            _synthetic = true;
+        }
+        #endregion
+
+        #region synthetic
+        //a synthetic namespace is an auto-created structural placeholder for an unregistered
+        //ancestor of a registered namespace. it carries no help text until promoted.
+        internal static NamespaceDefinition CreateSynthetic(string name)
+        {
+            int depth = 0;
+            for (int i = 0; i < name.Length; i++)
+                if (name[i] == '.')
+                    depth += 1;
+
+            return new NamespaceDefinition(name, depth);
+        }
+
+        //promote a synthetic placeholder into a real, author-declared namespace.
+        internal void Promote(string help)
+        {
+            if (help is null)
+                throw new ArgumentNullException(nameof(help));
+
+            _help = help;
+            _synthetic = false;
         }
         #endregion
 

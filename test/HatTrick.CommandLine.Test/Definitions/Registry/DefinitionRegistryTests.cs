@@ -37,6 +37,17 @@ namespace HatTrick.CommandLine.Test
             Action action = () => registry.Add(new CommandDefinition("name") { Handler = (cmd) => { } });
             Assert.Throws<CommandDefinitionException>(action);
         }
+
+        [Fact]
+        public void Add_NamespaceDefinition_WhenAncestor_CollidesWith_ExistingCommandName_ShouldThrow_NamespaceDefinitionException()
+        {
+            DefinitionRegistry.Clear();
+            var registry = DefinitionRegistry.GetInstance();
+            registry.Add(new CommandDefinition("git") { Handler = (cmd) => { }, Help = "Help!" });
+            //registering "git.push" would auto-vivify a synthetic namespace "git", colliding with the command
+            Action action = () => registry.Add(new NamespaceDefinition("git.push", "help"));
+            Assert.Throws<NamespaceDefinitionException>(action);
+        }
         #endregion
 
         #region get command definitions

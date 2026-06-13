@@ -53,9 +53,19 @@ namespace HatTrick.CommandLine
         #region add
         public void Add(NamespaceDefinition namespaceDef)
         {
-            //ensure no command name collisions
-            if (_commands.ContainsName(namespaceDef.Name))
-                throw new NamespaceDefinitionException($"Naming collision between namespace and command definition: {namespaceDef.Name}");
+            if (namespaceDef is null)
+                throw new ArgumentNullException(nameof(namespaceDef));
+
+            //ensure no command name collisions — for the namespace itself or any ancestor
+            //that will be auto-created as a synthetic placeholder.
+            string[] segments = namespaceDef.Name.Split('.');
+            string prefix = null;
+            for (int i = 0; i < segments.Length; i++)
+            {
+                prefix = (i > 0) ? string.Concat(prefix, '.', segments[i]) : segments[i];
+                if (_commands.ContainsName(prefix))
+                    throw new NamespaceDefinitionException($"Naming collision between namespace and command definition: {prefix}");
+            }
 
             _namespaces.Add(namespaceDef);
         }

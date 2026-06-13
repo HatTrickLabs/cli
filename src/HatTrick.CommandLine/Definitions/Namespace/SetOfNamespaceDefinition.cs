@@ -58,42 +58,43 @@ namespace HatTrick.CommandLine
 
             namespaceDef.Validate();
 
-            this.ThrowOnSegmentGap(namespaceDef.Name);
-            this.ThrowOnDuplicateName(namespaceDef.Name);
+            this.EnsureAncestors(namespaceDef.Name);
+
+            //promote a synthetic placeholder to this real definition; a real duplicate is an error.
+            if (this.TryGet(namespaceDef.Name, out NamespaceDefinition existing))
+            {
+                if (existing.Synthetic)
+                {
+                    existing.Promote(namespaceDef.Help);
+                    return;
+                }
+
+                throw new NamespaceDefinitionException($"Cannot insert namespace, duplicate key found: '{namespaceDef.Name}'");
+            }
 
             base.Add(namespaceDef);
         }
         #endregion
 
-        #region throw on segment gap
-        private void ThrowOnSegmentGap(string name)
+        #region ensure ancestors
+        //auto-vivify: create any missing ancestor namespaces as synthetic placeholders so the
+        //namespace tree is always connected (gap-free registration is no longer required).
+        private void EnsureAncestors(string name)
         {
-            if (name.Contains('.'))
+            if (!name.Contains('.'))
+                return;
+
+            string[] segments = name.Split('.');
+            string prefix = null;
+            for (int i = 0; i < (segments.Length - 1); i++)
             {
-                //ensure no segment gaps
-                string[] segments = name.Split('.');
-                string segment = null;
-                for (int i = 0; i < (segments.Length - 1); i++)
-                {
-                    segment = (i > 0)
-                        ? string.Concat(segment, '.', segments[i])
-                        : segments[i];
+                prefix = (i > 0)
+                    ? string.Concat(prefix, '.', segments[i])
+                    : segments[i];
 
-                    if (!this.ContainsName(segment))
-                    {
-                        string msg = $"Namespace cannot be added for '{name}'...no parent namespace for '{segment}' exists.";
-                        throw new NamespaceDefinitionException(msg);
-                    }
-                }
+                if (!this.ContainsName(prefix))
+                    base.Add(NamespaceDefinition.CreateSynthetic(prefix));
             }
-        }
-        #endregion
-
-        #region throw on duplicate name
-        private void ThrowOnDuplicateName(string name)
-        {
-            if (this.ContainsName(name))
-                throw new NamespaceDefinitionException($"Cannot insert namespace, duplicate key found: '{name}'");
         }
         #endregion
 

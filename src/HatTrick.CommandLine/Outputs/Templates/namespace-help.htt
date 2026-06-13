@@ -1,6 +1,6 @@
 {?var:blockAt = $.BlockStart}
 
-{$.Target.Name}{($.Target.Help, :blockAt,  $.Target.Name.Length, '.') => GetBlockedContent}
+{$.Target.Name}{$.TargetHelp}
 
 {#if $.Namespaces}
 Child Namespaces:

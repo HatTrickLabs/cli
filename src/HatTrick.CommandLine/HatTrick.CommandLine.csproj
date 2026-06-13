@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <None Remove="Outputs\Templates\command-help.htt" />
-    <None Remove="Outputs\Templates\invalid-input-help.htt" />
     <None Remove="Outputs\Templates\namespace-help.htt" />
     <None Remove="Outputs\Templates\namespace-wildcard-help.htt" />
     <None Remove="Outputs\Templates\root-help.htt" />

@@ -73,17 +73,52 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
-        public void Add_WhenNameHasSegmentGap_ShouldThrow_NamespaceDefinition()
+        public void Add_WhenNameHasSegmentGap_ShouldAutoVivify_SyntheticAncestor()
         {
             var set = new SetOfNamespaceDefinition();
             set.Add(new NamespaceDefinition("system", "help"));
             set.Add(new NamespaceDefinition("system.io", "help"));
             set.Add(new NamespaceDefinition("system.io.access", "help"));
 
+            //"system.io.access.output" is missing — it should be auto-created as a synthetic placeholder
+            set.Add(new NamespaceDefinition("system.io.access.output.encoding", "help"));
 
-            Action action = () => set.Add(new NamespaceDefinition("system.io.access.output.encoding", "help"));
-            Assert.Throws<NamespaceDefinitionException>(action);
-            return;
+            Assert.True(set.ContainsName("system.io.access.output"));
+            Assert.True(set["system.io.access.output"].Synthetic);
+            Assert.Null(set["system.io.access.output"].Help);
+
+            Assert.True(set.ContainsName("system.io.access.output.encoding"));
+            Assert.False(set["system.io.access.output.encoding"].Synthetic);
+        }
+
+        [Fact]
+        public void Add_WhenAncestorsMissing_ShouldCreate_SyntheticAncestors()
+        {
+            var set = new SetOfNamespaceDefinition();
+            set.Add(new NamespaceDefinition("a.b.c", "help"));
+
+            Assert.True(set["a"].Synthetic);
+            Assert.Null(set["a"].Help);
+            Assert.True(set["a.b"].Synthetic);
+            Assert.Null(set["a.b"].Help);
+            Assert.False(set["a.b.c"].Synthetic);
+            Assert.Equal("help", set["a.b.c"].Help);
+        }
+
+        [Fact]
+        public void Add_RealNamespace_WhenSyntheticPlaceholderExists_ShouldPromote()
+        {
+            var set = new SetOfNamespaceDefinition();
+            set.Add(new NamespaceDefinition("a.b.c", "help"));    //auto-creates synthetic "a" and "a.b"
+
+            Assert.True(set["a.b"].Synthetic);
+
+            set.Add(new NamespaceDefinition("a.b", "real help")); //promotes the placeholder
+
+            Assert.False(set["a.b"].Synthetic);
+            Assert.Equal("real help", set["a.b"].Help);
+            //promotion must not create a duplicate node
+            Assert.Single(set.GetDescendants(set["a"]), ns => ns.Name == "a.b");
         }
 
         [Fact]
