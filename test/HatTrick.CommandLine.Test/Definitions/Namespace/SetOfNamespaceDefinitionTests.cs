@@ -401,5 +401,61 @@ namespace HatTrick.CommandLine.Test
             );
         }
         #endregion
+
+        #region get ancestors
+        [Fact]
+        public void GetAncestors_ShouldReturn_OnlyPrefixAncestors_OfProvidedCommand()
+        {
+            var set = new SetOfNamespaceDefinition();
+            set.Add(new NamespaceDefinition("name1", "help"));      //depth 0, not an ancestor
+            set.Add(new NamespaceDefinition("ab", "help"));         //depth 0, sibling-prefix of "abc", not an ancestor
+            set.Add(new NamespaceDefinition("abc", "help"));        //depth 0, ancestor
+            set.Add(new NamespaceDefinition("abc.other", "help"));  //depth 1, shallower but not a prefix
+            set.Add(new NamespaceDefinition("abc.xyz", "help"));    //depth 1, ancestor
+
+            var cmd = new CommandDefinition("abc.xyz.connect") { Handler = (c) => { }, Help = "help" };
+            cmd.Validate();//computes depth (2)
+
+            NamespaceDefinition[] ancestors = set.GetAncestors(cmd);
+
+            Assert.Equal(2, ancestors.Length);
+            Assert.Collection(ancestors,
+                (ns) => Assert.Equal("abc", ns.Name),
+                (ns) => Assert.Equal("abc.xyz", ns.Name)
+            );
+        }
+        #endregion
+
+        #region segment-aware prefix matching
+        [Fact]
+        public void GetChildren_ShouldExclude_SiblingPrefixNamespaces()
+        {
+            var set = new SetOfNamespaceDefinition();
+            set.Add(new NamespaceDefinition("abc", "help"));       //depth 0, parent
+            set.Add(new NamespaceDefinition("abc.name3", "help")); //depth 1, real child
+            set.Add(new NamespaceDefinition("abcd", "help"));      //depth 0, sibling-prefix
+            set.Add(new NamespaceDefinition("abcd.xyz", "help"));  //depth 1, child of abcd (NOT abc)
+
+            NamespaceDefinition[] children = set.GetChildren(set["abc"]);
+
+            Assert.Single(children);
+            Assert.Equal("abc.name3", children[0].Name);
+        }
+
+        [Fact]
+        public void GetDescendants_ShouldExclude_SiblingPrefixNamespaces()
+        {
+            var set = new SetOfNamespaceDefinition();
+            set.Add(new NamespaceDefinition("abc", "help"));       //depth 0, parent
+            set.Add(new NamespaceDefinition("abc.name3", "help")); //depth 1, real descendant
+            set.Add(new NamespaceDefinition("abcd", "help"));      //depth 0, sibling-prefix
+            set.Add(new NamespaceDefinition("abcd.xyz", "help"));  //depth 1, descendant of abcd (NOT abc)
+
+            NamespaceDefinition[] descendants = set.GetDescendants(set["abc"]);
+
+            Assert.Single(descendants);
+            Assert.Equal("abc.name3", descendants[0].Name);
+        }
+        #endregion
     }
 }

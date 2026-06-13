@@ -127,7 +127,7 @@ namespace HatTrick.CommandLine
             int atDepth = parent.Depth + 1;
             var children = base.FindAll((ns) =>
             {
-                bool isChild = ns.Depth == atDepth && ns.Name.StartsWith(parent.Name);
+                bool isChild = ns.Depth == atDepth && ns.Name.StartsWith(parent.Name + ".");
                 return includeHidden 
                     ? isChild 
                     : (isChild && !ns.Hidden);
@@ -145,7 +145,7 @@ namespace HatTrick.CommandLine
 
             var descendents = base.FindAll((ns) =>
             {
-                bool isDescendent = ns.Depth > parent.Depth && ns.Name.StartsWith(parent.Name);
+                bool isDescendent = ns.Depth > parent.Depth && ns.Name.StartsWith(parent.Name + ".");
                 return includeHidden
                     ? isDescendent
                     : (isDescendent && !ns.Hidden);
@@ -163,7 +163,7 @@ namespace HatTrick.CommandLine
 
             var ancestors = base.FindAll((ns) =>
             {
-                bool isAncestor = ns.Depth < descendant.Depth && descendant.Name.StartsWith(descendant.Name);
+                bool isAncestor = ns.Depth < descendant.Depth && descendant.Name.StartsWith(ns.Name + ".");
                 return includeHidden
                     ? isAncestor
                     : (isAncestor && !ns.Hidden);

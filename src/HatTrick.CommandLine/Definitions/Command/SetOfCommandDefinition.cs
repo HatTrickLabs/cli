@@ -94,7 +94,7 @@ namespace HatTrick.CommandLine
 
             var descendents = base.FindAll((cmd) =>
             {
-                bool isDescendent = cmd.Depth > depth && cmd.Name.StartsWith(ofNamespace);
+                bool isDescendent = cmd.Depth > depth && cmd.Name.StartsWith(ofNamespace + ".");
                 return includeHidden
                     ? isDescendent
                     : (isDescendent && !cmd.Hidden);

@@ -274,5 +274,20 @@ namespace HatTrick.CommandLine.Test
             Assert.Equal("1abc", set["1abc"].Name);
         }
         #endregion
+
+        #region segment-aware prefix matching
+        [Fact]
+        public void GetDescendents_ShouldExclude_SiblingPrefixCommands()
+        {
+            var set = new SetOfCommandDefinition();
+            set.Add(new CommandDefinition("abc.connect") { Handler = (cmd) => { }, Help = "Help!" });  //descendant of abc
+            set.Add(new CommandDefinition("abcd.connect") { Handler = (cmd) => { }, Help = "Help!" }); //sibling-prefix, NOT under abc
+
+            CommandDefinition[] descendents = set.GetDescendents("abc");
+
+            Assert.Single(descendents);
+            Assert.Equal("abc.connect", descendents[0].Name);
+        }
+        #endregion
     }
 }
