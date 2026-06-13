@@ -36,14 +36,13 @@ namespace HatTrick.CommandLine
         #region execute async
         public async Task ExecuteAsync()
         {
-            this.EnsureCommand(_cmd);
-
-            Func<Command, Task> function = _cmdDef.AsyncHandler;
-
-            if (function is null)
+            Func<Command, Task> handler = _cmdDef.AsyncHandler;
+            if (handler is null)
                 throw new CommandExecutionException($"{nameof(CommandDefinition)}.{nameof(CommandDefinition.AsyncHandler)} is null for command definition '{_cmdDef.Name}'.");
 
-            await _cmdDef.AsyncHandler(_cmd);
+            _cmdDef.OnPreEnsure?.Invoke(_cmd);
+            this.EnsureCommand(_cmd);
+            await handler(_cmd);
         }
         #endregion
 
