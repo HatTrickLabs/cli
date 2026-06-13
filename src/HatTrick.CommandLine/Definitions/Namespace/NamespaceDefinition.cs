@@ -122,10 +122,13 @@ namespace HatTrick.CommandLine
 
                     depth += 1;
                 }
+
+                if (c == '-' && (name[i - 1] == '.' || (i < name.Length - 1 && name[i + 1] == '.')))
+                    throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' segments cannot start or end with '-'.");
             }
 
-            if (name[^1] == '.')
-                throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' cannot end with '.'");
+            if (name[^1] == '.' || name[^1] == '-')
+                throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' cannot end with '.' or '-'.");
 
             _depth = depth;
         }

@@ -153,6 +153,39 @@ namespace HatTrick.CommandLine.Test
             Action action = () => namespaceDef.Validate();
             Assert.Throws<NamespaceDefinitionException>(action);
         }
+
+        [Fact]
+        public void Validate_WhenNameEndsWithDash_ShouldThrow_NamespaceDefinitionException()
+        {
+            var namespaceDef = new NamespaceDefinition("abc-", "help");
+            Action action = () => namespaceDef.Validate();
+            Assert.Throws<NamespaceDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Validate_WhenSegmentEndsWithDash_ShouldThrow_NamespaceDefinitionException()
+        {
+            var namespaceDef = new NamespaceDefinition("abc-.xyz", "help");
+            Action action = () => namespaceDef.Validate();
+            Assert.Throws<NamespaceDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Validate_WhenSegmentStartsWithDash_ShouldThrow_NamespaceDefinitionException()
+        {
+            var namespaceDef = new NamespaceDefinition("abc.-xyz", "help");
+            Action action = () => namespaceDef.Validate();
+            Assert.Throws<NamespaceDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Validate_WhenNameHasInteriorDash_ShouldNotThrow()
+        {
+            //a dash interior to a segment is still valid
+            var namespaceDef = new NamespaceDefinition("ab-cd.x-y", "help");
+            namespaceDef.Validate();
+            Assert.Equal(1, namespaceDef.Depth);
+        }
         #endregion
     }
 }

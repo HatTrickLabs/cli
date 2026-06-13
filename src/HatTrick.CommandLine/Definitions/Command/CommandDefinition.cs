@@ -313,6 +313,9 @@ namespace HatTrick.CommandLine
 
                     depth += 1;
                 }
+
+                if (c == '-' && ((i > 0 && _name[i - 1] == '.') || (i < _name.Length - 1 && _name[i + 1] == '.')))
+                    throw new CommandDefinitionException($"{nameof(CommandDefinition)} '{nameof(Name)}' segments cannot start or end with '-'.");
             }
 
             if (_name[^1] == '.' || _name[^1] == '-')

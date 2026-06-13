@@ -267,6 +267,31 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
+        public void Add_WhenCommandNameSegmentEndsWithDash_ShouldThrow_CommandDefinitionException()
+        {
+            var set = new SetOfCommandDefinition();
+            Action action = () => set.Add(new CommandDefinition("abc-.xyz") { Handler = (cmd) => { }, Help = "Help!" });
+            Assert.Throws<CommandDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Add_WhenCommandNameSegmentStartsWithDash_ShouldThrow_CommandDefinitionException()
+        {
+            var set = new SetOfCommandDefinition();
+            Action action = () => set.Add(new CommandDefinition("abc.-xyz") { Handler = (cmd) => { }, Help = "Help!" });
+            Assert.Throws<CommandDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Add_WhenCommandNameHasInteriorDash_ShouldNotThrow()
+        {
+            //a dash interior to a segment is still valid
+            var set = new SetOfCommandDefinition();
+            set.Add(new CommandDefinition("ab-cd.x-y") { Handler = (cmd) => { }, Help = "Help!" });
+            Assert.Equal("ab-cd.x-y", set["ab-cd.x-y"].Name);
+        }
+
+        [Fact]
         public void Add_WhenCommandNameIsDigitFirst_ShouldNotThrow()
         {
             var set = new SetOfCommandDefinition();
