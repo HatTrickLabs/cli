@@ -23,16 +23,14 @@ namespace HatTrick.CommandLine
         #region constructors
         public MaskedInputLineReader()
         {
-            //no console access at construction — all console-dependent setup and per-read state
-            //is initialized in ReadMaskedInput, so a single instance can be constructed anywhere
-            //(e.g. globally / via DI) and reused across multiple reads.
         }
         #endregion
 
         #region initialize
-        //validate console state and reset per-read state so the reader can be reused across calls.
         private void Initialize()
         {
+            //validate console state and reset per-read state so the reader can be reused across calls.
+
             if (Console.GetCursorPosition().Left > 0)
                 throw new InvalidOperationException("Masked line input reader must start at console left position of 0.");
 
