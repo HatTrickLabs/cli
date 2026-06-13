@@ -75,14 +75,19 @@ namespace HatTrick.CommandLine
                 throw new NamespaceDefinitionException($"Invalid namespace...Length of '{nameof(Name)}' cannot exceed {MaxNameLength} characters.");
 
             int depth = 0;
-            for (int i = 1; i < name.Length - 1; i++)
+            for (int i = 1; i < name.Length; i++)
             {
                 char c = name[i];
                 if (!NamespaceDefinition.IsValidNamespaceChar(c))
                     throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' can only contain letters, digits, '-' and '.'");
 
                 if (c == '.')
+                {
+                    if (name[i - 1] == '.')
+                        throw new NamespaceDefinitionException($"Invalid namespace...'{nameof(Name)}' cannot contain empty segments ('..').");
+
                     depth += 1;
+                }
             }
 
             if (name[^1] == '.')

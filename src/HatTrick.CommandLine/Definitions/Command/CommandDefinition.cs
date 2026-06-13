@@ -287,8 +287,8 @@ namespace HatTrick.CommandLine
             if (_name == string.Empty)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Name)}.");
 
-            if (_name[0] == '-')
-                throw new CommandDefinitionException($"{nameof(CommandDefinition)} {nameof(Name)} cannot start with a '-'.");
+            if (_name[0] == '-' || _name[0] == '.')
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} {nameof(Name)} cannot start with a '-' or '.'.");
 
             if (_name.Length > CommandDefinition.MaxNameLength)
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)}...max accepted char length is {CommandDefinition.MaxNameLength}.");
@@ -300,18 +300,23 @@ namespace HatTrick.CommandLine
                 throw new CommandDefinitionException($"{nameof(CommandDefinition)} must be provided a value for {nameof(Help)}.");
 
             int depth = 0;
-            for (int i = 1; i < _name.Length; i++)
+            for (int i = 0; i < _name.Length; i++)
             {
                 char c = _name[i];
                 if (!CommandDefinition.IsValidCommandNameChar(c))
-                    throw new CommandDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)} can only contain letters, digits, '-' and '.'");
+                    throw new CommandDefinitionException($"{nameof(CommandDefinition)}.{nameof(Name)} can only contain letters, digits, '+', '-' and '.'");
 
                 if (c == '.')
+                {
+                    if (i > 0 && _name[i - 1] == '.')
+                        throw new CommandDefinitionException($"{nameof(CommandDefinition)} '{nameof(Name)}' cannot contain empty segments ('..').");
+
                     depth += 1;
+                }
             }
 
-            if (_name[^1] == '.')
-                throw new CommandDefinitionException($"{nameof(CommandDefinition)} '{nameof(Name)}' cannot end with '.'");
+            if (_name[^1] == '.' || _name[^1] == '-')
+                throw new CommandDefinitionException($"{nameof(CommandDefinition)} '{nameof(Name)}' cannot end with '.' or '-'.");
 
             _depth = depth;
 

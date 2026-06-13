@@ -231,5 +231,48 @@ namespace HatTrick.CommandLine.Test
             );
         }
         #endregion
+
+        #region add name validation
+        [Fact]
+        public void Add_WhenCommandNameStartsWithDot_ShouldThrow_CommandDefinitionException()
+        {
+            var set = new SetOfCommandDefinition();
+            Action action = () => set.Add(new CommandDefinition(".abc") { Handler = (cmd) => { }, Help = "Help!" });
+            Assert.Throws<CommandDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Add_WhenCommandNameFirstCharIsInvalid_ShouldThrow_CommandDefinitionException()
+        {
+            var set = new SetOfCommandDefinition();
+            Action action = () => set.Add(new CommandDefinition("@abc") { Handler = (cmd) => { }, Help = "Help!" });
+            Assert.Throws<CommandDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Add_WhenCommandNameContainsEmptySegment_ShouldThrow_CommandDefinitionException()
+        {
+            var set = new SetOfCommandDefinition();
+            Action action = () => set.Add(new CommandDefinition("abc..xyz") { Handler = (cmd) => { }, Help = "Help!" });
+            Assert.Throws<CommandDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Add_WhenCommandNameEndsWithDash_ShouldThrow_CommandDefinitionException()
+        {
+            //registers fine but is unreachable at parse time (CommandToken.IsValid rejects trailing '-')
+            var set = new SetOfCommandDefinition();
+            Action action = () => set.Add(new CommandDefinition("abc-") { Handler = (cmd) => { }, Help = "Help!" });
+            Assert.Throws<CommandDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Add_WhenCommandNameIsDigitFirst_ShouldNotThrow()
+        {
+            var set = new SetOfCommandDefinition();
+            set.Add(new CommandDefinition("1abc") { Handler = (cmd) => { }, Help = "Help!" });
+            Assert.Equal("1abc", set["1abc"].Name);
+        }
+        #endregion
     }
 }

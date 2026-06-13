@@ -98,6 +98,22 @@ namespace HatTrick.CommandLine.Test
         }
 
         [Fact]
+        public void Validate_WhenNameEndsWithInvalidChar_ShouldThrow_NamespaceDefinitionException()
+        {
+            var namespaceDef = new NamespaceDefinition("abc$", "help");
+            Action action = () => namespaceDef.Validate();
+            Assert.Throws<NamespaceDefinitionException>(action);
+        }
+
+        [Fact]
+        public void Validate_WhenNameContainsEmptySegment_ShouldThrow_NamespaceDefinitionException()
+        {
+            var namespaceDef = new NamespaceDefinition("abc..xyz", "help");
+            Action action = () => namespaceDef.Validate();
+            Assert.Throws<NamespaceDefinitionException>(action);
+        }
+
+        [Fact]
         public void Validate_WhenNameLength_GreaterThanMaxNameLength_ShouldThrow_NamespaceDefinitionException()
         {
             var namespaceDef = new NamespaceDefinition(new string('x', NamespaceDefinition.MaxNameLength + 1), string.Empty);

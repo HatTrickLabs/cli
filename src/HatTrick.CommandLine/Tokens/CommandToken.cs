@@ -29,10 +29,13 @@ namespace HatTrick.CommandLine
             if (c == '.' || c == '-')
                 return false;
 
-            for (int i = 1; i < value.Length - 1; i++)
+            for (int i = 0; i < value.Length; i++)
             {
                 c = value[i];
                 if (!CommandToken.IsValidCommandChar(c))
+                    return false;
+
+                if (c == '.' && i > 0 && value[i - 1] == '.')
                     return false;
             }
 
