@@ -1,4 +1,7 @@
-﻿using NuGet.Frameworks;
+﻿// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) HatTrick Labs, LLC
+
+using NuGet.Frameworks;
 using Xunit;
 
 namespace HatTrick.CommandLine.Test

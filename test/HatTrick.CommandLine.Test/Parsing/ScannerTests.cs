@@ -1,4 +1,7 @@
-﻿using HatTrick.CommandLine;
+﻿// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) HatTrick Labs, LLC
+
+using HatTrick.CommandLine;
 using Xunit;
 
 namespace HatTrick.CommandLine.Test

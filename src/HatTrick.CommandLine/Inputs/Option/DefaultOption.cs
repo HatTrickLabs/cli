@@ -1,4 +1,7 @@
-﻿namespace HatTrick.CommandLine
+﻿// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) HatTrick Labs, LLC
+
+namespace HatTrick.CommandLine
 {
     public class DefaultOption : Option
     {

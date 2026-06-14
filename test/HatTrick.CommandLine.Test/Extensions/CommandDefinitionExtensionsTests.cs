@@ -1,4 +1,7 @@
-﻿using Xunit;
+﻿// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) HatTrick Labs, LLC
+
+using Xunit;
 using HatTrick.CommandLine.Extensions;
 
 namespace HatTrick.CommandLine.Test
