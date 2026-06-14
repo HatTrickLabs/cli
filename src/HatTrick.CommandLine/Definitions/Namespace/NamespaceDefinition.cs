@@ -29,7 +29,7 @@ namespace HatTrick.CommandLine
         #region constructors
         static NamespaceDefinition()
         {
-            MaxNameLength = CommandDefinition.MaxNameLength - 1;//one less than max command name length
+            MaxNameLength = CommandDefinition.MaxNameLength - 2;//2 less than max command name length
         }
 
         public NamespaceDefinition(string name, string help)
