@@ -21,21 +21,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Outputs\Templates\command-help.htt" />
-    <None Remove="Outputs\Templates\namespace-help.htt" />
-    <None Remove="Outputs\Templates\namespace-wildcard-help.htt" />
-    <None Remove="Outputs\Templates\root-help.htt" />
-    <None Remove="Outputs\Templates\usage-help.htt" />
+    <None Remove="Outputs\Templates\command-help.httt" />
+    <None Remove="Outputs\Templates\namespace-help.httt" />
+    <None Remove="Outputs\Templates\namespace-wildcard-help.httt" />
+    <None Remove="Outputs\Templates\root-help.httt" />
+    <None Remove="Outputs\Templates\usage-help.httt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Outputs\Templates\command-help.htt" />
-    <EmbeddedResource Include="Outputs\Templates\namespace-help.htt" />
-    <EmbeddedResource Include="Outputs\Templates\namespace-wildcard-help.htt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Outputs\Templates\root-help.htt" />
-    <EmbeddedResource Include="Outputs\Templates\usage-help.htt" />
+    <EmbeddedResource Include="Outputs\Templates\command-help.httt" />
+    <EmbeddedResource Include="Outputs\Templates\namespace-help.httt" />
+    <EmbeddedResource Include="Outputs\Templates\namespace-wildcard-help.httt" />
+    <EmbeddedResource Include="Outputs\Templates\root-help.httt" />
+    <EmbeddedResource Include="Outputs\Templates\usage-help.httt" />
   </ItemGroup>
 
   <ItemGroup>
