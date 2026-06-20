@@ -49,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HatTrick.Text.Templating" Version="2.2.0" />
+    <PackageReference Include="HatTrick.Text.Templating" Version="3.0.0" />
   </ItemGroup>
 
 </Project>
