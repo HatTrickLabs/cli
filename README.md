@@ -5,7 +5,7 @@
 
 Argument parsing, type conversion, constraint validation, and handler dispatch for building structured, validated .NET 9 CLI applications.
 
-**[Full documentation](https://hattricklabs.com/docs/cli/)** | **[NuGet package](https://www.nuget.org/packages/HatTrick.CommandLine/)** | **[hattricklabs.com](https://hattricklabs.com)**
+**[Full documentation](https://hattricklabs.com/docs/cli/)** | **[hattricklabs.com](https://hattricklabs.com)**
 
 ---
 
