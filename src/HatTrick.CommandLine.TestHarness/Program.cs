@@ -18,6 +18,8 @@ namespace HatTrick.CommandLine.TestHarness
         //static async Task Main(string[] args)
         static void Main(string[] args)
         {
+            string test = new MaskedInputLineReader().ReadMaskedInput();
+            return;
             RegisterCommandDefinitions();
             Command cmd = CommandBuilder.Build(args);
             CommandExecutor exe = DefinitionRegistry.GetInstance().GetCommandExecutor(cmd);

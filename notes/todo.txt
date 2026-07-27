@@ -111,6 +111,23 @@ x Figure out how to render a legit argument type in error feedback when the arg 
 x The logic behind the concept of IgnoreAndContinueException does not work at all...no exception can bubble out of the command loop, so consuming devs MUST catch
   their own exceptions within the command execution handler.
 x Validate that Help is supplied for the command definition...if not it causes null ref exception when rendering command level help....
+x MaskedInputReader: if the user copy/pastes a value into masked input read that is LARGER than the console line buffer we get an error...How can we handle masked input larger than console buffer length?
+  Rewrote cursor handling around absolute position + BufferWidth (row = pos/width, col = pos%width) using only
+  CUU/CUD/CHA/ED escapes instead of Console.CursorLeft/SetCursorPosition, plus a growable List<char> buffer
+  (no more Console.BufferWidth-1 cap). Handles the DECAWM deferred-autowrap quirk explicitly (_pendingWrap).
+  Perf follow-up: pasting mid-buffer (e.g. Home then paste) was O(pasted length * existing tail length) -
+  every inserted char repainted the whole tail. HandleInsertBurst now batches a run of characters that
+  arrive already-queued (Console.KeyAvailable) into one InsertRange + one repaint instead of one per char.
+  Added a 64K (65536 char) MaxLength cap - not for the terminal-row limitation (that's fully gone), just
+  a sane memory/render-cost ceiling against a pathologically large paste. Throws InvalidOperationException.
+  Resize mid-read: Console.BufferWidth is still cached once at read start (re-checking it per key turned
+  out to be effectively free - a Console.BufferWidth read is microseconds, dwarfed by any human typing
+  interval), but HasResized() now compares live vs cached width on every key (outer loop + inside
+  HandleInsertBurst) and abandons the read - returns null exactly like Escape, no exception, no attempted
+  cleanup render (which would itself use the stale width and risk making things worse). Content integrity
+  was never actually at risk from a resize (the buffer/position bookkeeping never depends on _width - only
+  the escape-sequence rendering does), so this is a "stop showing the user a broken screen" fix, not a
+  data-safety one.
 
 
 
